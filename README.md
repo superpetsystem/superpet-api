@@ -1,98 +1,533 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# SuperPet API 🐾
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST desenvolvida com NestJS, TypeORM e MySQL para gerenciamento de pets.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Tecnologias
 
-## Description
+- **NestJS** - Framework Node.js progressivo
+- **TypeORM** - ORM para TypeScript e JavaScript
+- **MySQL** - Banco de dados relacional
+- **JWT** - Autenticação com JSON Web Tokens
+- **Passport** - Middleware de autenticação
+- **bcrypt** - Hash de senhas
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Pré-requisitos
 
-## Project setup
+- Node.js (v18 ou superior)
+- MySQL (v8 ou superior)
+- npm ou yarn
 
+## ⚙️ Instalação
+
+1. Clone o repositório:
 ```bash
-$ npm install
+git clone <repository-url>
+cd superpet-api
 ```
 
-## Compile and run the project
-
+2. Instale as dependências:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
+3. Configure as variáveis de ambiente:
 ```bash
-# unit tests
-$ npm run test
+# Copie o arquivo template
+# Windows (PowerShell)
+Copy-Item env\template.env env\local.env
 
-# e2e tests
-$ npm run test:e2e
+# Linux/Mac
+cp env/template.env env/local.env
 
-# test coverage
-$ npm run test:cov
+# Edite o arquivo env/local.env com suas configurações
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
+4. Configure o banco de dados MySQL:
+```sql
+CREATE DATABASE superpet_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+5. Execute as migrations:
+```bash
+npm run migration:run:local
+```
 
-## Resources
+6. Execute a aplicação:
+```bash
+# Modo local (desenvolvimento)
+npm run start:local
 
-Check out a few resources that may come in handy when working with NestJS:
+# Modo staging
+npm run start:staging
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Modo produção
+npm run start:prod
+```
 
-## Support
+A aplicação estará rodando em `http://localhost:3000`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 📚 Documentação
 
-## Stay in touch
+### 📖 Guias
+- [Guia de Ambientes](./docs/guides/ENVIRONMENTS.md) - Configuração de ambientes (local, staging, production)
+- [Guia de Migrations](./docs/guides/MIGRATIONS.md) - Referência completa de comandos de migrations
+- [Comandos de Migrations](./docs/guides/MIGRATION-COMMANDS.md) - Referência rápida: aplicar todas de uma vez
+- [Workflow de Migrations](./docs/guides/MIGRATIONS-WORKFLOW.md) - Fluxo prático do dia-a-dia com migrations
+- [Recuperação de Senha](./docs/guides/PASSWORD-RECOVERY.md) - Change password e forgot/reset password
+- [Guia de Scripts](./docs/guides/SCRIPTS.md) - Todos os comandos NPM disponíveis
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 📦 Collections & Exemplos
+- [Collection Postman - Auth](./docs/collections/auth/) - Collection completa do Postman para testar Auth
+- [Exemplos HTTP](./docs/collections/api-examples.http) - Exemplos de requisições HTTP (REST Client)
 
-## License
+## 📁 Estrutura do Projeto
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```
+├── env/                       # Arquivos de configuração de ambiente
+│   ├── local.env             # Configurações locais (gitignored)
+│   ├── staging.env           # Configurações staging (gitignored)
+│   ├── prod.env              # Configurações produção (gitignored)
+│   ├── template.env          # Template para criar novos ambientes
+│   └── README.md             # Documentação dos ambientes
+├── src/
+│   ├── auth/                 # Módulo de autenticação
+│   │   ├── decorators/       # Decorators customizados
+│   │   │   ├── current-user.decorator.ts
+│   │   │   └── public.decorator.ts
+│   │   ├── dto/              # Data Transfer Objects
+│   │   │   ├── auth-response.dto.ts
+│   │   │   ├── login.dto.ts
+│   │   │   ├── refresh-token.dto.ts
+│   │   │   └── register.dto.ts
+│   │   ├── guards/           # Guards de autenticação
+│   │   │   └── jwt-auth.guard.ts
+│   │   ├── strategies/       # Estratégias Passport
+│   │   │   └── jwt.strategy.ts
+│   │   ├── auth.controller.ts
+│   │   ├── auth.module.ts
+│   │   └── auth.service.ts
+│   ├── common/               # Recursos compartilhados
+│   │   └── entities/
+│   │       └── base.entity.ts
+│   ├── database/             # Configuração do banco de dados
+│   │   ├── migrations/       # Migrations do TypeORM
+│   │   │   └── 1729000000000-CreateUsersTable.ts
+│   │   ├── data-source.ts    # DataSource para migrations
+│   │   └── database.module.ts
+│   ├── users/                # Módulo de usuários
+│   │   ├── entities/
+│   │   │   └── user.entity.ts
+│   │   ├── users.module.ts
+│   │   └── users.repository.ts
+│   ├── app.module.ts         # Módulo principal
+│   └── main.ts               # Arquivo de inicialização
+├── docs/                             # Documentação do projeto
+│   ├── README.md                     # Índice da documentação
+│   ├── guides/                       # Guias e tutoriais
+│   │   ├── ENVIRONMENTS.md           # Guia de ambientes
+│   │   ├── MIGRATIONS.md             # Guia de migrations
+│   │   ├── MIGRATION-COMMANDS.md     # Comandos de migrations
+│   │   ├── MIGRATIONS-WORKFLOW.md    # Workflow de migrations
+│   │   ├── PASSWORD-RECOVERY.md      # Recuperação de senha
+│   │   └── SCRIPTS.md                # Guia de scripts
+│   └── collections/                  # Collections e exemplos
+│       ├── auth/                     # Collection do módulo Auth
+│       │   ├── SuperPet-Auth.postman_collection.json
+│       │   └── README.md
+│       └── api-examples.http         # Exemplos REST Client
+└── README.md                         # Documentação principal
+```
+
+## 🔐 Endpoints da API
+
+### 📋 Resumo de Endpoints
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| POST | `/auth/register` | ❌ | Criar nova conta |
+| POST | `/auth/login` | ❌ | Fazer login |
+| POST | `/auth/logout` | ✅ | Fazer logout |
+| POST | `/auth/refresh` | ❌ | Renovar tokens |
+| GET | `/auth/me` | ✅ | Ver perfil do usuário logado |
+| PATCH | `/auth/change-password` | ✅ | Trocar senha (com senha atual) |
+| POST | `/auth/forgot-password` | ❌ | Solicitar recuperação de senha |
+| POST | `/auth/reset-password` | ❌ | Resetar senha com token |
+
+### Autenticação
+
+#### 1. Registro de Usuário
+```http
+POST /auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "senha123",
+  "name": "Nome do Usuário"
+}
+```
+
+**Resposta (201 Created):**
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "Nome do Usuário"
+  }
+}
+```
+
+#### 2. Login
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "senha123"
+}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "Nome do Usuário"
+  }
+}
+```
+
+#### 3. Logout
+```http
+POST /auth/logout
+Authorization: Bearer {accessToken}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "message": "Logout successful"
+}
+```
+
+#### 4. Refresh Token
+```http
+POST /auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "Nome do Usuário"
+  }
+}
+```
+
+#### 5. Ver Perfil (Autenticado)
+```http
+GET /auth/me
+Authorization: Bearer {accessToken}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "id": "uuid",
+  "email": "user@example.com",
+  "name": "Nome do Usuário",
+  "createdAt": "2025-10-14T19:00:00.000Z",
+  "updatedAt": "2025-10-14T19:00:00.000Z"
+}
+```
+
+#### 6. Trocar Senha (Autenticado)
+```http
+PATCH /auth/change-password
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "currentPassword": "senha123",
+  "newPassword": "novaSenha123"
+}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "message": "Password changed successfully"
+}
+```
+
+#### 7. Solicitar Recuperação de Senha
+```http
+POST /auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "message": "If the email exists, a password reset link has been sent"
+}
+```
+
+**Nota:** Por segurança, sempre retorna sucesso mesmo se o email não existir. Em desenvolvimento, o token aparece no console do servidor. Em produção, seria enviado por email.
+
+#### 8. Resetar Senha com Token
+```http
+POST /auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "token_recebido_por_email",
+  "newPassword": "novaSenha123"
+}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "message": "Password has been reset successfully"
+}
+```
+
+**Nota:** O token é válido por 1 hora e pode ser usado apenas uma vez.
+
+## 🔒 Autenticação
+
+A API utiliza JWT (JSON Web Tokens) para autenticação. Existem dois tipos de tokens:
+
+- **Access Token**: Validade de 15 minutos, usado para acessar rotas protegidas
+- **Refresh Token**: Validade de 7 dias, usado para obter novos access tokens
+
+### Como usar tokens protegidos
+
+Para acessar rotas protegidas, inclua o access token no header:
+
+```http
+Authorization: Bearer {accessToken}
+```
+
+### Rotas Públicas
+
+Use o decorator `@Public()` para marcar rotas que não precisam de autenticação.
+
+### Obter usuário atual
+
+Use o decorator `@CurrentUser()` em rotas protegidas para obter os dados do usuário autenticado:
+
+```typescript
+@UseGuards(JwtAuthGuard)
+@Get('profile')
+getProfile(@CurrentUser() user: any) {
+  return user;
+}
+```
+
+## 🛠️ Configuração de Ambiente
+
+### Ambientes Suportados
+
+A aplicação suporta múltiplos ambientes com arquivos na pasta `env/`:
+- **Local**: `env/local.env` - Desenvolvimento local
+- **Staging**: `env/staging.env` - Ambiente de testes
+- **Production**: `env/prod.env` - Ambiente de produção
+
+### Arquivo de Configuração (`env/local.env`)
+
+```env
+# Environment
+NODE_ENV=local
+
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=root
+DB_DATABASE=superpet_db
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=your-super-secret-refresh-jwt-key-change-this-in-production
+JWT_REFRESH_EXPIRES_IN=7d
+
+# App
+PORT=3000
+```
+
+⚠️ **IMPORTANTE**: 
+- Todos os arquivos de ambiente estão em `env/`
+- Nomes dos arquivos: `local.env`, `staging.env`, `prod.env`
+- Altere os valores de `JWT_SECRET` e `JWT_REFRESH_SECRET` em staging e produção!
+- Use secrets de no mínimo 32 caracteres
+- Nunca commite arquivos `env/*.env` no git (exceto `template.env`)
+- Use `cross-env` para compatibilidade Windows/Linux/Mac
+
+📖 **Guia completo de ambientes:** [ENVIRONMENTS.md](./docs/guides/ENVIRONMENTS.md)
+
+## 🧪 Testes
+
+```bash
+# Testes unitários
+npm run test
+
+# Testes e2e
+npm run test:e2e
+
+# Cobertura de testes
+npm run test:cov
+```
+
+## 📝 Comandos Úteis
+
+### Desenvolvimento
+
+```bash
+# Local (desenvolvimento com hot-reload)
+npm run start:local
+
+# Debug
+npm run start:debug
+
+# Build
+npm run build
+
+# Lint
+npm run lint
+
+# Format
+npm run format
+```
+
+### Migrations
+
+```bash
+# Criar migration vazia
+npm run migration:create src/database/migrations/NomeDaMigration
+
+# Gerar migration automaticamente (local)
+npm run migration:generate:local src/database/migrations/NomeDaMigration
+
+# Ver migrations pendentes ANTES de aplicar
+npm run migration:pending:local       # Local
+npm run migration:pending:staging     # Staging
+npm run migration:pending:production  # Production
+
+# Aplicar TODAS as migrations pendentes de uma vez
+npm run migration:apply:all:local       # Local
+npm run migration:apply:all:staging     # Staging
+npm run migration:apply:all:production  # Production
+
+# Reverter última migration
+npm run migration:revert:local
+npm run migration:revert:staging
+npm run migration:revert:production
+
+# Ver status das migrations (executadas + pendentes)
+npm run migration:show:local
+npm run migration:show:staging
+npm run migration:show:production
+```
+
+📖 **Veja o guia completo:** [MIGRATIONS.md](./docs/guides/MIGRATIONS.md)
+
+### Ambientes
+
+```bash
+# Local (desenvolvimento)
+npm run start:local
+
+# Staging
+npm run start:staging
+
+# Production
+npm run start:prod
+```
+
+📖 **Veja o guia completo:** [ENVIRONMENTS.md](./docs/guides/ENVIRONMENTS.md)
+
+## 🔄 Migrations
+
+O projeto usa **TypeORM Migrations** para gerenciar o schema do banco de dados de forma controlada e versionada.
+
+### Comandos Principais
+
+```bash
+# Criar migration
+npm run migration:create src/database/migrations/NomeDaMigration
+
+# Gerar migration automaticamente
+npm run migration:generate:local src/database/migrations/NomeDaMigration
+
+# Aplicar migrations
+npm run migration:run:local
+
+# Reverter última migration
+npm run migration:revert:local
+
+# Ver status
+npm run migration:show:local
+```
+
+📖 **Guia completo de migrations:** [MIGRATIONS.md](./docs/guides/MIGRATIONS.md)
+
+### Fluxo de Trabalho
+
+1. Modificar/criar entity
+2. Gerar migration: `npm run migration:generate:local src/database/migrations/NomeMigration`
+3. Revisar migration gerada
+4. Aplicar: `npm run migration:run:local`
+5. Testar
+6. Commit e push
+
+## 🤝 Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+
+## ✨ Próximos Passos
+
+- [ ] Implementar módulo de Pets
+- [ ] Adicionar validações de email
+- [ ] Implementar recuperação de senha
+- [ ] Adicionar refresh token rotation
+- [ ] Implementar rate limiting
+- [ ] Adicionar documentação Swagger/OpenAPI
+- [ ] Implementar testes unitários e e2e
+- [ ] Configurar CI/CD
+- [ ] Adicionar logs estruturados
+- [ ] Implementar health checks
+
+---
+
+Desenvolvido com ❤️ usando NestJS
