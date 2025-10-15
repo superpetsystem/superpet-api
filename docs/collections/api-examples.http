@@ -1,0 +1,69 @@
+### SuperPet API - Exemplos de Requisições
+### Use com a extensão REST Client do VS Code
+
+@baseUrl = http://localhost:3000
+@accessToken = seu_access_token_aqui
+@refreshToken = seu_refresh_token_aqui
+
+### 1. Registrar novo usuário
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "teste@example.com",
+  "password": "senha123",
+  "name": "Usuário Teste"
+}
+
+### 2. Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@example.com",
+  "password": "senha123"
+}
+
+### 3. Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### 4. Logout (requer autenticação)
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{accessToken}}
+
+### 5. Ver perfil do usuário logado (requer autenticação)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+
+### 6. Trocar senha (requer autenticação)
+PATCH {{baseUrl}}/auth/change-password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "senha123",
+  "newPassword": "novaSenha123"
+}
+
+### 7. Solicitar recuperação de senha (público - sem autenticação)
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "teste@example.com"
+}
+
+### 8. Resetar senha com token (público - sem autenticação)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "cole_aqui_o_token_recebido_no_console",
+  "newPassword": "senhaNovissima123"
+}
+
