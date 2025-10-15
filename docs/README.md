@@ -82,6 +82,17 @@ Exemplos prontos para usar com REST Client (VS Code):
 
 ---
 
+## 🧪 Testes de Automação
+
+### [Testes de Auth](../test/automation/)
+Scripts de automação para testar todos os endpoints:
+- 16 testes automatizados
+- Casos de sucesso e erro
+- Validação completa do módulo Auth
+- Execute com: `npm run test:automation`
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Configurar Ambiente

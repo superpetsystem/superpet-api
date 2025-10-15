@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { UsersRepository } from '../users/users.repository';
+import { TokenBlacklistRepository } from './repositories/token-blacklist.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -20,6 +21,7 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly tokenBlacklistRepository: TokenBlacklistRepository,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
@@ -91,8 +93,39 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string): Promise<void> {
+  async logout(userId: string, accessToken: string): Promise<void> {
+    // Invalidar refresh token no banco
     await this.usersRepository.updateRefreshToken(userId, null);
+    
+    // Adicionar access token à blacklist
+    const jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN') || '15m';
+    const expiresInMinutes = this.parseTimeToMinutes(jwtExpiresIn);
+    
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + expiresInMinutes);
+    
+    await this.tokenBlacklistRepository.addToBlacklist(
+      accessToken,
+      userId,
+      expiresAt,
+      'logout',
+    );
+  }
+
+  /**
+   * Converte string de tempo (15m, 1h, 7d) para minutos
+   */
+  private parseTimeToMinutes(time: string): number {
+    const unit = time.slice(-1);
+    const value = parseInt(time.slice(0, -1));
+    
+    switch (unit) {
+      case 's': return Math.ceil(value / 60);
+      case 'm': return value;
+      case 'h': return value * 60;
+      case 'd': return value * 60 * 24;
+      default: return 15; // 15 minutos default
+    }
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponseDto> {

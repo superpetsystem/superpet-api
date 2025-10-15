@@ -135,6 +135,12 @@ A aplicação estará rodando em `http://localhost:3000`
 │       │   ├── SuperPet-Auth.postman_collection.json
 │       │   └── README.md
 │       └── api-examples.http         # Exemplos REST Client
+├── test/                             # Testes
+│   ├── automation/                   # Testes de automação E2E
+│   │   ├── auth.test.js              # Testes do módulo Auth
+│   │   └── README.md                 # Como executar
+│   ├── app.e2e-spec.ts               # Testes E2E
+│   └── jest-e2e.json                 # Config Jest E2E
 └── README.md                         # Documentação principal
 ```
 
@@ -390,16 +396,39 @@ PORT=3000
 
 ## 🧪 Testes
 
+### Testes Unitários
 ```bash
-# Testes unitários
+# Executar todos os testes unitários
 npm run test
 
-# Testes e2e
-npm run test:e2e
+# Watch mode
+npm run test:watch
 
-# Cobertura de testes
+# Com cobertura
 npm run test:cov
 ```
+
+### Testes E2E
+```bash
+npm run test:e2e
+```
+
+### Testes de Automação (API)
+```bash
+# Testar módulo Auth completo (16 testes)
+npm run test:automation
+
+# Ou especificamente Auth
+npm run test:automation:auth
+```
+
+**O que testa:**
+- ✅ Todos endpoints de Auth (8 endpoints)
+- ✅ Casos de sucesso (happy path)
+- ✅ Casos de erro (validações)
+- ✅ Fluxos completos (register → login → logout)
+
+📖 **Ver detalhes:** [test/automation/README.md](./test/automation/README.md)
 
 ## 📝 Comandos Úteis
 
@@ -515,18 +544,33 @@ npm run migration:show:local
 
 Este projeto está sob a licença MIT.
 
+## ✨ Features Implementadas
+
+- ✅ Módulo de Autenticação completo
+- ✅ JWT com Access e Refresh Tokens
+- ✅ Recuperação de senha (Forgot/Reset)
+- ✅ Troca de senha (Change Password)
+- ✅ TypeORM com Migrations
+- ✅ Múltiplos ambientes (local, staging, prod)
+- ✅ Validações com class-validator
+- ✅ Guards e Decorators customizados
+- ✅ Collection Postman completa
+- ✅ Testes de automação E2E
+- ✅ Documentação completa
+
 ## ✨ Próximos Passos
 
 - [ ] Implementar módulo de Pets
-- [ ] Adicionar validações de email
-- [ ] Implementar recuperação de senha
+- [ ] Adicionar validações de email (confirmação)
+- [ ] Envio de emails (integração com SendGrid/AWS SES)
 - [ ] Adicionar refresh token rotation
 - [ ] Implementar rate limiting
 - [ ] Adicionar documentação Swagger/OpenAPI
-- [ ] Implementar testes unitários e e2e
-- [ ] Configurar CI/CD
-- [ ] Adicionar logs estruturados
+- [ ] Implementar testes unitários (Jest)
+- [ ] Configurar CI/CD (GitHub Actions)
+- [ ] Adicionar logs estruturados (Winston)
 - [ ] Implementar health checks
+- [ ] Adicionar 2FA (Two-Factor Authentication)
 
 ---
 

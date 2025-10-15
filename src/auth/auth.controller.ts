@@ -7,7 +7,9 @@ import {
   UseGuards,
   Get,
   Patch,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -41,9 +43,25 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@CurrentUser() user: any): Promise<{ message: string }> {
-    await this.authService.logout(user.userId);
+  async logout(
+    @CurrentUser() user: any,
+    @Req() request: Request,
+  ): Promise<{ message: string }> {
+    // Extrair token do header
+    const token = this.extractTokenFromHeader(request);
+    
+    await this.authService.logout(user.userId, token);
     return { message: 'Logout successful' };
+  }
+
+  private extractTokenFromHeader(request: Request): string {
+    const authorization = request.headers.authorization;
+    if (!authorization) {
+      return '';
+    }
+
+    const [type, token] = authorization.split(' ');
+    return type === 'Bearer' ? token : '';
   }
 
   @Public()
