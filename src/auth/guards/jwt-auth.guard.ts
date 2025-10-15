@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
@@ -6,6 +6,8 @@ import { TokenBlacklistRepository } from '../repositories/token-blacklist.reposi
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  private readonly logger = new Logger(JwtAuthGuard.name);
+
   constructor(
     private reflector: Reflector,
     private tokenBlacklistRepository: TokenBlacklistRepository,
@@ -38,6 +40,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (token) {
       const isBlacklisted = await this.tokenBlacklistRepository.isBlacklisted(token);
       if (isBlacklisted) {
+        this.logger.warn(`🚫 Blocked blacklisted token - Token: ${token.substring(0, 20)}...`);
         throw new UnauthorizedException('Token has been revoked');
       }
     }

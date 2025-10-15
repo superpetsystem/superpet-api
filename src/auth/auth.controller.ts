@@ -8,6 +8,7 @@ import {
   Get,
   Patch,
   Req,
+  Logger,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -24,20 +25,40 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    return this.authService.register(registerDto);
+    this.logger.log(`📝 Register attempt - Email: ${registerDto.email}`);
+    
+    try {
+      const result = await this.authService.register(registerDto);
+      this.logger.log(`✅ User registered successfully - Email: ${registerDto.email}, UserID: ${result.user.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Register failed - Email: ${registerDto.email}, Error: ${error.message}`);
+      throw error;
+    }
   }
 
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-    return this.authService.login(loginDto);
+    this.logger.log(`🔑 Login attempt - Email: ${loginDto.email}`);
+    
+    try {
+      const result = await this.authService.login(loginDto);
+      this.logger.log(`✅ Login successful - Email: ${loginDto.email}, UserID: ${result.user.id}`);
+      return result;
+    } catch (error) {
+      this.logger.warn(`⚠️  Login failed - Email: ${loginDto.email}, Reason: ${error.message}`);
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -47,11 +68,20 @@ export class AuthController {
     @CurrentUser() user: any,
     @Req() request: Request,
   ): Promise<{ message: string }> {
-    // Extrair token do header
-    const token = this.extractTokenFromHeader(request);
+    this.logger.log(`🚪 Logout attempt - UserID: ${user.userId}`);
     
-    await this.authService.logout(user.userId, token);
-    return { message: 'Logout successful' };
+    try {
+      // Extrair token do header
+      const token = this.extractTokenFromHeader(request);
+      
+      await this.authService.logout(user.userId, token);
+      
+      this.logger.log(`✅ Logout successful - UserID: ${user.userId}, Token added to blacklist`);
+      return { message: 'Logout successful' };
+    } catch (error) {
+      this.logger.error(`❌ Logout failed - UserID: ${user.userId}, Error: ${error.message}`);
+      throw error;
+    }
   }
 
   private extractTokenFromHeader(request: Request): string {
@@ -70,14 +100,32 @@ export class AuthController {
   async refresh(
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<AuthResponseDto> {
-    return this.authService.refreshToken(refreshTokenDto.refreshToken);
+    this.logger.log(`🔄 Refresh token attempt`);
+    
+    try {
+      const result = await this.authService.refreshToken(refreshTokenDto.refreshToken);
+      this.logger.log(`✅ Token refreshed successfully - UserID: ${result.user.id}`);
+      return result;
+    } catch (error) {
+      this.logger.warn(`⚠️  Refresh token failed - Reason: ${error.message}`);
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
   async getProfile(@CurrentUser() user: any) {
-    return this.authService.getProfile(user.userId);
+    this.logger.log(`👤 Get profile - UserID: ${user.userId}`);
+    
+    try {
+      const result = await this.authService.getProfile(user.userId);
+      this.logger.log(`✅ Profile retrieved - Email: ${result.email}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Get profile failed - UserID: ${user.userId}, Error: ${error.message}`);
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -87,12 +135,21 @@ export class AuthController {
     @CurrentUser() user: any,
     @Body() changePasswordDto: ChangePasswordDto,
   ): Promise<{ message: string }> {
-    await this.authService.changePassword(
-      user.userId,
-      changePasswordDto.currentPassword,
-      changePasswordDto.newPassword,
-    );
-    return { message: 'Password changed successfully' };
+    this.logger.log(`🔐 Change password attempt - UserID: ${user.userId}`);
+    
+    try {
+      await this.authService.changePassword(
+        user.userId,
+        changePasswordDto.currentPassword,
+        changePasswordDto.newPassword,
+      );
+      
+      this.logger.log(`✅ Password changed successfully - UserID: ${user.userId}`);
+      return { message: 'Password changed successfully' };
+    } catch (error) {
+      this.logger.warn(`⚠️  Change password failed - UserID: ${user.userId}, Reason: ${error.message}`);
+      throw error;
+    }
   }
 
   @Public()
@@ -101,7 +158,16 @@ export class AuthController {
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
   ): Promise<{ message: string }> {
-    return this.authService.forgotPassword(forgotPasswordDto.email);
+    this.logger.log(`📧 Forgot password request - Email: ${forgotPasswordDto.email}`);
+    
+    try {
+      const result = await this.authService.forgotPassword(forgotPasswordDto.email);
+      this.logger.log(`✅ Forgot password processed - Email: ${forgotPasswordDto.email}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Forgot password failed - Email: ${forgotPasswordDto.email}, Error: ${error.message}`);
+      throw error;
+    }
   }
 
   @Public()
@@ -110,10 +176,20 @@ export class AuthController {
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message: string }> {
-    return this.authService.resetPassword(
-      resetPasswordDto.token,
-      resetPasswordDto.newPassword,
-    );
+    this.logger.log(`🔓 Reset password attempt with token`);
+    
+    try {
+      const result = await this.authService.resetPassword(
+        resetPasswordDto.token,
+        resetPasswordDto.newPassword,
+      );
+      
+      this.logger.log(`✅ Password reset successful`);
+      return result;
+    } catch (error) {
+      this.logger.warn(`⚠️  Reset password failed - Reason: ${error.message}`);
+      throw error;
+    }
   }
 }
 
