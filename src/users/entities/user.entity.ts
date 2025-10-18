@@ -1,6 +1,12 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 
+export enum UserRole {
+  ADMIN = 'admin',
+  CUSTOMER = 'customer',
+  EMPLOYEE = 'employee',
+}
+
 @Entity('users')
 export class UserEntity extends BaseEntity {
   @Column({ unique: true })
@@ -11,6 +17,13 @@ export class UserEntity extends BaseEntity {
 
   @Column()
   name: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.CUSTOMER,
+  })
+  role: UserRole;
 
   @Column({ nullable: true, type: 'text' })
   refreshToken: string | null;

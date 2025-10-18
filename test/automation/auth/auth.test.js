@@ -608,6 +608,52 @@ async function testError5_ResetPasswordInvalidToken() {
   }
 }
 
+async function test12_CreateMultipleUsers() {
+  separator();
+  log('TEST 12: Criar 100 usuários', 'blue');
+  separator();
+  
+  try {
+    const totalToCreate = 100;
+    let created = 0;
+    let failed = 0;
+    
+    logInfo(`Criando ${totalToCreate} usuários...`);
+    
+    for (let i = 1; i <= totalToCreate; i++) {
+      try {
+        const userData = {
+          email: `user.batch${Date.now()}.${i}@superpet.com`,
+          password: 'senha123',
+          name: `User Batch ${i}`
+        };
+        
+        await axios.post(`${BASE_URL}/auth/register`, userData);
+        
+        created++;
+        
+        if (i % 10 === 0) {
+          logInfo(`  ✓ ${i}/${totalToCreate} usuários criados...`);
+        }
+      } catch (error) {
+        failed++;
+        if (failed <= 3) {
+          logInfo(`  ✗ Falha ao criar usuário ${i}: ${error.message}`);
+        }
+      }
+    }
+    
+    logSuccess(`${created} usuários criados com sucesso`);
+    if (failed > 0) {
+      logInfo(`${failed} falharam`);
+    }
+    return true;
+  } catch (error) {
+    logError('Criar múltiplos usuários', error);
+    return false;
+  }
+}
+
 // ========================================
 // EXECUTAR TODOS OS TESTES
 // ========================================
@@ -643,6 +689,7 @@ async function runAllTests() {
     { name: 'Logout', fn: test9_Logout },
     { name: 'Token invalidado após logout', fn: test10_FailedLoginAfterLogout },
     { name: 'Login após logout', fn: test11_LoginAgain },
+    { name: 'Criar 100 usuários', fn: test12_CreateMultipleUsers },
     
     // Testes de erro
     { name: 'Email duplicado', fn: testError1_RegisterDuplicateEmail },
