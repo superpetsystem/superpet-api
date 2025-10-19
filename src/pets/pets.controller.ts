@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Put,
-  Delete,
+  Patch,
   Body,
   Param,
   Query,
@@ -12,70 +12,57 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PetCreateService } from './services/pet-create.service';
-import { PetGetService } from './services/pet-get.service';
-import { PetUpdateService } from './services/pet-update.service';
-import { PetDeleteService } from './services/pet-delete.service';
+import { PetService } from './services/pet.service';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
-import { PetEntity } from './entities/pet.entity';
-import { PaginationDto, PaginatedResult } from '../common/dto/pagination.dto';
+import { PetEntity, PetStatus } from './entities/pet.entity';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-@Controller('pets')
+@Controller('v1')
 @UseGuards(JwtAuthGuard)
 export class PetsController {
-  constructor(
-    private readonly petCreateService: PetCreateService,
-    private readonly petGetService: PetGetService,
-    private readonly petUpdateService: PetUpdateService,
-    private readonly petDeleteService: PetDeleteService,
-  ) {}
+  constructor(private readonly petService: PetService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createPetDto: CreatePetDto): Promise<PetEntity> {
-    return this.petCreateService.create(createPetDto);
-  }
-
-  @Get('all')
+  @Get('customers/:customerId/pets')
   @HttpCode(HttpStatus.OK)
-  async findAllSimple(): Promise<PetEntity[]> {
-    return this.petGetService.findAllSimple();
+  async findByCustomer(
+    @Param('customerId') customerId: string,
+    @Query('status') status?: PetStatus,
+  ): Promise<PetEntity[]> {
+    return this.petService.findByCustomer(customerId, status);
   }
 
-  @Get()
-  @HttpCode(HttpStatus.OK)
-  async findAll(@Query() paginationDto: PaginationDto): Promise<PaginatedResult<PetEntity>> {
-    return this.petGetService.findAll(paginationDto.page, paginationDto.limit);
-  }
-
-  @Get(':id')
+  @Get('pets/:id')
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: string): Promise<PetEntity> {
-    return this.petGetService.findById(id);
+    return this.petService.findById(id);
   }
 
-  @Get('customer/:customerId')
-  @HttpCode(HttpStatus.OK)
-  async findByCustomerId(
+  @Post('customers/:customerId/pets')
+  @HttpCode(HttpStatus.CREATED)
+  async create(
+    @CurrentUser() user: any,
     @Param('customerId') customerId: string,
-  ): Promise<PetEntity[]> {
-    return this.petGetService.findByCustomerId(customerId);
+    @Body() dto: CreatePetDto,
+  ): Promise<PetEntity> {
+    return this.petService.create(user.organizationId, customerId, dto);
   }
 
-  @Put(':id')
+  @Put('pets/:id')
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
-    @Body() updatePetDto: UpdatePetDto,
+    @Body() dto: UpdatePetDto,
   ): Promise<PetEntity> {
-    return this.petUpdateService.update(id, updatePetDto);
+    return this.petService.update(id, dto);
   }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id') id: string): Promise<void> {
-    return this.petDeleteService.delete(id);
+  @Patch('pets/:id/status')
+  @HttpCode(HttpStatus.OK)
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: PetStatus,
+  ): Promise<PetEntity> {
+    return this.petService.updateStatus(id, status);
   }
 }
-

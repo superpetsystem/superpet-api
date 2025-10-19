@@ -1,33 +1,28 @@
-import { IsEmail, IsString, MinLength, ValidateNested, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateAddressDto } from './create-address.dto';
-import { CreatePersonDataDto } from './create-person-data.dto';
+import { IsString, IsEmail, IsOptional, IsEnum, IsObject, Matches } from 'class-validator';
+import { CustomerSource } from '../entities/customer.entity';
 
 export class CreateCustomerDto {
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @MinLength(6)
-  password: string;
-
-  @IsString()
+  @IsString({ message: 'Nome é obrigatório' })
   name: string;
 
   @IsOptional()
-  @IsString()
-  phone?: string;
+  @IsEmail({}, { message: 'Email inválido' })
+  email?: string;
 
   @IsOptional()
   @IsString()
-  notes?: string;
+  @Matches(/^\+[1-9]\d{1,14}$/, { message: 'Telefone deve estar no formato E.164' })
+  phone?: string;
 
-  @ValidateNested()
-  @Type(() => CreateAddressDto)
-  address: CreateAddressDto;
+  @IsOptional()
+  @IsObject()
+  marketingConsent?: {
+    email?: boolean;
+    sms?: boolean;
+    whatsapp?: boolean;
+  };
 
-  @ValidateNested()
-  @Type(() => CreatePersonDataDto)
-  personData: CreatePersonDataDto;
+  @IsOptional()
+  @IsEnum(CustomerSource)
+  source?: CustomerSource;
 }
-

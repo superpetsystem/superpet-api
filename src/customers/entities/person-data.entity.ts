@@ -2,43 +2,47 @@ import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { CustomerEntity } from './customer.entity';
 
-export enum DocumentType {
-  CPF = 'cpf',
-  CNPJ = 'cnpj',
-  RG = 'rg',
-  PASSPORT = 'passport',
+export enum Gender {
+  M = 'M',
+  F = 'F',
+  OTHER = 'OTHER',
+  PREFER_NOT_SAY = 'PREFER_NOT_SAY',
 }
 
-@Entity('person_data')
+@Entity('personal_data')
 export class PersonDataEntity extends BaseEntity {
-  @Column({ name: 'customer_id' })
+  @Column({ name: 'customer_id', unique: true })
   customerId: string;
 
-  @OneToOne(() => CustomerEntity, (customer) => customer.personData, {
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(() => CustomerEntity, (customer) => customer.personData, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'customer_id' })
   customer: CustomerEntity;
 
-  @Column({ type: 'varchar', length: 255 })
-  fullName: string;
+  @Column({ type: 'varchar', length: 11, nullable: true })
+  cpf: string | null;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  rg: string | null;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  issuer: string | null;
+
+  @Column({ type: 'date', nullable: true })
+  birthdate: Date | null;
 
   @Column({
     type: 'enum',
-    enum: DocumentType,
+    enum: Gender,
+    nullable: true,
   })
-  documentType: DocumentType;
+  gender: Gender | null;
 
-  @Column({ type: 'varchar', length: 20, unique: true })
-  documentNumber: string;
+  @Column({ name: 'guardian_name', type: 'varchar', length: 255, nullable: true })
+  guardianName: string | null;
 
-  @Column({ type: 'date', nullable: true })
-  birthDate: Date | null;
+  @Column({ name: 'guardian_phone', type: 'varchar', length: 20, nullable: true })
+  guardianPhone: string | null;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  phoneAlternative: string | null;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  emailAlternative: string | null;
+  @Column({ type: 'text', nullable: true })
+  notes: string | null;
 }
-

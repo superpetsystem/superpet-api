@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { CustomerEntity } from './customer.entity';
 
@@ -7,26 +7,24 @@ export class AddressEntity extends BaseEntity {
   @Column({ name: 'customer_id' })
   customerId: string;
 
-  @OneToOne(() => CustomerEntity, (customer) => customer.address, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => CustomerEntity, (customer) => customer.addresses, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'customer_id' })
   customer: CustomerEntity;
 
-  @Column({ type: 'varchar', length: 10 })
-  zipCode: string;
+  @Column({ name: 'is_primary', type: 'boolean', default: false })
+  isPrimary: boolean;
 
   @Column({ type: 'varchar', length: 255 })
   street: string;
 
-  @Column({ type: 'varchar', length: 20 })
-  number: string;
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  number: string | null;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   complement: string | null;
 
-  @Column({ type: 'varchar', length: 100 })
-  neighborhood: string;
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  district: string | null;
 
   @Column({ type: 'varchar', length: 100 })
   city: string;
@@ -34,7 +32,9 @@ export class AddressEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 2 })
   state: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  country: string | null;
-}
+  @Column({ type: 'varchar', length: 10 })
+  zip: string;
 
+  @Column({ type: 'varchar', length: 2, default: 'BR' })
+  country: string;
+}

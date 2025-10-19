@@ -1,71 +1,94 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PersonDataRepository } from '../repositories/person-data.repository';
-import { PersonDataEntity } from '../entities/person-data.entity';
 import { CreatePersonDataDto } from '../dto/create-person-data.dto';
-import { UpdatePersonDataDto } from '../dto/update-person-data.dto';
+import { PersonDataEntity } from '../entities/person-data.entity';
 
 @Injectable()
 export class PersonDataService {
   constructor(private readonly personDataRepository: PersonDataRepository) {}
 
-  async create(customerId: string, createPersonDataDto: CreatePersonDataDto): Promise<PersonDataEntity> {
-    // Verificar se o documento já existe
-    const existingPersonData = await this.personDataRepository.findByDocumentNumber(
-      createPersonDataDto.documentNumber,
-    );
+  private validateCpf(cpf: string): boolean {
+    // Validação simplificada de CPF (11 dígitos)
+    if (!/^\d{11}$/.test(cpf)) return false;
 
-    if (existingPersonData) {
-      throw new BadRequestException('Document number already registered');
-    }
-
-    try {
-      return await this.personDataRepository.create({
-        ...createPersonDataDto,
-        customerId,
-      });
-    } catch (error) {
-      throw new BadRequestException('Failed to create person data');
-    }
+    // TODO: Implementar validação completa de DV
+    // Por enquanto, aceitar se tiver 11 dígitos
+    return true;
   }
 
-  async findByCustomerId(customerId: string): Promise<PersonDataEntity> {
-    const personData = await this.personDataRepository.findByCustomerId(customerId);
-    if (!personData) {
-      throw new NotFoundException(`Person data for customer ${customerId} not found`);
-    }
-    return personData;
-  }
+  async create(customerId: string, dto: CreatePersonDataDto): Promise<PersonDataEntity> {
+    // Validar CPF
+    if (dto.cpf) {
+      if (!this.validateCpf(dto.cpf)) {
+        throw new BadRequestException('CPF_INVALID');
+      }
 
-  async update(id: string, updatePersonDataDto: UpdatePersonDataDto): Promise<PersonDataEntity> {
-    const personData = await this.personDataRepository.findById(id);
-    if (!personData) {
-      throw new NotFoundException(`Person data with ID ${id} not found`);
-    }
-
-    // Se está atualizando o documento, verificar se não existe outro com o mesmo número
-    if (updatePersonDataDto.documentNumber && updatePersonDataDto.documentNumber !== personData.documentNumber) {
-      const existingPersonData = await this.personDataRepository.findByDocumentNumber(
-        updatePersonDataDto.documentNumber,
-      );
-      if (existingPersonData) {
-        throw new BadRequestException('Document number already registered');
+      const cpfExists = await this.personDataRepository.checkCpfExists(dto.cpf);
+      if (cpfExists) {
+        throw new BadRequestException('CPF_TAKEN');
       }
     }
 
-    const updatedPersonData = await this.personDataRepository.update(id, updatePersonDataDto);
-    if (!updatedPersonData) {
-      throw new NotFoundException(`Person data with ID ${id} not found after update`);
+    // Validar birthdate
+    if (dto.birthdate) {
+      const birthDate = new Date(dto.birthdate);
+      const today = new Date();
+
+      if (birthDate > today) {
+        throw new BadRequestException('BIRTHDATE_INVALID');
+      }
+
+      // Se < 18 anos, exigir guardianName
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 18 && !dto.guardianName) {
+        throw new BadRequestException('INSUFFICIENT_CONSENT');
+      }
     }
-    return updatedPersonData;
+
+    return this.personDataRepository.create({
+      customerId,
+      cpf: dto.cpf || null,
+      rg: dto.rg || null,
+      issuer: dto.issuer || null,
+      birthdate: dto.birthdate ? new Date(dto.birthdate) : null,
+      gender: dto.gender || null,
+      guardianName: dto.guardianName || null,
+      guardianPhone: dto.guardianPhone || null,
+      notes: dto.notes || null,
+    });
   }
 
-  async delete(id: string): Promise<void> {
-    const personData = await this.personDataRepository.findById(id);
-    if (!personData) {
-      throw new NotFoundException(`Person data with ID ${id} not found`);
+  async findByCustomerId(customerId: string): Promise<PersonDataEntity | null> {
+    return this.personDataRepository.findByCustomerId(customerId);
+  }
+
+  async update(customerId: string, dto: Partial<PersonDataEntity>): Promise<PersonDataEntity> {
+    // Validar CPF se fornecido
+    if (dto.cpf) {
+      if (!this.validateCpf(dto.cpf)) {
+        throw new BadRequestException('CPF_INVALID');
+      }
+
+      const cpfExists = await this.personDataRepository.checkCpfExists(dto.cpf, customerId);
+      if (cpfExists) {
+        throw new BadRequestException('CPF_TAKEN');
+      }
     }
 
-    await this.personDataRepository.delete(id);
+    const existing = await this.personDataRepository.findByCustomerId(customerId);
+
+    if (existing) {
+      const updated = await this.personDataRepository.update(customerId, dto);
+      if (!updated) {
+        throw new NotFoundException('NOT_FOUND');
+      }
+      return updated;
+    }
+
+    // Criar se não existe
+    return this.personDataRepository.create({
+      customerId,
+      ...dto,
+    } as PersonDataEntity);
   }
 }
-

@@ -1,0 +1,338 @@
+{
+	"info": {
+		"_postman_id": "stores-collection-001",
+		"name": "SuperPet - Stores & Features",
+		"description": "Store management with multi-location support and dynamic feature configuration.\n\n**Features:**\n- Create and manage stores\n- Configure store features (SERVICE_CATALOG, TELEPICKUP, LIVE_CAM, etc)\n- Set feature limits per store\n- Enable/disable features dynamically",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Stores",
+			"item": [
+				{
+					"name": "1. Create Store",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"MNS-NORTE\",\n  \"name\": \"SuperPet - Loja Norte\",\n  \"timezone\": \"America/Manaus\",\n  \"openingHours\": {\n    \"mon\": [[\"08:00\", \"18:00\"]],\n    \"tue\": [[\"08:00\", \"18:00\"]],\n    \"wed\": [[\"08:00\", \"18:00\"]],\n    \"thu\": [[\"08:00\", \"18:00\"]],\n    \"fri\": [[\"08:00\", \"18:00\"]],\n    \"sat\": [[\"08:00\", \"12:00\"]]\n  },\n  \"resourcesCatalog\": [\"GROOMER\", \"VETERINARIAN\"],\n  \"capacity\": {\n    \"GROOMER\": 2,\n    \"VETERINARIAN\": 1\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores"]
+						}
+					}
+				},
+				{
+					"name": "2. List All Stores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores"]
+						}
+					}
+				},
+				{
+					"name": "3. Get Store by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}"]
+						}
+					}
+				},
+				{
+					"name": "4. Update Store",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"SuperPet - Loja Norte Atualizada\",\n  \"timezone\": \"America/Sao_Paulo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}"]
+						}
+					}
+				},
+				{
+					"name": "5. Update Store Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"INACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/status",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "status"]
+						},
+						"description": "Status: ACTIVE | INACTIVE | MAINTENANCE"
+					}
+				},
+				{
+					"name": "6. Update Opening Hours",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"openingHours\": {\n    \"mon\": [[\"08:00\", \"12:00\"], [\"14:00\", \"18:00\"]],\n    \"tue\": [[\"08:00\", \"18:00\"]],\n    \"wed\": [[\"08:00\", \"18:00\"]],\n    \"thu\": [[\"08:00\", \"18:00\"]],\n    \"fri\": [[\"08:00\", \"18:00\"]],\n    \"sat\": [[\"08:00\", \"12:00\"]]\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/opening-hours",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "opening-hours"]
+						}
+					}
+				},
+				{
+					"name": "7. Update Store Capacity",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"capacity\": {\n    \"GROOMER\": 3,\n    \"VETERINARIAN\": 2,\n    \"BATHER\": 2\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/capacity",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "capacity"]
+						}
+					}
+				},
+				{
+					"name": "8. Update Store Blackouts",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"blackouts\": [\n    {\n      \"date\": \"2025-12-25\",\n      \"reason\": \"Christmas Holiday\"\n    },\n    {\n      \"date\": \"2025-01-01\",\n      \"reason\": \"New Year\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/blackouts",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "blackouts"]
+						},
+						"description": "Set blackout dates when store is closed"
+					}
+				}
+			]
+		},
+		{
+			"name": "Store Features",
+			"item": [
+				{
+					"name": "1. List Store Features",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/features",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "features"]
+						},
+						"description": "List all available features for the store"
+					}
+				},
+				{
+					"name": "2. Enable Feature (TELEPICKUP)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true,\n  \"limits\": {\n    \"dailyPickups\": 50\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/features/TELEPICKUP",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "features", "TELEPICKUP"]
+						}
+					}
+				},
+				{
+					"name": "3. Enable Feature (LIVE_CAM)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true,\n  \"limits\": {\n    \"maxConcurrentStreams\": 10\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/features/LIVE_CAM",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "features", "LIVE_CAM"]
+						}
+					}
+				},
+				{
+					"name": "4. Disable Feature",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/features/TELEPICKUP",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "features", "TELEPICKUP"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "Bearer YOUR_TOKEN_HERE",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "00000000-0000-0000-0000-000000000101",
+			"type": "string"
+		}
+	]
+}
+

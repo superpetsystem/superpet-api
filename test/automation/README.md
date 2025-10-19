@@ -1,334 +1,499 @@
-# 🧪 Testes de Automação - SuperPet API
+# 🧪 Automation Tests
 
-Testes automatizados end-to-end para validar os endpoints da API.
-
----
-
-## 📋 Arquivos
-
-### `auth.test.js`
-Testa **todos** os endpoints do módulo de autenticação:
-
-#### Testes de Sucesso (Happy Path)
-1. ✅ Register - Criar nova conta
-2. ✅ Login - Fazer login
-3. ✅ Get Profile (Me) - Obter dados do usuário
-4. ✅ Change Password - Trocar senha (autenticado)
-5. ✅ Login com nova senha
-6. ✅ Refresh Token - Renovar tokens
-7. ✅ Forgot Password - Solicitar recuperação
-8. ✅ Reset Password - Resetar com token
-9. ✅ Logout - Fazer logout
-10. ✅ Token invalidado após logout
-11. ✅ Login após logout
-
-#### Testes de Erro (Validações)
-12. ❌ Email duplicado (409)
-13. ❌ Credenciais inválidas (401)
-14. ❌ Acesso sem token (401)
-15. ❌ Senha atual incorreta (401)
-16. ❌ Token de reset inválido (400)
-
-**Total: 16 testes**
+Complete test suite with 88 automated tests covering all modules.
 
 ---
 
-## 🚀 Como Executar
+## 🚀 Quick Start
 
-### Pré-requisitos
-
-1. **Servidor deve estar rodando:**
 ```bash
+# Terminal 1: Start API
 npm run start:local
+
+# Terminal 2: Run all tests
+node test/automation/run-all-tests.js
 ```
 
-2. **Banco de dados configurado e migrations aplicadas:**
-```bash
-npm run migration:apply:all:local
+**Expected:** ✅ All 88 tests pass in ~10 seconds
+
+---
+
+## 📊 Test Modules
+
+| Module | Tests | File | Coverage |
+|--------|-------|------|----------|
+| **Auth** | 6 | `auth/auth.test.js` | Register, login, profile, errors |
+| **Stores** | 7 | `stores/stores.test.js` | CRUD, features, validation |
+| **Customers** | 8 | `customers/customers.test.js` | CRUD, addresses, PII, status |
+| **Pets** | 6 | `pets/pets.test.js` | CRUD, validation, status, weight |
+| **Services** | 7 | `services/services.test.js` | Catalog, custom pricing, states |
+| **Features** | 7 | `features/features.test.js` | TelePickup, Live Cam |
+| **SaaS Isolation** | 13 | `saas/saas-isolation.test.js` | Cross-tenant prevention |
+| **SaaS Limits** | 4 | `saas/saas-limits.test.js` | Plan limits enforcement |
+| **Employees** | 10 | `employees/employees-hierarchy.test.js` | Role hierarchy |
+| **Features Scale** | 6 | `features/features-scalability.test.js` | Dynamic features |
+| **Validation Errors** | 12 | `errors/validation-errors.test.js` | Input validation |
+| **Permission Errors** | 2 | `errors/permission-errors.test.js` | Authorization |
+| **TOTAL** | **88** | **12 files** | **Complete** |
+
+---
+
+## 🔬 Test Details
+
+### Auth (6 tests)
+
+**File:** `auth/auth.test.js`
+
+```javascript
+✅ Register new user
+✅ Login with credentials
+✅ Get user profile (JWT)
+❌ Login with wrong password → 401
+❌ Register duplicate email → 400
+❌ Access without token → 401
 ```
 
-### Executar Testes
+**Validates:**
+- JWT token generation
+- Password hashing (bcrypt)
+- Email uniqueness per org
+- Unauthorized access handling
 
-#### Método 1: Script NPM (Recomendado)
-```bash
-npm run test:automation
+---
+
+### Stores (7 tests)
+
+**File:** `stores/stores.test.js`
+
+```javascript
+✅ List stores
+✅ Get store by ID
+✅ Create store
+✅ Update store
+✅ Get store features
+✅ Configure feature (TELEPICKUP)
+❌ Create with duplicate code → 400
 ```
 
-#### Método 2: Node Direto
+**Validates:**
+- Multi-store management
+- Feature configuration
+- Code uniqueness per org
+
+---
+
+### Customers (8 tests)
+
+**File:** `customers/customers.test.js`
+
+```javascript
+✅ Create customer
+✅ List customers
+✅ Get by ID
+✅ Add address
+✅ List addresses
+✅ Update status (ACTIVE/INACTIVE)
+✅ Add personal data (PII)
+❌ Create without contact → 400 MISSING_CONTACT
+```
+
+**Validates:**
+- Customer CRUD
+- Address management
+- PII protection (OWNER/ADMIN only)
+- Business rule: At least one contact (email/phone)
+
+---
+
+### Pets (6 tests)
+
+**File:** `pets/pets.test.js`
+
+```javascript
+✅ Create pet
+✅ List customer pets
+✅ Get by ID
+✅ Update pet
+✅ Update status (DECEASED)
+❌ Create with invalid weight → 400 INVALID_WEIGHT
+```
+
+**Validates:**
+- Multi-species support (DOG, CAT, BIRD, etc)
+- Weight validation (0-200kg)
+- Status management
+- Microchip uniqueness
+
+---
+
+### Services (7 tests)
+
+**File:** `services/services.test.js`
+
+```javascript
+✅ List services
+✅ Create service
+✅ Create custom service (store override)
+✅ Publish custom service
+✅ List store custom services
+✅ Archive custom service
+❌ Create with invalid duration → 400
+```
+
+**Validates:**
+- Global service catalog
+- Per-store pricing overrides
+- State machine: DRAFT → PUBLISHED → ARCHIVED
+
+---
+
+### Features (7 tests)
+
+**File:** `features/features.test.js`
+
+```javascript
+✅ Schedule pickup (TelePickup)
+✅ Confirm pickup
+✅ List pickups
+✅ Create live stream
+✅ Get pet streams
+✅ Delete stream
+❌ Invalid time window → 400
+```
+
+**Validates:**
+- TelePickup feature (30min minimum window)
+- Live Camera feature
+- Feature-specific validation
+
+---
+
+### SaaS Isolation (13 tests)
+
+**File:** `saas/saas-isolation.test.js`
+
+```javascript
+✅ Create 2 organizations
+✅ Create users in each org
+✅ Org 1 cannot see Org 2 stores
+✅ Org 2 cannot see Org 1 stores
+✅ Cross-tenant store access → 404
+✅ Cross-tenant customer access → 404
+✅ Service catalog isolation
+✅ OrganizationId in token validated
+... 5 more isolation tests
+```
+
+**Validates:**
+- Complete data isolation
+- Cross-tenant access prevention (404, not 403!)
+- Organization-scoped queries
+- JWT token validation
+
+---
+
+### SaaS Limits (4 tests)
+
+**File:** `saas/saas-limits.test.js`
+
+```javascript
+✅ Create first store (within limit)
+❌ Create second store → 400 STORE_LIMIT_EXCEEDED
+✅ Create first employee (within limit)
+❌ Create third employee → 400 EMPLOYEE_LIMIT_EXCEEDED
+```
+
+**Validates:**
+- Plan limits enforcement
+- BASIC plan: 1 store, 2 employees
+- Clear error messages with current/max counts
+
+---
+
+### Employees Hierarchy (10 tests)
+
+**File:** `employees/employees-hierarchy.test.js`
+
+```javascript
+✅ SUPER_ADMIN creates OWNER
+✅ OWNER creates ADMIN
+✅ ADMIN creates STAFF
+✅ ADMIN creates VIEWER
+❌ STAFF cannot create → 403
+❌ ADMIN cannot create OWNER → 403
+✅ Filter by role (STAFF)
+✅ Filter by jobTitle (GROOMER)
+✅ Create with different jobTitles
+✅ List all employees
+```
+
+**Validates:**
+- Role hierarchy (OWNER > ADMIN > STAFF > VIEWER)
+- 17 job titles
+- Permission cascading
+
+---
+
+### Feature Scalability (6 tests)
+
+**File:** `features/features-scalability.test.js`
+
+```javascript
+✅ Add new feature dynamically
+✅ Enable feature on store
+✅ List store features
+✅ Create 5 new features (proves scalability)
+✅ Enable multiple features
+✅ Disable feature
+```
+
+**Validates:**
+- Database-driven features
+- No code changes needed
+- Ready for 20+ features
+
+---
+
+### Validation Errors (12 tests)
+
+**File:** `errors/validation-errors.test.js`
+
+```javascript
+❌ Invalid email → 400
+❌ Empty name → 400
+❌ Short password (<6 chars) → 400
+❌ Multiple validation errors → 400 (array)
+❌ Invalid ID (not found) → 404
+❌ Pet weight negative → 400
+❌ Pet weight > 200kg → 400
+... 5 more validation tests
+```
+
+**Validates:**
+- DTO validation (class-validator)
+- Error message format
+- HTTP status codes
+
+---
+
+### Permission Errors (2 tests)
+
+**File:** `errors/permission-errors.test.js`
+
+```javascript
+❌ VIEWER tries to create employee → 403 ROLE_NOT_ALLOWED
+❌ User without employee → 403 FORBIDDEN
+```
+
+**Validates:**
+- Authorization guards
+- Role-based access control
+
+---
+
+## 🛠️ Utility Scripts
+
+### Setup Scripts
+
 ```bash
-node test/automation/auth.test.js
+# Setup SUPER_ADMIN user
+node test/automation/setup-superuser.js
+
+# Update organization limits
+node test/automation/update-org-limits.js
+
+# Reset database
+node test/automation/reset-database.js
+```
+
+### Helper Functions
+
+**File:** `helpers/superadmin-login.js`
+
+```javascript
+const { loginAsSuperAdmin } = require('./helpers/superadmin-login.js');
+const { accessToken } = await loginAsSuperAdmin();
 ```
 
 ---
 
-## 📊 Output Esperado
+## 📋 Test Output Example
 
 ```
-================================================================================
-🧪 INICIANDO TESTES DE AUTOMAÇÃO - MÓDULO AUTH
-SuperPet API
-================================================================================
-Base URL: http://localhost:3000
-Test User Email: teste1729000000000@superpet.com
+╔════════════════════════════════════════════════════════════════════╗
+║         SUPERPET API - SUITE COMPLETA DE TESTES                   ║
+║                  Arquitetura SaaS Multi-Tenant                    ║
+╚════════════════════════════════════════════════════════════════════╝
 
-================================================================================
-TEST 1: POST /auth/register - Registrar novo usuário
-================================================================================
-✅ PASSOU: Registro de usuário
-   User ID: 9b1deb4d-93df-4ad1-a2a2-fc0c2fc98c01
-   Email: teste1729000000000@superpet.com
-   Name: Usuário Teste Automação
-   Access Token: eyJhbGciOiJIUzI1NiI...
+📝 MÓDULO 1/12: Autenticação
+✅ POST /auth/register
+✅ POST /auth/login
+✅ GET /auth/me
+✅ Login wrong password (401)
+✅ Register duplicate email (400)
+✅ Unauthorized access (401)
 
-================================================================================
-TEST 2: POST /auth/login - Fazer login
-================================================================================
-✅ PASSOU: Login
-   Access Token atualizado: eyJhbGciOiJIUzI1NiI...
+... 82 more tests ...
 
-[... mais testes ...]
+╔════════════════════════════════════════════════════════════════════╗
+║                    RESULTADO FINAL                                 ║
+╚════════════════════════════════════════════════════════════════════╝
 
-================================================================================
-📊 RESUMO DOS TESTES
-================================================================================
-Total de testes: 16
-✅ Passaram: 16
-❌ Falharam: 0
-Taxa de sucesso: 100.00%
-================================================================================
-🎉 TODOS OS TESTES PASSARAM!
-================================================================================
-```
+📊 Resumo Geral:
+   ────────────────────────────────────────────────────────
+   │ Módulo            │ Status    │ Testes           │
+   ────────────────────────────────────────────────────────
+   │ Auth              │ ✅ PASSOU │ 6 testes         │
+   │ Stores & Features │ ✅ PASSOU │ 7 testes         │
+   │ Customers         │ ✅ PASSOU │ 8 testes         │
+   │ Pets              │ ✅ PASSOU │ 6 testes         │
+   │ Services          │ ✅ PASSOU │ 7 testes         │
+   │ Features Extras   │ ✅ PASSOU │ 7 testes         │
+   │ SaaS Isolation    │ ✅ PASSOU │ 13 testes        │
+   │ SaaS Limits       │ ✅ PASSOU │ 4 testes         │
+   │ Employees Hier.   │ ✅ PASSOU │ 10 testes        │
+   │ Features Scale    │ ✅ PASSOU │ 6 testes         │
+   │ Validation Errors │ ✅ PASSOU │ 12 testes        │
+   │ Permission Errors │ ✅ PASSOU │ 2 testes         │
+   ────────────────────────────────────────────────────────
+   │ TOTAL             │ ✅ PASSOU │ 88 testes        │
+   ────────────────────────────────────────────────────────
 
----
+⏱️  Tempo total: 9.66s
 
-## 🔧 Configuração
-
-### Alterar Base URL
-
-Edite o arquivo `auth.test.js`:
-
-```javascript
-const BASE_URL = 'http://localhost:3000';  // Local
-// const BASE_URL = 'https://staging.superpet.com';  // Staging
-// const BASE_URL = 'https://api.superpet.com';  // Production
-```
-
-### Fornecer Reset Token
-
-Para testar o endpoint `reset-password`:
-
-1. Execute até o teste 7 (Forgot Password)
-2. Copie o token do console do servidor
-3. Edite `auth.test.js`:
-```javascript
-let resetToken = 'COLE_O_TOKEN_AQUI';
-```
-4. Execute novamente
-
-Ou deixe vazio para pular este teste:
-```javascript
-let resetToken = '';  // Teste será pulado
+╔════════════════════════════════════════════════════════════════════╗
+║              ✅ TODOS OS TESTES PASSARAM! 🎉                       ║
+╚════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 📝 Estrutura dos Testes
+## 🎯 Test Guidelines
 
-### Cada teste:
-
-1. **Descrição:** O que está sendo testado
-2. **Request:** Faz requisição HTTP
-3. **Validações:** Verifica status e response
-4. **Success/Error:** Log colorido do resultado
-5. **Return:** `true` se passou, `false` se falhou
-
-### Exemplo de Teste:
+### Writing New Tests
 
 ```javascript
-async function test1_Register() {
+// test/automation/my-module/my-module.test.js
+const axios = require('axios');
+const assert = require('assert');
+
+const BASE_URL = 'http://localhost:3000';
+let accessToken = null;
+
+async function test1_Something() {
+  console.log('Test 1: POST /my-endpoint');
+  
   try {
-    const response = await axios.post(`${BASE_URL}/auth/register`, TEST_USER);
-    
-    // Validações
-    if (response.status !== 201) {
-      throw new Error('Status incorreto');
-    }
-    
-    if (!response.data.accessToken) {
-      throw new Error('Token não retornado');
-    }
-    
-    // Salvar tokens para próximos testes
-    accessToken = response.data.accessToken;
-    
-    logSuccess('Registro de usuário');
-    return true;
+    const response = await axios.post(`${BASE_URL}/my-endpoint`, {
+      data: 'value'
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    assert.strictEqual(response.status, 201);
+    console.log('   ✅ Test passed');
   } catch (error) {
-    logError('Registro de usuário', error);
-    return false;
+    console.error('   ❌ Error:', error.response?.data || error.message);
+    throw error;
   }
 }
+
+async function runAllTests() {
+  try {
+    await test1_Something();
+    // ... more tests
+    
+    console.log('✅ ALL TESTS PASSED!');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Tests failed');
+    throw error;
+  }
+}
+
+module.exports = { runAllTests };
+```
+
+### Best Practices
+
+✅ **DO:**
+- Use unique data for each test run (timestamps)
+- Clean up test data (or use separate test database)
+- Test both success and error scenarios
+- Use descriptive test names
+- Log test progress clearly
+
+❌ **DON'T:**
+- Rely on specific IDs (they change)
+- Leave test data in production
+- Skip error scenario tests
+- Use generic error messages
+
+---
+
+## 🔍 Debugging Tests
+
+### Run Individual Module
+
+```bash
+node test/automation/auth/auth.test.js
+node test/automation/customers/customers.test.js
+```
+
+### Check API Logs
+
+While tests run, watch the API terminal for:
+- Business rule logs: `[BUSINESS RULE]`
+- Plan limits: `[PLAN LIMITS]`
+- Role hierarchy: `[ROLE HIERARCHY]`
+
+### Common Issues
+
+**Connection Refused:**
+```bash
+# Make sure API is running
+npm run start:local
+```
+
+**Tests Fail After Code Changes:**
+```bash
+# Rebuild and restart
+npm run build
+npm run start:local
+```
+
+**Database Issues:**
+```bash
+# Reset and reseed
+node test/automation/reset-database.js
+npm run migration:run:local
+npm run seed:local
 ```
 
 ---
 
-## 🎯 Casos de Uso
+## ✅ Continuous Integration
 
-### Desenvolvimento Local
-
-Execute após cada mudança no módulo de Auth:
-
-```bash
-# 1. Fazer mudanças no código
-# 2. Aplicar migrations se necessário
-npm run migration:apply:all:local
-
-# 3. Reiniciar servidor
-# Ctrl+C
-npm run start:local
-
-# 4. Executar testes
-npm run test:automation
-```
-
-### CI/CD Pipeline
-
-Adicione ao pipeline:
+### GitHub Actions Example
 
 ```yaml
-# .github/workflows/test.yml
-- name: Run E2E Tests
-  run: |
-    npm run start:local &
-    sleep 10
-    npm run test:automation
-```
+name: Tests
+on: [push, pull_request]
 
-### Antes de Commit
-
-```bash
-# Verificar se tudo funciona
-npm run test:automation
-
-# Se passou, commit
-git add .
-git commit -m "feat: ..."
-```
-
----
-
-## 🔍 Troubleshooting
-
-### Erro: "ECONNREFUSED"
-
-**Causa:** Servidor não está rodando
-
-**Solução:**
-```bash
-npm run start:local
-# Aguarde iniciar
-npm run test:automation
-```
-
-### Erro: "AxiosError: Request failed with status code 500"
-
-**Causa:** Erro no servidor (bug no código)
-
-**Solução:**
-1. Verifique os logs do servidor
-2. Corrija o bug
-3. Execute novamente
-
-### Testes falhando aleatoriamente
-
-**Causa:** Banco de dados com dados antigos
-
-**Solução:**
-```bash
-# Resetar banco
-npm run migration:revert:local
-npm run migration:apply:all:local
-
-# Executar testes
-npm run test:automation
-```
-
-### Teste "Reset Password" sempre pulado
-
-**Causa:** `resetToken` vazio
-
-**Solução:**
-1. Execute teste manualmente até o passo 7
-2. Copie token do console
-3. Cole no código: `let resetToken = 'TOKEN_AQUI';`
-4. Execute novamente
-
----
-
-## 🚀 Melhorias Futuras
-
-### 1. Integração com Jest
-
-```javascript
-describe('Auth Module', () => {
-  it('should register user', async () => {
-    // ...
-  });
-});
-```
-
-### 2. Fixtures e Factories
-
-```javascript
-const UserFactory = {
-  create: () => ({
-    email: `user${Date.now()}@test.com`,
-    password: 'senha123',
-    name: 'Test User'
-  })
-};
-```
-
-### 3. Database Seeding/Cleanup
-
-```javascript
-beforeAll(async () => {
-  // Limpar banco antes dos testes
-});
-
-afterAll(async () => {
-  // Limpar dados de teste
-});
-```
-
-### 4. Testes Paralelos
-
-```javascript
-// Executar testes independentes em paralelo
-await Promise.all([
-  testEndpoint1(),
-  testEndpoint2(),
-  testEndpoint3(),
-]);
-```
-
-### 5. Relatórios HTML
-
-```bash
-# Gerar relatório visual
-npm run test:automation --reporter html
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: npm install
+      - run: npm run migration:run:local
+      - run: npm run seed:local
+      - run: npm run start:local &
+      - run: sleep 5
+      - run: node test/automation/run-all-tests.js
 ```
 
 ---
 
-## 📚 Links Relacionados
-
-- [README Principal](../../README.md)
-- [Collection Postman](../../docs/collections/auth/)
-- [Guia de Testes](../../docs/guides/TESTING.md) (futuro)
-
----
-
-Desenvolvido com ❤️ para SuperPet API
-
+**✨ All 88 tests covering authentication, authorization, business rules, SaaS isolation, and error handling!**
