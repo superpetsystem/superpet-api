@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "employees-collection-001",
+		"name": "SuperPet - Employees & Roles",
+		"description": "Complete employee management with role hierarchy, job titles, and store access control.\n\n**Features:**\n- Create employees with different roles (OWNER, ADMIN, STAFF, VIEWER)\n- Assign job titles (17 types)\n- Link employees to specific stores\n- Filter by role and job title\n- Role-based permissions validation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Create Employee (OWNER creates ADMIN)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"admin@superpet.com\",\n  \"name\": \"Admin User\",\n  \"password\": \"senha123\",\n  \"role\": \"ADMIN\",\n  \"jobTitle\": \"MANAGER\",\n  \"storeIds\": [\"{{store_id}}\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/employees",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"]
+				},
+				"description": "Create a new employee. \n\n**Role Permissions:**\n- OWNER can create: OWNER, ADMIN, STAFF, VIEWER\n- ADMIN can create: STAFF, VIEWER\n- STAFF/VIEWER cannot create employees\n\n**Possible Errors:**\n- 400: Email already exists\n- 400: EMPLOYEE_LIMIT_EXCEEDED (plan limit)\n- 403: Insufficient permissions (ADMIN trying to create OWNER)\n- 403: STAFF/VIEWER cannot create employees"
+			},
+			"response": [
+				{
+					"name": "201 - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@superpet.com\",\n  \"name\": \"Admin User\",\n  \"password\": \"senha123\",\n  \"role\": \"ADMIN\",\n  \"jobTitle\": \"MANAGER\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/employees",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "employees"]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n  \"id\": \"uuid\",\n  \"organizationId\": \"uuid\",\n  \"userId\": \"uuid\",\n  \"role\": \"ADMIN\",\n  \"jobTitle\": \"MANAGER\",\n  \"active\": true,\n  \"user\": {\n    \"id\": \"uuid\",\n    \"email\": \"admin@superpet.com\",\n    \"name\": \"Admin User\"\n  }\n}"
+				},
+				{
+					"name": "400 - Email Already Exists",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"existing@superpet.com\",\n  \"name\": \"Test\",\n  \"password\": \"senha123\",\n  \"role\": \"STAFF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/employees",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "employees"]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n  \"statusCode\": 400,\n  \"message\": \"Email already exists\",\n  \"error\": \"Bad Request\"\n}"
+				},
+				{
+					"name": "403 - Insufficient Permissions",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"owner@superpet.com\",\n  \"name\": \"Owner\",\n  \"password\": \"senha123\",\n  \"role\": \"OWNER\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/employees",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "employees"]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n  \"statusCode\": 403,\n  \"message\": \"ADMIN can only create STAFF or VIEWER roles\",\n  \"error\": \"Forbidden\"\n}"
+				},
+				{
+					"name": "400 - Employee Limit Exceeded",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"new@superpet.com\",\n  \"name\": \"New Employee\",\n  \"password\": \"senha123\",\n  \"role\": \"STAFF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/employees",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "employees"]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n  \"statusCode\": 400,\n  \"message\": \"EMPLOYEE_LIMIT_EXCEEDED: Plano BASIC permite no máximo 20 funcionários. Atual: 20\",\n  \"error\": \"Bad Request\"\n}"
+				}
+			]
+		},
+		{
+			"name": "2. Create Employee (STAFF - Groomer)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"groomer@superpet.com\",\n  \"name\": \"Professional Groomer\",\n  \"password\": \"senha123\",\n  \"role\": \"STAFF\",\n  \"jobTitle\": \"GROOMER\",\n  \"storeIds\": [\"{{store_id}}\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/employees",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"]
+				}
+			}
+		},
+		{
+			"name": "3. Create Employee (Veterinarian)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"vet@superpet.com\",\n  \"name\": \"Dr. Veterinarian\",\n  \"password\": \"senha123\",\n  \"role\": \"STAFF\",\n  \"jobTitle\": \"VETERINARIAN\",\n  \"storeIds\": [\"{{store_id}}\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/employees",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"]
+				}
+			}
+		},
+		{
+			"name": "4. List All Employees",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/employees",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"]
+				},
+				"description": "List all employees in the organization"
+			}
+		},
+		{
+			"name": "5. List Employees by Role (STAFF)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/employees?role=STAFF",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"],
+					"query": [
+						{
+							"key": "role",
+							"value": "STAFF"
+						}
+					]
+				},
+				"description": "Filter employees by role"
+			}
+		},
+		{
+			"name": "6. List Employees by JobTitle (GROOMER)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/employees?jobTitle=GROOMER",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"],
+					"query": [
+						{
+							"key": "jobTitle",
+							"value": "GROOMER"
+						}
+					]
+				},
+				"description": "Filter employees by job title"
+			}
+		},
+		{
+			"name": "7. List Employees by Store",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/employees?storeId={{store_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees"],
+					"query": [
+						{
+							"key": "storeId",
+							"value": "{{store_id}}"
+						}
+					]
+				},
+				"description": "List employees linked to a specific store"
+			}
+		},
+		{
+			"name": "8. Get Employee by ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/employees/{{employee_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees", "{{employee_id}}"]
+				},
+				"description": "Get employee details including stores"
+			}
+		},
+		{
+			"name": "9. Update Employee",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"role\": \"ADMIN\",\n  \"jobTitle\": \"MANAGER\",\n  \"active\": true,\n  \"storeIds\": [\"{{store_id}}\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/employees/{{employee_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees", "{{employee_id}}"]
+				},
+				"description": "Update employee role, job title, or store assignments"
+			}
+		},
+		{
+			"name": "10. Deactivate Employee",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"active\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/employees/{{employee_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "employees", "{{employee_id}}"]
+				},
+				"description": "Soft delete an employee by setting active=false"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "Bearer YOUR_TOKEN_HERE",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "00000000-0000-0000-0000-000000000101",
+			"type": "string"
+		},
+		{
+			"key": "employee_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

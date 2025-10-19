@@ -1,37 +1,44 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
+import { OrganizationEntity } from '../../organizations/entities/organization.entity';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  CUSTOMER = 'customer',
-  EMPLOYEE = 'employee',
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  DELETED = 'DELETED',
 }
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
-  @Column({ unique: true })
+  @Column({ name: 'organization_id' })
+  organizationId: string;
+
+  @ManyToOne(() => OrganizationEntity, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'organization_id' })
+  organization: OrganizationEntity;
+
+  @Column({ type: 'varchar', length: 255 })
   email: string;
 
-  @Column()
-  password: string;
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  phone: string | null;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   name: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  password: string | null;
 
   @Column({
     type: 'enum',
-    enum: UserRole,
-    default: UserRole.CUSTOMER,
+    enum: UserStatus,
+    default: UserStatus.ACTIVE,
   })
-  role: UserRole;
+  status: UserStatus;
 
-  @Column({ nullable: true, type: 'text' })
-  refreshToken: string | null;
+  @Column({ name: 'email_verified', type: 'boolean', default: false })
+  emailVerified: boolean;
 
-  @Column({ nullable: true, type: 'varchar', length: 255 })
-  resetPasswordToken: string | null;
-
-  @Column({ nullable: true, type: 'timestamp' })
-  resetPasswordExpires: Date | null;
+  @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })
+  deletedAt: Date | null;
 }
-

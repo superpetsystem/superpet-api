@@ -1,333 +1,274 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, Inject, forwardRef, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UsersRepository } from '../users/users.repository';
+import { UserEntity, UserStatus } from '../users/entities/user.entity';
+import { EmployeesRepository } from '../employees/repositories/employees.repository';
+import { EmployeeRole, JobTitle } from '../employees/entities/employee.entity';
+import { PasswordResetRepository } from './repositories/password-reset.repository';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { UsersRepository } from '../users/users.repository';
-import { TokenBlacklistRepository } from './repositories/token-blacklist.repository';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
-import { UserEntity } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    private readonly tokenBlacklistRepository: TokenBlacklistRepository,
+    private usersRepository: UsersRepository,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+    private passwordResetRepository: PasswordResetRepository,
+    @Inject(forwardRef(() => EmployeesRepository))
+    private employeesRepository: EmployeesRepository,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const { email, password, name } = registerDto;
-
-    // Verificar se o usuário já existe
-    const existingUser = await this.usersRepository.findByEmail(email);
-    if (existingUser) {
-      throw new ConflictException('Email already registered');
-    }
-
-    // Hash da senha
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Criar usuário
-    const user = await this.usersRepository.create({
-      email,
-      password: hashedPassword,
-      name,
-      refreshToken: null,
-    });
-
-    // Gerar tokens
-    const tokens = await this.generateTokens(user);
-
-    // Salvar refresh token
-    const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
-    await this.usersRepository.updateRefreshToken(user.id, hashedRefreshToken);
-
-    return {
-      ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
-    };
-  }
-
-  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
-    const { email, password } = loginDto;
-
-    // Buscar usuário
-    const user = await this.usersRepository.findByEmail(email);
-    if (!user) {
+  async validateUser(email: string, password: string, organizationId?: string): Promise<any> {
+    // Buscar por email globalmente se organizationId não for fornecido
+    const user = organizationId 
+      ? await this.usersRepository.findByEmail(organizationId, email)
+      : await this.usersRepository.findByEmailGlobal(email);
+    
+    if (!user || !user.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Verificar senha
+    if (user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException('User is not active');
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Gerar tokens
-    const tokens = await this.generateTokens(user);
+    const { password: _, ...result } = user;
+    return result;
+  }
 
-    // Salvar refresh token
-    const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
-    await this.usersRepository.updateRefreshToken(user.id, hashedRefreshToken);
+  async login(user: any) {
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      organizationId: user.organizationId,
+    };
 
     return {
-      ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
+      access_token: this.jwtService.sign(payload),
+      user,
     };
   }
 
-  async logout(userId: string, accessToken: string): Promise<void> {
-    // Invalidar refresh token no banco
-    await this.usersRepository.updateRefreshToken(userId, null);
+  async register(organizationId: string, email: string, name: string, password: string): Promise<UserEntity> {
+    const existingUser = await this.usersRepository.findByEmail(organizationId, email);
     
-    // Adicionar access token à blacklist
-    const jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN') || '15m';
-    const expiresInMinutes = this.parseTimeToMinutes(jwtExpiresIn);
-    
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + expiresInMinutes);
-    
-    await this.tokenBlacklistRepository.addToBlacklist(
-      accessToken,
-      userId,
-      expiresAt,
-      'logout',
-    );
-  }
-
-  /**
-   * Converte string de tempo (15m, 1h, 7d) para minutos
-   */
-  private parseTimeToMinutes(time: string): number {
-    const unit = time.slice(-1);
-    const value = parseInt(time.slice(0, -1));
-    
-    switch (unit) {
-      case 's': return Math.ceil(value / 60);
-      case 'm': return value;
-      case 'h': return value * 60;
-      case 'd': return value * 60 * 24;
-      default: return 15; // 15 minutos default
+    if (existingUser) {
+      throw new BadRequestException('Email already exists');
     }
-  }
 
-  async refreshToken(refreshToken: string): Promise<AuthResponseDto> {
-    try {
-      // Verificar se o token é válido
-      const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Buscar usuário
-      const user = await this.usersRepository.findById(payload.sub);
-      if (!user || !user.refreshToken) {
-        throw new UnauthorizedException('Invalid refresh token');
-      }
+    const user = await this.usersRepository.create({
+      organizationId,
+      email,
+      name,
+      password: hashedPassword,
+      status: UserStatus.ACTIVE,
+    });
 
-      // Verificar se o refresh token corresponde ao armazenado
-      const isRefreshTokenValid = await bcrypt.compare(
-        refreshToken,
-        user.refreshToken,
-      );
-      if (!isRefreshTokenValid) {
-        throw new UnauthorizedException('Invalid refresh token');
-      }
+    // Criar Employee com role OWNER e jobTitle OWNER para o usuário registrado
+    await this.employeesRepository.create({
+      userId: user.id,
+      organizationId,
+      role: EmployeeRole.OWNER,
+      jobTitle: JobTitle.OWNER,
+      active: true,
+    });
 
-      // Gerar novos tokens
-      const tokens = await this.generateTokens(user);
-
-      // Atualizar refresh token
-      const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
-      await this.usersRepository.updateRefreshToken(user.id, hashedRefreshToken);
-
-      return {
-        ...tokens,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        },
-      };
-    } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-  }
-
-  private async generateTokens(user: UserEntity): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
-    const payload = { sub: user.id, email: user.email };
-
-    const jwtSecret = this.configService.get<string>('JWT_SECRET')!;
-    const jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN') || '15m';
-    const jwtRefreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET')!;
-    const jwtRefreshExpiresIn = this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d';
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: jwtSecret,
-        expiresIn: jwtExpiresIn,
-      } as any),
-      this.jwtService.signAsync(payload, {
-        secret: jwtRefreshSecret,
-        expiresIn: jwtRefreshExpiresIn,
-      } as any),
-    ]);
-
-    return {
-      accessToken,
-      refreshToken,
-    };
-  }
-
-  async validateUser(userId: string): Promise<UserEntity> {
-    const user = await this.usersRepository.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
     return user;
   }
 
-  async getProfile(userId: string) {
-    const user = await this.usersRepository.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+  async findById(id: string): Promise<UserEntity | null> {
+    return this.usersRepository.findById(id);
   }
 
+  /**
+   * Forgot Password - Gera token de reset
+   */
+  async forgotPassword(email: string): Promise<{ message: string; token?: string }> {
+    this.logger.log(`🔐 Forgot password request - Email: ${email}`);
+
+    const user = await this.usersRepository.findByEmailGlobal(email);
+    
+    if (!user) {
+      // Por segurança, retornar sucesso mesmo se usuário não existir
+      this.logger.warn(`⚠️  Forgot password for non-existent email: ${email}`);
+      return { message: 'If email exists, reset instructions sent' };
+    }
+
+    // Deletar tokens antigos do usuário
+    await this.passwordResetRepository.deleteByUserId(user.id);
+
+    // Gerar token seguro
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Expira em 1 hora
+
+    await this.passwordResetRepository.create({
+      userId: user.id,
+      token,
+      expiresAt,
+      used: false,
+    });
+
+    this.logger.log(`✅ Password reset token generated - UserID: ${user.id}`);
+
+    // TODO: Enviar email com o token
+    // await this.emailService.sendPasswordReset(user.email, token);
+
+    // Em desenvolvimento, retornar o token (REMOVER em produção!)
+    if (this.configService.get('NODE_ENV') === 'local') {
+      return { 
+        message: 'Reset token generated', 
+        token // Apenas para desenvolvimento!
+      };
+    }
+
+    return { message: 'If email exists, reset instructions sent' };
+  }
+
+  /**
+   * Reset Password - Reseta senha com token
+   */
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    this.logger.log(`🔐 Reset password attempt - Token: ${token.substring(0, 8)}...`);
+
+    const resetRequest = await this.passwordResetRepository.findByToken(token);
+
+    if (!resetRequest) {
+      this.logger.error(`❌ Invalid or expired token - Token: ${token.substring(0, 8)}...`);
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    // Verificar se expirou
+    if (resetRequest.expiresAt < new Date()) {
+      this.logger.error(`❌ Expired token - Token: ${token.substring(0, 8)}...`);
+      throw new BadRequestException('Reset token has expired');
+    }
+
+    // Atualizar senha
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.usersRepository.update(resetRequest.userId, {
+      password: hashedPassword,
+    });
+
+    // Marcar token como usado
+    await this.passwordResetRepository.markAsUsed(resetRequest.id);
+
+    this.logger.log(`✅ Password reset successful - UserID: ${resetRequest.userId}`);
+
+    return { message: 'Password reset successful' };
+  }
+
+  /**
+   * Change Password - Troca senha (usuário autenticado)
+   */
   async changePassword(
     userId: string,
     currentPassword: string,
     newPassword: string,
-  ): Promise<void> {
+  ): Promise<{ message: string }> {
+    this.logger.log(`🔐 Change password request - UserID: ${userId}`);
+
     const user = await this.usersRepository.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
+
+    if (!user || !user.password) {
+      throw new BadRequestException('User not found');
     }
 
     // Verificar senha atual
     const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Current password is incorrect');
+      this.logger.error(`❌ Invalid current password - UserID: ${userId}`);
+      throw new BadRequestException('Current password is incorrect');
     }
 
-    // Hash da nova senha
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Verificar se nova senha é diferente
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new BadRequestException('New password must be different from current');
+    }
 
     // Atualizar senha
-    user.password = hashedPassword;
-    await this.usersRepository.save(user);
-  }
-
-  async forgotPassword(email: string): Promise<{ message: string }> {
-    const user = await this.usersRepository.findByEmail(email);
-    
-    // Por segurança, sempre retorna sucesso mesmo se o email não existir
-    // Isso evita que atacantes descubram quais emails estão cadastrados
-    if (!user) {
-      return {
-        message: 'If the email exists, a password reset link has been sent',
-      };
-    }
-
-    // Gerar token aleatório
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    
-    // Hash do token para armazenar no banco
-    const hashedToken = await bcrypt.hash(resetToken, 10);
-    
-    // Token expira em 1 hora
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1);
-
-    // Salvar token e expiração no usuário
-    user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = expiresAt;
-    await this.usersRepository.save(user);
-
-    // TODO: Enviar email com o token
-    // Em produção, você enviaria um email com um link como:
-    // https://seusite.com/reset-password?token=${resetToken}
-    
-    console.log('='.repeat(80));
-    console.log('🔐 PASSWORD RESET TOKEN (APENAS PARA DESENVOLVIMENTO)');
-    console.log('='.repeat(80));
-    console.log(`Email: ${email}`);
-    console.log(`Token: ${resetToken}`);
-    console.log(`Expires: ${expiresAt.toISOString()}`);
-    console.log('='.repeat(80));
-    console.log('⚠️  Em produção, este token seria enviado por EMAIL');
-    console.log('='.repeat(80));
-
-    return {
-      message: 'If the email exists, a password reset link has been sent',
-    };
-  }
-
-  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-    // Buscar usuário com token de reset válido (não expirado)
-    const users = await this.usersRepository.findAll();
-    
-    let userToReset: UserEntity | null = null;
-
-    for (const user of users) {
-      if (
-        user.resetPasswordToken &&
-        user.resetPasswordExpires &&
-        user.resetPasswordExpires > new Date()
-      ) {
-        // Verificar se o token corresponde
-        const isTokenValid = await bcrypt.compare(token, user.resetPasswordToken);
-        if (isTokenValid) {
-          userToReset = user;
-          break;
-        }
-      }
-    }
-
-    if (!userToReset) {
-      throw new BadRequestException('Invalid or expired reset token');
-    }
-
-    // Hash da nova senha
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.usersRepository.update(userId, {
+      password: hashedPassword,
+    });
 
-    // Atualizar senha e limpar token de reset
-    userToReset.password = hashedPassword;
-    userToReset.resetPasswordToken = null;
-    userToReset.resetPasswordExpires = null;
-    userToReset.refreshToken = null; // Invalidar refresh tokens existentes
+    this.logger.log(`✅ Password changed successfully - UserID: ${userId}`);
 
-    await this.usersRepository.save(userToReset);
+    return { message: 'Password changed successfully' };
+  }
+
+  /**
+   * Refresh Token - Gera novo access token
+   */
+  async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
+    this.logger.log(`🔄 Refresh token request`);
+
+    try {
+      // Verificar refresh token
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+
+      const user = await this.usersRepository.findById(payload.sub);
+
+      if (!user || user.status !== UserStatus.ACTIVE) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Gerar novo access token
+      const newPayload = {
+        email: user.email,
+        sub: user.id,
+        organizationId: user.organizationId,
+      };
+
+      const access_token = this.jwtService.sign(newPayload);
+
+      this.logger.log(`✅ Token refreshed - UserID: ${user.id}`);
+
+      return { access_token };
+    } catch (error) {
+      this.logger.error(`❌ Refresh token failed - Error: ${error.message}`);
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  /**
+   * Login com refresh token
+   */
+  async loginWithRefresh(user: any) {
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      organizationId: user.organizationId,
+    };
+
+    const refreshPayload = {
+      sub: user.id,
+      type: 'refresh',
+    };
 
     return {
-      message: 'Password has been reset successfully',
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(refreshPayload, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '7d') as any,
+      }),
+      user,
     };
   }
 }

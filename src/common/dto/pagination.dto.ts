@@ -13,18 +13,41 @@ export class PaginationDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit?: number = 10;
+  limit?: number = 50;
+
+  @IsOptional()
+  sort?: string = '-createdAt';
 }
 
 export interface PaginatedResult<T> {
   data: T[];
   meta: {
-    total: number;
     page: number;
     limit: number;
+    total: number;
     totalPages: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;
   };
 }
 
+export function createPaginatedResult<T>(
+  data: T[],
+  total: number,
+  page: number,
+  limit: number,
+): PaginatedResult<T> {
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    data,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
+}

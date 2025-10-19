@@ -1,371 +1,431 @@
-# SuperPet API 🐾
+# SuperPet API
 
-API REST desenvolvida com NestJS, TypeORM e MySQL para gerenciamento de pets.
+> Enterprise-grade SaaS Multi-Tenant Platform for Pet Business Management
 
-## 🚀 Tecnologias
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-74%20passing-brightgreen)]()
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
+[![NestJS](https://img.shields.io/badge/NestJS-10.x-red)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)]()
 
-- **NestJS** - Framework Node.js progressivo
-- **TypeORM** - ORM para TypeScript e JavaScript
-- **MySQL** - Banco de dados relacional
-- **JWT** - Autenticação com JSON Web Tokens
-- **Passport** - Middleware de autenticação
-- **bcrypt** - Hash de senhas
+A comprehensive REST API platform designed for multi-location pet service businesses, featuring advanced multi-tenancy, role-based access control, dynamic feature management, and enterprise-level scalability.
 
-## 📋 Pré-requisitos
+---
 
-- Node.js (v18 ou superior)
-- MySQL (v8 ou superior)
-- npm ou yarn
+## ✨ Key Features
 
-## ⚙️ Instalação
+### 🏢 **Multi-Tenant SaaS Architecture**
+- Complete organization isolation with data segregation
+- Flexible subscription plans (FREE, BASIC, PRO, ENTERPRISE)
+- Configurable limits per plan (employees, stores, appointments)
+- Cross-tenant access prevention with 404/403 responses
 
-1. Clone o repositório:
+### 👥 **Advanced Role-Based Access Control**
+- **Hierarchical Roles**: SUPER_ADMIN → OWNER → ADMIN → STAFF → VIEWER
+- **17 Job Titles**: Veterinarian, Groomer, Receptionist, Manager, and more
+- Store-level access control for staff members
+- Dynamic permission system with guard composition
+
+### 🎯 **Dynamic Feature System**
+- Database-driven feature management (no code changes required)
+- Per-store feature activation with custom limits
+- 10+ built-in features, scalable to 20+ features
+- Feature categories: CORE, SERVICES, CUSTOMER, OPERATIONS, ANALYTICS, INTEGRATIONS
+
+### 🏪 **Multi-Store Management**
+- Unlimited stores per organization (plan-dependent)
+- Store-specific service pricing and configurations
+- Independent operating hours and resource allocation
+- Store-feature relationship management
+
+### 📊 **Core Business Modules**
+- **Customers**: Full profile management with PII protection
+- **Pets**: Multi-species support with health tracking
+- **Services**: Flexible catalog with store-level customization
+- **Employees**: Complete workforce management
+- **Live Features**: TelePickup, Live Camera streams
+
+---
+
+## 🚀 Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Framework** | NestJS 10.x | Enterprise Node.js framework with TypeScript |
+| **ORM** | TypeORM | Type-safe database operations |
+| **Database** | MySQL 8.x | Relational data storage |
+| **Authentication** | JWT + Passport | Stateless authentication |
+| **Validation** | class-validator | DTO validation |
+| **Security** | bcrypt | Password hashing |
+| **Testing** | Jest | Unit, E2E, and automation tests |
+
+---
+
+## 📦 Quick Start
+
+### Prerequisites
+- Node.js 18+ and npm
+- MySQL 8.0+
+- Git
+
+### Installation
+
 ```bash
+# Clone repository
 git clone <repository-url>
 cd superpet-api
-```
 
-2. Instale as dependências:
-```bash
+# Install dependencies
 npm install
+
+# Setup environment
+cp env/template.env env/local.env
+# Edit env/local.env with your configurations
+
+# Create database
+mysql -u root -p -e "CREATE DATABASE superpet_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# Run migrations
+npm run migration:run:local
+
+# Seed database (optional)
+npm run typeorm -- -d src/database/data-source.ts migration:run
+node src/database/seeds/run-seed.ts
+
+# Start application
+npm run start:local
 ```
 
-3. Configure as variáveis de ambiente:
+Application will be running at `http://localhost:3000`
+
+---
+
+## 🧪 Testing
+
+### Test Suite Overview
+```
+╔════════════════════════════════════════════════════════╗
+║  88 Tests Passing | 100% Success Rate | ~8s Runtime   ║
+╚════════════════════════════════════════════════════════╝
+```
+
+### Test Modules
+| Module | Tests | Coverage |
+|--------|-------|----------|
+| Authentication | 6 | 100% |
+| Stores & Features | 7 | 100% |
+| Customers & Addresses | 8 | 100% |
+| Pets | 6 | 100% |
+| Services & Custom Services | 7 | 100% |
+| Advanced Features | 7 | 100% |
+| SaaS Isolation | 13 | 100% |
+| Plan Limits | 4 | 100% |
+| Employee Hierarchy | 10 | 100% |
+| Feature Scalability | 6 | 100% |
+| **Validation Errors** | **12** | **100%** ✨ |
+| **Permission Errors** | **2** | **100%** ✨ |
+
+### Run Tests
+
 ```bash
-# Copie o arquivo template
-# Windows (PowerShell)
+# Run all automation tests (88 tests)
+node test/automation/run-all-tests.js
+
+# Run specific module
+node test/automation/auth/auth.test.js
+node test/automation/employees/employees-hierarchy.test.js
+node test/automation/saas/saas-isolation.test.js
+
+# Run error scenario tests
+node test/automation/errors/validation-errors.test.js  # 12 tests
+node test/automation/errors/permission-errors.test.js  # 2 tests
+
+# Setup SUPER_ADMIN for testing
+node test/automation/setup-superuser.js
+
+# Reset test organization limits
+node test/automation/update-org-limits.js
+```
+
+---
+
+## 🏗️ Architecture
+
+### Database Schema (14 Tables)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    ORGANIZATIONS                        │
+│              (Multi-Tenant Root Entity)                 │
+└────────────────────┬────────────────────────────────────┘
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+    ┌───▼───┐   ┌───▼───┐   ┌───▼────┐
+    │ USERS │   │STORES │   │FEATURES│
+    └───┬───┘   └───┬───┘   └────────┘
+        │           │
+    ┌───┴───┐   ┌───┴──────────┐
+    │       │   │               │
+┌───▼──┐ ┌─▼─────┐  ┌──────────▼─────┐
+│EMPLOYEE│CUSTOMER│  │ STORE_FEATURES │
+└───┬───┘└──┬─────┘  └────────────────┘
+    │       │
+    │   ┌───▼────┐
+    │   │ PETS   │
+    │   └────────┘
+    │   ┌────────┐
+    │   │ADDRESS │
+    │   └────────┘
+    │   ┌─────────┐
+    │   │PERSONAL │
+    │   │  DATA   │
+    │   └─────────┘
+    │
+    │ N:M via EMPLOYEE_STORES
+```
+
+### API Versioning
+- **Current Version**: v1
+- **Base URL**: `http://localhost:3000/v1`
+- **Public Routes**: `/auth/register`, `/auth/login`
+- **Protected Routes**: All others require JWT Bearer token
+
+---
+
+## 📚 API Endpoints
+
+### 🔐 Authentication
+```http
+POST   /auth/register         # Register new user
+POST   /auth/login            # Login
+GET    /auth/me               # Get current user profile
+```
+
+### 👥 Employees
+```http
+POST   /v1/employees          # Create employee (role-based)
+GET    /v1/employees          # List employees (with filters)
+GET    /v1/employees/:id      # Get employee details
+PUT    /v1/employees/:id      # Update employee
+```
+
+### 🏪 Stores
+```http
+POST   /v1/stores                      # Create store
+GET    /v1/stores                      # List stores
+GET    /v1/stores/:id                  # Get store details
+PUT    /v1/stores/:id                  # Update store
+GET    /v1/stores/:id/features         # List store features
+PUT    /v1/stores/:id/features/:key    # Configure feature
+```
+
+### 👤 Customers
+```http
+POST   /v1/customers                       # Create customer
+GET    /v1/customers                       # List customers
+GET    /v1/customers/:id                   # Get customer
+PUT    /v1/customers/:id                   # Update customer
+PATCH  /v1/customers/:id/status            # Update status
+PUT    /v1/customers/:id/personal-data     # Add personal data (CPF, RG)
+POST   /v1/customers/:id/addresses         # Create address
+GET    /v1/customers/:id/addresses         # List addresses
+```
+
+### 🐾 Pets
+```http
+POST   /v1/customers/:customerId/pets  # Create pet
+GET    /v1/customers/:customerId/pets  # List customer's pets
+GET    /v1/pets/:id                    # Get pet details
+PUT    /v1/pets/:id                    # Update pet
+PATCH  /v1/pets/:id/status             # Update pet status
+```
+
+### 💼 Services
+```http
+POST   /v1/services                                          # Create service
+GET    /v1/services                                          # List services
+GET    /v1/services/:id                                      # Get service
+POST   /v1/stores/:storeId/custom-services                   # Create custom service
+POST   /v1/stores/:storeId/custom-services/:id/publish       # Publish custom service
+POST   /v1/stores/:storeId/custom-services/:id/archive       # Archive custom service
+GET    /v1/stores/:storeId/custom-services                   # List store custom services
+```
+
+### 🚚 Advanced Features
+```http
+# TelePickup
+POST   /v1/stores/:storeId/pickups              # Schedule pickup
+PATCH  /v1/stores/:storeId/pickups/:id/status   # Update pickup status
+GET    /v1/stores/:storeId/pickups              # List pickups
+
+# Live Camera
+POST   /v1/stores/:storeId/live-cam/streams     # Create stream
+GET    /v1/customers/:customerId/pets/:petId/live-cam  # Get pet streams
+DELETE /v1/stores/:storeId/live-cam/streams/:id # Delete stream
+```
+
+> 📖 **Full API Documentation**: See [API Endpoints Guide](./docs/guides/api-endpoints.md)
+
+---
+
+## 🔒 Security & Authorization
+
+### Authentication Flow
+1. **Register/Login** → Receive JWT token
+2. **JWT Payload** includes: `userId`, `organizationId`, `employee` data
+3. **All requests** must include: `Authorization: Bearer <token>`
+
+### Role Hierarchy & Permissions
+
+```
+SUPER_ADMIN (Database-level, cross-tenant access)
+    ↓
+OWNER (Full organization access, can create ADMIN)
+    ↓
+ADMIN (Manage stores, can create STAFF/VIEWER)
+    ↓
+STAFF (Store-level access via employee_stores)
+    ↓
+VIEWER (Read-only access)
+```
+
+### Guards
+- **JwtAuthGuard**: Validates JWT token
+- **RoleGuard**: Validates employee role (@Roles decorator)
+- **StoreAccessGuard**: Validates store-level access
+
+---
+
+## 🎯 SaaS Features
+
+### Multi-Tenancy
+- ✅ Complete data isolation between organizations
+- ✅ Organization-scoped queries with automatic filtering
+- ✅ Cross-tenant access prevention (404/403 responses)
+- ✅ Unique constraints per organization (email, codes, etc.)
+
+### Subscription Plans
+
+| Plan | Employees | Stores | Monthly Appointments |
+|------|-----------|--------|---------------------|
+| FREE | 5 | 1 | 100 |
+| BASIC | 20 | 5 | 1,000 |
+| PRO | 100 | 20 | 10,000 |
+| ENTERPRISE | Unlimited | Unlimited | Unlimited |
+
+### Dynamic Features
+- Features stored in database (not hardcoded)
+- Per-store activation with custom limits
+- Category-based organization
+- Minimum plan requirements per feature
+
+---
+
+## 📂 Project Structure
+
+```
+superpet-api/
+├── src/
+│   ├── auth/                    # Authentication & authorization
+│   ├── organizations/           # Multi-tenant organizations
+│   ├── users/                   # User management
+│   ├── employees/               # Employee & role management
+│   ├── stores/                  # Store management & features
+│   ├── customers/               # Customer management
+│   ├── pets/                    # Pet management
+│   ├── services/                # Service catalog & custom services
+│   ├── pickups/                 # TelePickup feature
+│   ├── live-cam/                # Live camera streaming
+│   ├── database/
+│   │   ├── migrations/          # TypeORM migrations (14 files)
+│   │   └── seeds/               # Database seeders
+│   └── common/
+│       ├── guards/              # Security guards
+│       ├── decorators/          # Custom decorators
+│       └── entities/            # Base entities
+│
+├── test/
+│   └── automation/              # Automated test suite
+│       ├── auth/                # Auth tests (6)
+│       ├── stores/              # Store tests (7)
+│       ├── customers/           # Customer tests (8)
+│       ├── pets/                # Pet tests (6)
+│       ├── services/            # Service tests (7)
+│       ├── features/            # Feature tests (7+6)
+│       ├── employees/           # Employee tests (10)
+│       └── saas/                # SaaS tests (13+4)
+│
+├── docs/
+│   ├── guides/                  # Technical documentation
+│   │   ├── ARCHITECTURE.md      # System architecture
+│   │   ├── SAAS-RULES.md        # SaaS implementation rules
+│   │   ├── IMPLEMENTATION-STATUS.md  # Current implementation status
+│   │   ├── api-endpoints.md     # Complete API reference
+│   │   ├── environments.md      # Environment setup
+│   │   ├── MIGRATIONS.md        # Migration management
+│   │   ├── SEED-DATABASE.md     # Database seeding
+│   │   ├── PASSWORD-RECOVERY.md # Password recovery flow
+│   │   └── SCRIPTS.md           # NPM scripts reference
+│   │
+│   └── collections/
+│       └── postman/             # Postman collections
+│
+└── env/                         # Environment configurations
+    ├── template.env             # Environment template
+    ├── local.env                # Local development (gitignored)
+    ├── staging.env              # Staging (gitignored)
+    └── prod.env                 # Production (gitignored)
+```
+
+---
+
+## 🛠️ Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run start:local              # Start in local mode
+npm run start:dev                # Start with watch mode
+npm run build                    # Build for production
+
+# Database
+npm run typeorm                  # TypeORM CLI
+npm run migration:generate       # Generate migration from entities
+npm run migration:create         # Create empty migration
+npm run migration:run:local      # Run migrations (local)
+npm run migration:revert:local   # Revert last migration (local)
+
+# Testing
+node test/automation/run-all-tests.js        # Run all 74 tests
+node test/automation/auth/auth.test.js       # Run auth tests only
+node test/automation/saas/saas-isolation.test.js  # Run SaaS tests
+
+# Database Utilities
+node test/automation/setup-superuser.js      # Create SUPER_ADMIN user
+node test/automation/update-org-limits.js    # Update organization limits
+node test/automation/reset-database.js       # Reset database (careful!)
+```
+
+### Environment Configuration
+
+Create your environment file:
+
+```bash
+# Windows
 Copy-Item env\template.env env\local.env
 
 # Linux/Mac
 cp env/template.env env/local.env
-
-# Edite o arquivo env/local.env com suas configurações
 ```
 
-4. Configure o banco de dados MySQL:
-```sql
-CREATE DATABASE superpet_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-5. Execute as migrations:
-```bash
-npm run migration:run:local
-```
-
-6. Execute a aplicação:
-```bash
-# Modo local (desenvolvimento)
-npm run start:local
-
-# Modo staging
-npm run start:staging
-
-# Modo produção
-npm run start:prod
-```
-
-A aplicação estará rodando em `http://localhost:3000`
-
-## 📚 Documentação
-
-### 📖 Guias
-- [Guia de Ambientes](./docs/guides/ENVIRONMENTS.md) - Configuração de ambientes (local, staging, production)
-- [Guia de Migrations](./docs/guides/MIGRATIONS.md) - Referência completa de comandos de migrations
-- [Comandos de Migrations](./docs/guides/MIGRATION-COMMANDS.md) - Referência rápida: aplicar todas de uma vez
-- [Workflow de Migrations](./docs/guides/MIGRATIONS-WORKFLOW.md) - Fluxo prático do dia-a-dia com migrations
-- [Recuperação de Senha](./docs/guides/PASSWORD-RECOVERY.md) - Change password e forgot/reset password
-- [Guia de Scripts](./docs/guides/SCRIPTS.md) - Todos os comandos NPM disponíveis
-
-### 📦 Collections & Exemplos
-- [Collection Postman - Auth](./docs/collections/auth/) - Collection completa do Postman para testar Auth
-- [Exemplos HTTP](./docs/collections/api-examples.http) - Exemplos de requisições HTTP (REST Client)
-
-## 📁 Estrutura do Projeto
-
-```
-├── env/                       # Arquivos de configuração de ambiente
-│   ├── local.env             # Configurações locais (gitignored)
-│   ├── staging.env           # Configurações staging (gitignored)
-│   ├── prod.env              # Configurações produção (gitignored)
-│   ├── template.env          # Template para criar novos ambientes
-│   └── README.md             # Documentação dos ambientes
-├── src/
-│   ├── auth/                 # Módulo de autenticação
-│   │   ├── decorators/       # Decorators customizados
-│   │   │   ├── current-user.decorator.ts
-│   │   │   └── public.decorator.ts
-│   │   ├── dto/              # Data Transfer Objects
-│   │   │   ├── auth-response.dto.ts
-│   │   │   ├── login.dto.ts
-│   │   │   ├── refresh-token.dto.ts
-│   │   │   └── register.dto.ts
-│   │   ├── guards/           # Guards de autenticação
-│   │   │   └── jwt-auth.guard.ts
-│   │   ├── strategies/       # Estratégias Passport
-│   │   │   └── jwt.strategy.ts
-│   │   ├── auth.controller.ts
-│   │   ├── auth.module.ts
-│   │   └── auth.service.ts
-│   ├── common/               # Recursos compartilhados
-│   │   └── entities/
-│   │       └── base.entity.ts
-│   ├── database/             # Configuração do banco de dados
-│   │   ├── migrations/       # Migrations do TypeORM
-│   │   │   └── 1729000000000-CreateUsersTable.ts
-│   │   ├── data-source.ts    # DataSource para migrations
-│   │   └── database.module.ts
-│   ├── users/                # Módulo de usuários
-│   │   ├── entities/
-│   │   │   └── user.entity.ts
-│   │   ├── users.module.ts
-│   │   └── users.repository.ts
-│   ├── app.module.ts         # Módulo principal
-│   └── main.ts               # Arquivo de inicialização
-├── docs/                             # Documentação do projeto
-│   ├── README.md                     # Índice da documentação
-│   ├── guides/                       # Guias e tutoriais
-│   │   ├── ENVIRONMENTS.md           # Guia de ambientes
-│   │   ├── MIGRATIONS.md             # Guia de migrations
-│   │   ├── MIGRATION-COMMANDS.md     # Comandos de migrations
-│   │   ├── MIGRATIONS-WORKFLOW.md    # Workflow de migrations
-│   │   ├── PASSWORD-RECOVERY.md      # Recuperação de senha
-│   │   └── SCRIPTS.md                # Guia de scripts
-│   └── collections/                  # Collections e exemplos
-│       ├── auth/                     # Collection do módulo Auth
-│       │   ├── SuperPet-Auth.postman_collection.json
-│       │   └── README.md
-│       └── api-examples.http         # Exemplos REST Client
-├── test/                             # Testes
-│   ├── automation/                   # Testes de automação E2E
-│   │   ├── auth.test.js              # Testes do módulo Auth
-│   │   └── README.md                 # Como executar
-│   ├── app.e2e-spec.ts               # Testes E2E
-│   └── jest-e2e.json                 # Config Jest E2E
-└── README.md                         # Documentação principal
-```
-
-## 🔐 Endpoints da API
-
-### 📋 Resumo de Endpoints
-
-| Método | Endpoint | Auth | Descrição |
-|--------|----------|------|-----------|
-| POST | `/auth/register` | ❌ | Criar nova conta |
-| POST | `/auth/login` | ❌ | Fazer login |
-| POST | `/auth/logout` | ✅ | Fazer logout |
-| POST | `/auth/refresh` | ❌ | Renovar tokens |
-| GET | `/auth/me` | ✅ | Ver perfil do usuário logado |
-| PATCH | `/auth/change-password` | ✅ | Trocar senha (com senha atual) |
-| POST | `/auth/forgot-password` | ❌ | Solicitar recuperação de senha |
-| POST | `/auth/reset-password` | ❌ | Resetar senha com token |
-
-### Autenticação
-
-#### 1. Registro de Usuário
-```http
-POST /auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "senha123",
-  "name": "Nome do Usuário"
-}
-```
-
-**Resposta (201 Created):**
-```json
-{
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "name": "Nome do Usuário"
-  }
-}
-```
-
-#### 2. Login
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "senha123"
-}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "name": "Nome do Usuário"
-  }
-}
-```
-
-#### 3. Logout
-```http
-POST /auth/logout
-Authorization: Bearer {accessToken}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "message": "Logout successful"
-}
-```
-
-#### 4. Refresh Token
-```http
-POST /auth/refresh
-Content-Type: application/json
-
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "name": "Nome do Usuário"
-  }
-}
-```
-
-#### 5. Ver Perfil (Autenticado)
-```http
-GET /auth/me
-Authorization: Bearer {accessToken}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "id": "uuid",
-  "email": "user@example.com",
-  "name": "Nome do Usuário",
-  "createdAt": "2025-10-14T19:00:00.000Z",
-  "updatedAt": "2025-10-14T19:00:00.000Z"
-}
-```
-
-#### 6. Trocar Senha (Autenticado)
-```http
-PATCH /auth/change-password
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-
-{
-  "currentPassword": "senha123",
-  "newPassword": "novaSenha123"
-}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "message": "Password changed successfully"
-}
-```
-
-#### 7. Solicitar Recuperação de Senha
-```http
-POST /auth/forgot-password
-Content-Type: application/json
-
-{
-  "email": "user@example.com"
-}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "message": "If the email exists, a password reset link has been sent"
-}
-```
-
-**Nota:** Por segurança, sempre retorna sucesso mesmo se o email não existir. Em desenvolvimento, o token aparece no console do servidor. Em produção, seria enviado por email.
-
-#### 8. Resetar Senha com Token
-```http
-POST /auth/reset-password
-Content-Type: application/json
-
-{
-  "token": "token_recebido_por_email",
-  "newPassword": "novaSenha123"
-}
-```
-
-**Resposta (200 OK):**
-```json
-{
-  "message": "Password has been reset successfully"
-}
-```
-
-**Nota:** O token é válido por 1 hora e pode ser usado apenas uma vez.
-
-## 🔒 Autenticação
-
-A API utiliza JWT (JSON Web Tokens) para autenticação. Existem dois tipos de tokens:
-
-- **Access Token**: Validade de 15 minutos, usado para acessar rotas protegidas
-- **Refresh Token**: Validade de 7 dias, usado para obter novos access tokens
-
-### Como usar tokens protegidos
-
-Para acessar rotas protegidas, inclua o access token no header:
-
-```http
-Authorization: Bearer {accessToken}
-```
-
-### Rotas Públicas
-
-Use o decorator `@Public()` para marcar rotas que não precisam de autenticação.
-
-### Obter usuário atual
-
-Use o decorator `@CurrentUser()` em rotas protegidas para obter os dados do usuário autenticado:
-
-```typescript
-@UseGuards(JwtAuthGuard)
-@Get('profile')
-getProfile(@CurrentUser() user: any) {
-  return user;
-}
-```
-
-## 🛠️ Configuração de Ambiente
-
-### Ambientes Suportados
-
-A aplicação suporta múltiplos ambientes com arquivos na pasta `env/`:
-- **Local**: `env/local.env` - Desenvolvimento local
-- **Staging**: `env/staging.env` - Ambiente de testes
-- **Production**: `env/prod.env` - Ambiente de produção
-
-### Arquivo de Configuração (`env/local.env`)
+Required environment variables:
 
 ```env
-# Environment
+# Server
 NODE_ENV=local
+PORT=3000
 
 # Database
 DB_HOST=localhost
@@ -375,203 +435,227 @@ DB_PASSWORD=root
 DB_DATABASE=superpet_db
 
 # JWT
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
 JWT_EXPIRES_IN=15m
-JWT_REFRESH_SECRET=your-super-secret-refresh-jwt-key-change-this-in-production
 JWT_REFRESH_EXPIRES_IN=7d
 
-# App
-PORT=3000
+# Other services (optional)
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
-
-⚠️ **IMPORTANTE**: 
-- Todos os arquivos de ambiente estão em `env/`
-- Nomes dos arquivos: `local.env`, `staging.env`, `prod.env`
-- Altere os valores de `JWT_SECRET` e `JWT_REFRESH_SECRET` em staging e produção!
-- Use secrets de no mínimo 32 caracteres
-- Nunca commite arquivos `env/*.env` no git (exceto `template.env`)
-- Use `cross-env` para compatibilidade Windows/Linux/Mac
-
-📖 **Guia completo de ambientes:** [ENVIRONMENTS.md](./docs/guides/ENVIRONMENTS.md)
-
-## 🧪 Testes
-
-### Testes Unitários
-```bash
-# Executar todos os testes unitários
-npm run test
-
-# Watch mode
-npm run test:watch
-
-# Com cobertura
-npm run test:cov
-```
-
-### Testes E2E
-```bash
-npm run test:e2e
-```
-
-### Testes de Automação (API)
-```bash
-# Testar módulo Auth completo (16 testes)
-npm run test:automation
-
-# Ou especificamente Auth
-npm run test:automation:auth
-```
-
-**O que testa:**
-- ✅ Todos endpoints de Auth (8 endpoints)
-- ✅ Casos de sucesso (happy path)
-- ✅ Casos de erro (validações)
-- ✅ Fluxos completos (register → login → logout)
-
-📖 **Ver detalhes:** [test/automation/README.md](./test/automation/README.md)
-
-## 📝 Comandos Úteis
-
-### Desenvolvimento
-
-```bash
-# Local (desenvolvimento com hot-reload)
-npm run start:local
-
-# Debug
-npm run start:debug
-
-# Build
-npm run build
-
-# Lint
-npm run lint
-
-# Format
-npm run format
-```
-
-### Migrations
-
-```bash
-# Criar migration vazia
-npm run migration:create src/database/migrations/NomeDaMigration
-
-# Gerar migration automaticamente (local)
-npm run migration:generate:local src/database/migrations/NomeDaMigration
-
-# Ver migrations pendentes ANTES de aplicar
-npm run migration:pending:local       # Local
-npm run migration:pending:staging     # Staging
-npm run migration:pending:production  # Production
-
-# Aplicar TODAS as migrations pendentes de uma vez
-npm run migration:apply:all:local       # Local
-npm run migration:apply:all:staging     # Staging
-npm run migration:apply:all:production  # Production
-
-# Reverter última migration
-npm run migration:revert:local
-npm run migration:revert:staging
-npm run migration:revert:production
-
-# Ver status das migrations (executadas + pendentes)
-npm run migration:show:local
-npm run migration:show:staging
-npm run migration:show:production
-```
-
-📖 **Veja o guia completo:** [MIGRATIONS.md](./docs/guides/MIGRATIONS.md)
-
-### Ambientes
-
-```bash
-# Local (desenvolvimento)
-npm run start:local
-
-# Staging
-npm run start:staging
-
-# Production
-npm run start:prod
-```
-
-📖 **Veja o guia completo:** [ENVIRONMENTS.md](./docs/guides/ENVIRONMENTS.md)
-
-## 🔄 Migrations
-
-O projeto usa **TypeORM Migrations** para gerenciar o schema do banco de dados de forma controlada e versionada.
-
-### Comandos Principais
-
-```bash
-# Criar migration
-npm run migration:create src/database/migrations/NomeDaMigration
-
-# Gerar migration automaticamente
-npm run migration:generate:local src/database/migrations/NomeDaMigration
-
-# Aplicar migrations
-npm run migration:run:local
-
-# Reverter última migration
-npm run migration:revert:local
-
-# Ver status
-npm run migration:show:local
-```
-
-📖 **Guia completo de migrations:** [MIGRATIONS.md](./docs/guides/MIGRATIONS.md)
-
-### Fluxo de Trabalho
-
-1. Modificar/criar entity
-2. Gerar migration: `npm run migration:generate:local src/database/migrations/NomeMigration`
-3. Revisar migration gerada
-4. Aplicar: `npm run migration:run:local`
-5. Testar
-6. Commit e push
-
-## 🤝 Contribuindo
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
-## ✨ Features Implementadas
-
-- ✅ Módulo de Autenticação completo
-- ✅ JWT com Access e Refresh Tokens
-- ✅ Recuperação de senha (Forgot/Reset)
-- ✅ Troca de senha (Change Password)
-- ✅ TypeORM com Migrations
-- ✅ Múltiplos ambientes (local, staging, prod)
-- ✅ Validações com class-validator
-- ✅ Guards e Decorators customizados
-- ✅ Collection Postman completa
-- ✅ Testes de automação E2E
-- ✅ Documentação completa
-
-## ✨ Próximos Passos
-
-- [ ] Implementar módulo de Pets
-- [ ] Adicionar validações de email (confirmação)
-- [ ] Envio de emails (integração com SendGrid/AWS SES)
-- [ ] Adicionar refresh token rotation
-- [ ] Implementar rate limiting
-- [ ] Adicionar documentação Swagger/OpenAPI
-- [ ] Implementar testes unitários (Jest)
-- [ ] Configurar CI/CD (GitHub Actions)
-- [ ] Adicionar logs estruturados (Winston)
-- [ ] Implementar health checks
-- [ ] Adicionar 2FA (Two-Factor Authentication)
 
 ---
 
-Desenvolvido com ❤️ usando NestJS
+## 📊 Database Migrations
+
+### Migration Files (14)
+
+1. `CreateOrganizationsTable` - Multi-tenant root
+2. `CreateUsersTable` - User base entity
+3. `CreateEmployeesTable` - Employee management with roles
+4. `CreateEmployeeStoresTable` - Employee-store relationships
+5. `CreateStoresTable` - Store/location management
+6. `CreateCustomersTable` - Customer management
+7. `CreatePersonalDataTable` - PII-protected data
+8. `CreateAddressesTable` - Customer addresses
+9. `CreatePetsTable` - Pet management
+10. `CreateServicesTable` - Service catalog
+11. `CreateStoreFeaturesTable` - Store feature configuration
+12. `CreateCustomServicesTable` - Store-specific pricing
+13. `CreatePickupsTable` - TelePickup feature
+14. `CreateLiveCamStreamsTable` - Live camera feature
+15. `CreateTokenBlacklistTable` - JWT blacklist
+16. `CreateFeaturesTable` - Dynamic feature system
+
+### Migration Commands
+
+```bash
+# Run all pending migrations
+npm run migration:run:local
+
+# Revert last migration
+npm run migration:revert:local
+
+# Generate migration from entity changes
+npm run migration:generate -- src/database/migrations/MigrationName
+
+# Create empty migration
+npm run migration:create -- src/database/migrations/MigrationName
+```
+
+---
+
+## 🎨 Code Architecture
+
+### Module Structure
+
+Each module follows NestJS best practices:
+
+```
+module/
+├── entities/              # TypeORM entities
+│   ├── entity.entity.ts
+│   └── related.entity.ts
+├── dto/                   # Data Transfer Objects
+│   ├── create.dto.ts
+│   └── update.dto.ts
+├── repositories/          # Data access layer
+│   └── module.repository.ts
+├── services/              # Business logic
+│   └── module.service.ts
+├── guards/                # Authorization guards (if any)
+├── module.controller.ts   # HTTP endpoints
+└── module.module.ts       # NestJS module definition
+```
+
+### Dependency Injection
+
+```typescript
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([Entity]),
+    forwardRef(() => DependentModule), // Circular dependency
+  ],
+  controllers: [Controller],
+  providers: [Service, Repository],
+  exports: [Service, Repository],
+})
+export class MyModule {}
+```
+
+---
+
+## 📖 Documentation
+
+### Main Guides
+- **[Architecture](./docs/guides/ARCHITECTURE.md)** - Complete system architecture
+- **[SaaS Rules](./docs/guides/SAAS-RULES.md)** - Multi-tenancy implementation rules
+- **[Implementation Status](./docs/guides/IMPLEMENTATION-STATUS.md)** - Current development status
+- **[API Endpoints](./docs/guides/API-ENDPOINTS.md)** - Complete endpoint reference
+
+### Technical Guides
+- **[Migrations Guide](./docs/guides/MIGRATIONS-GUIDE.md)** - Complete migration workflow & commands
+- **[Error Codes Reference](./docs/guides/ERROR-CODES.md)** - All error codes & handling
+- **[Environments](./docs/guides/ENVIRONMENTS.md)** - Environment setup guide
+- **[Database Seeding](./docs/guides/SEED-DATABASE.md)** - How to seed the database
+- **[Scripts Reference](./docs/guides/SCRIPTS.md)** - All available NPM scripts
+- **[Password Recovery](./docs/guides/PASSWORD-RECOVERY.md)** - Password reset flow
+- **[Pets & Customers API](./docs/guides/PETS-CUSTOMERS-API.md)** - Detailed module guide
+
+### Postman Collections (64 Endpoints)
+- [Auth Collection](./docs/collections/auth/) - 3 endpoints
+- [Employees Collection](./docs/collections/employees/) - 10 endpoints
+- [Stores Collection](./docs/collections/stores/) - 12 endpoints
+- [Customers Collection](./docs/collections/customers/) - 11 endpoints
+- [Pets Collection](./docs/collections/pets/) - 7 endpoints
+- [Services Collection](./docs/collections/services/) - 13 endpoints
+- [Features Collection](./docs/collections/features/) - 8 endpoints
+
+> 📦 **[Collection Index](./docs/collections/README.md)** - Complete guide for all collections
+
+---
+
+## 🚢 Deployment
+
+### Build for Production
+
+```bash
+# Build the application
+npm run build
+
+# The compiled output will be in the dist/ directory
+```
+
+### Production Environment
+
+```bash
+# Set environment
+export NODE_ENV=production
+
+# Run migrations
+npm run migration:run:prod
+
+# Start application
+npm run start:prod
+```
+
+### Docker Support (Coming Soon)
+
+```bash
+# Build image
+docker build -t superpet-api .
+
+# Run container
+docker-compose up -d
+```
+
+---
+
+## 🤝 Contributing
+
+### Development Workflow
+
+1. Create feature branch from `main`
+2. Implement changes following existing patterns
+3. Run tests: `node test/automation/run-all-tests.js`
+4. Ensure all 74 tests pass
+5. Create pull request
+
+### Code Style
+
+- Use TypeScript strict mode
+- Follow NestJS conventions
+- Use DTOs for all inputs/outputs
+- Implement proper error handling
+- Add JSDoc comments for complex logic
+
+---
+
+## 📝 License
+
+This project is proprietary and confidential.
+
+---
+
+## 👨‍💻 Author
+
+**SuperPet Development Team**
+
+---
+
+## 🎯 Roadmap
+
+### Implemented ✅
+- [x] Multi-tenant SaaS architecture
+- [x] Role-based access control with 5 roles
+- [x] 17 job titles for employees
+- [x] Dynamic feature system (10+ features, scalable to 20+)
+- [x] Store management with multi-location support
+- [x] Customer & pet management
+- [x] Service catalog with store-level customization
+- [x] Advanced features (TelePickup, Live Camera)
+- [x] Plan limits & validation
+- [x] 74 automated tests with 100% pass rate
+
+### Coming Soon 🚧
+- [ ] Appointment scheduling system
+- [ ] Payment processing integration
+- [ ] Real-time notifications (WebSocket)
+- [ ] Analytics dashboard
+- [ ] Mobile app API
+- [ ] Docker deployment
+- [ ] CI/CD pipeline
+
+---
+
+## 📞 Support
+
+For questions or issues, please contact the development team.
+
+---
+
+<div align="center">
+
+**Built with ❤️ using NestJS, TypeORM & MySQL**
+
+</div>

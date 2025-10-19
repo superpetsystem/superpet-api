@@ -1,5 +1,4 @@
-import { IsString, IsEnum, IsDateString, IsNumber, IsOptional } from 'class-validator';
-import { PetType, PetGender } from '../entities/pet.entity';
+import { IsString, IsOptional, IsNumber, IsArray, Min, Max, IsDateString } from 'class-validator';
 
 export class UpdatePetDto {
   @IsOptional()
@@ -7,27 +6,29 @@ export class UpdatePetDto {
   name?: string;
 
   @IsOptional()
-  @IsEnum(PetType)
-  type?: PetType;
-
-  @IsOptional()
   @IsString()
   breed?: string;
 
   @IsOptional()
-  @IsEnum(PetGender)
-  gender?: PetGender;
-
-  @IsOptional()
   @IsDateString()
-  birthDate?: Date;
+  birthdate?: string;
 
   @IsOptional()
   @IsNumber()
-  weight?: number;
+  @Min(0)
+  @Max(200)
+  weightKg?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  allergies?: string[];
+
+  @IsOptional()
+  @IsString()
+  microchip?: string;
 
   @IsOptional()
   @IsString()
   notes?: string;
 }
-

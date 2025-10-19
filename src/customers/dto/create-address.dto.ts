@@ -1,32 +1,38 @@
-import { IsString, IsOptional, Length } from 'class-validator';
+import { IsString, IsBoolean, IsOptional, Length, Matches } from 'class-validator';
 
 export class CreateAddressDto {
-  @IsString()
-  @Length(8, 10)
-  zipCode: string;
-
-  @IsString()
+  @IsString({ message: 'Rua é obrigatória' })
   street: string;
 
+  @IsOptional()
   @IsString()
-  number: string;
+  number?: string;
 
   @IsOptional()
   @IsString()
   complement?: string;
 
+  @IsOptional()
   @IsString()
-  neighborhood: string;
+  district?: string;
 
-  @IsString()
+  @IsString({ message: 'Cidade é obrigatória' })
   city: string;
 
-  @IsString()
-  @Length(2, 2)
+  @IsString({ message: 'Estado é obrigatório' })
+  @Length(2, 2, { message: 'Estado deve ter 2 caracteres (UF)' })
   state: string;
+
+  @IsString({ message: 'CEP é obrigatório' })
+  @Matches(/^\d{8}$/, { message: 'CEP deve ter 8 dígitos (apenas números)' })
+  zip: string;
 
   @IsOptional()
   @IsString()
+  @Length(2, 2)
   country?: string;
-}
 
+  @IsOptional()
+  @IsBoolean()
+  isPrimary?: boolean;
+}

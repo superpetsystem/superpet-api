@@ -1,30 +1,37 @@
-import { IsString, IsEnum, IsDateString, IsNumber, IsOptional, IsUUID } from 'class-validator';
-import { PetType, PetGender } from '../entities/pet.entity';
+import { IsString, IsEnum, IsOptional, IsNumber, IsArray, Min, Max, IsDateString } from 'class-validator';
+import { PetSpecies } from '../entities/pet.entity';
 
 export class CreatePetDto {
-  @IsString()
+  @IsString({ message: 'Nome é obrigatório' })
   name: string;
 
-  @IsEnum(PetType)
-  type: PetType;
+  @IsEnum(PetSpecies, { message: 'Espécie inválida' })
+  species: PetSpecies;
 
+  @IsOptional()
   @IsString()
-  breed: string;
+  breed?: string;
 
-  @IsEnum(PetGender)
-  gender: PetGender;
+  @IsOptional()
+  @IsDateString({}, { message: 'Data de nascimento inválida' })
+  birthdate?: string;
 
-  @IsDateString()
-  birthDate: Date;
+  @IsOptional()
+  @IsNumber({}, { message: 'Peso deve ser numérico' })
+  @Min(0, { message: 'Peso não pode ser negativo' })
+  @Max(200, { message: 'Peso máximo é 200kg' })
+  weightKg?: number;
 
-  @IsNumber()
-  weight: number;
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  allergies?: string[];
+
+  @IsOptional()
+  @IsString()
+  microchip?: string;
 
   @IsOptional()
   @IsString()
   notes?: string;
-
-  @IsUUID()
-  customerId: string;
 }
-

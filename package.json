@@ -42,7 +42,10 @@
     "migration:pending:staging": "npm run migration:show:staging",
     "migration:pending:production": "npm run migration:show:production",
     "schema:drop": "npm run typeorm -- -d src/database/data-source.ts schema:drop",
-    "schema:sync": "npm run typeorm -- -d src/database/data-source.ts schema:sync"
+    "schema:sync": "npm run typeorm -- -d src/database/data-source.ts schema:sync",
+    "seed:local": "dotenv -e env/local.env -- cross-env NODE_ENV=local ts-node src/database/seeds/run-seed.ts",
+    "seed:staging": "dotenv -e env/staging.env -- cross-env NODE_ENV=staging ts-node src/database/seeds/run-seed.ts",
+    "seed:prod": "dotenv -e env/prod.env -- cross-env NODE_ENV=production ts-node src/database/seeds/run-seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

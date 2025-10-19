@@ -6,19 +6,15 @@ import {
   HttpStatus,
   UseGuards,
   Get,
-  Patch,
-  Req,
   Logger,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -32,13 +28,25 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+  async register(@Body() registerDto: RegisterDto) {
     this.logger.log(`📝 Register attempt - Email: ${registerDto.email}`);
     
     try {
-      const result = await this.authService.register(registerDto);
-      this.logger.log(`✅ User registered successfully - Email: ${registerDto.email}, UserID: ${result.user.id}`);
-      return result;
+      // Assumir organizationId fixo para simplificar (TODO: pegar do contexto/header)
+      const organizationId = '00000000-0000-0000-0000-000000000001'; 
+      
+      const user = await this.authService.register(
+        organizationId,
+        registerDto.email,
+        registerDto.name,
+        registerDto.password,
+      );
+      
+      this.logger.log(`✅ User registered successfully - Email: ${registerDto.email}, UserID: ${user.id}`);
+      
+      // Fazer login automático após registro
+      const loginResult = await this.authService.login(user);
+      return loginResult;
     } catch (error) {
       this.logger.error(`❌ Register failed - Email: ${registerDto.email}, Error: ${error.message}`);
       throw error;
@@ -48,66 +56,22 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-    this.logger.log(`🔑 Login attempt - Email: ${loginDto.email}`);
+  async login(@Body() loginDto: LoginDto) {
+    this.logger.log(`🔐 Login attempt - Email: ${loginDto.email}`);
     
     try {
-      const result = await this.authService.login(loginDto);
-      this.logger.log(`✅ Login successful - Email: ${loginDto.email}, UserID: ${result.user.id}`);
+      // Login busca o usuário pelo email globalmente (email é único)
+      const user = await this.authService.validateUser(
+        loginDto.email,
+        loginDto.password,
+      );
+      
+      const result = await this.authService.login(user);
+      this.logger.log(`✅ Login successful - Email: ${loginDto.email}, UserID: ${user.id}`);
+      
       return result;
     } catch (error) {
-      this.logger.warn(`⚠️  Login failed - Email: ${loginDto.email}, Reason: ${error.message}`);
-      throw error;
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  async logout(
-    @CurrentUser() user: any,
-    @Req() request: Request,
-  ): Promise<{ message: string }> {
-    this.logger.log(`🚪 Logout attempt - UserID: ${user.userId}`);
-    
-    try {
-      // Extrair token do header
-      const token = this.extractTokenFromHeader(request);
-      
-      await this.authService.logout(user.userId, token);
-      
-      this.logger.log(`✅ Logout successful - UserID: ${user.userId}, Token added to blacklist`);
-      return { message: 'Logout successful' };
-    } catch (error) {
-      this.logger.error(`❌ Logout failed - UserID: ${user.userId}, Error: ${error.message}`);
-      throw error;
-    }
-  }
-
-  private extractTokenFromHeader(request: Request): string {
-    const authorization = request.headers.authorization;
-    if (!authorization) {
-      return '';
-    }
-
-    const [type, token] = authorization.split(' ');
-    return type === 'Bearer' ? token : '';
-  }
-
-  @Public()
-  @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  async refresh(
-    @Body() refreshTokenDto: RefreshTokenDto,
-  ): Promise<AuthResponseDto> {
-    this.logger.log(`🔄 Refresh token attempt`);
-    
-    try {
-      const result = await this.authService.refreshToken(refreshTokenDto.refreshToken);
-      this.logger.log(`✅ Token refreshed successfully - UserID: ${result.user.id}`);
-      return result;
-    } catch (error) {
-      this.logger.warn(`⚠️  Refresh token failed - Reason: ${error.message}`);
+      this.logger.error(`❌ Login failed - Email: ${loginDto.email}, Error: ${error.message}`);
       throw error;
     }
   }
@@ -116,49 +80,24 @@ export class AuthController {
   @Get('me')
   @HttpCode(HttpStatus.OK)
   async getProfile(@CurrentUser() user: any) {
-    this.logger.log(`👤 Get profile - UserID: ${user.userId}`);
+    this.logger.log(`👤 Profile request - UserID: ${user.id}`);
     
-    try {
-      const result = await this.authService.getProfile(user.userId);
-      this.logger.log(`✅ Profile retrieved - Email: ${result.email}`);
-      return result;
-    } catch (error) {
-      this.logger.error(`❌ Get profile failed - UserID: ${user.userId}, Error: ${error.message}`);
-      throw error;
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('change-password')
-  @HttpCode(HttpStatus.OK)
-  async changePassword(
-    @CurrentUser() user: any,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ): Promise<{ message: string }> {
-    this.logger.log(`🔐 Change password attempt - UserID: ${user.userId}`);
+    const userProfile = await this.authService.findById(user.id);
     
-    try {
-      await this.authService.changePassword(
-        user.userId,
-        changePasswordDto.currentPassword,
-        changePasswordDto.newPassword,
-      );
-      
-      this.logger.log(`✅ Password changed successfully - UserID: ${user.userId}`);
-      return { message: 'Password changed successfully' };
-    } catch (error) {
-      this.logger.warn(`⚠️  Change password failed - UserID: ${user.userId}, Reason: ${error.message}`);
-      throw error;
+    if (!userProfile) {
+      this.logger.warn(`⚠️  Profile not found - UserID: ${user.id}`);
+      throw new Error('User not found');
     }
+    
+    this.logger.log(`✅ Profile retrieved - UserID: ${user.id}`);
+    return userProfile;
   }
 
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  async forgotPassword(
-    @Body() forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<{ message: string }> {
-    this.logger.log(`📧 Forgot password request - Email: ${forgotPasswordDto.email}`);
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    this.logger.log(`🔐 Forgot password request - Email: ${forgotPasswordDto.email}`);
     
     try {
       const result = await this.authService.forgotPassword(forgotPasswordDto.email);
@@ -173,23 +112,60 @@ export class AuthController {
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  async resetPassword(
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ): Promise<{ message: string }> {
-    this.logger.log(`🔓 Reset password attempt with token`);
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    this.logger.log(`🔐 Reset password request - Token: ${resetPasswordDto.token.substring(0, 8)}...`);
     
     try {
       const result = await this.authService.resetPassword(
         resetPasswordDto.token,
         resetPasswordDto.newPassword,
       );
-      
       this.logger.log(`✅ Password reset successful`);
       return result;
     } catch (error) {
-      this.logger.warn(`⚠️  Reset password failed - Reason: ${error.message}`);
+      this.logger.error(`❌ Reset password failed - Error: ${error.message}`);
+      throw error;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @CurrentUser() user: any,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    this.logger.log(`🔐 Change password request - UserID: ${user.id}`);
+    
+    try {
+      const result = await this.authService.changePassword(
+        user.id,
+        changePasswordDto.currentPassword,
+        changePasswordDto.newPassword,
+      );
+      this.logger.log(`✅ Password changed - UserID: ${user.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Change password failed - UserID: ${user.id}, Error: ${error.message}`);
+      throw error;
+    }
+  }
+
+  @Public()
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    this.logger.log(`🔄 Refresh token request`);
+    
+    try {
+      const result = await this.authService.refreshToken(refreshTokenDto.refreshToken);
+      this.logger.log(`✅ Token refreshed successfully`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Refresh token failed - Error: ${error.message}`);
       throw error;
     }
   }
 }
+
 

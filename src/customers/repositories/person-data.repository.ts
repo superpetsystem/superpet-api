@@ -7,33 +7,34 @@ import { PersonDataEntity } from '../entities/person-data.entity';
 export class PersonDataRepository {
   constructor(
     @InjectRepository(PersonDataEntity)
-    private readonly personDataRepository: Repository<PersonDataEntity>,
+    private readonly repository: Repository<PersonDataEntity>,
   ) {}
 
-  async create(personData: Partial<PersonDataEntity>): Promise<PersonDataEntity> {
-    const data = this.personDataRepository.create(personData);
-    return this.personDataRepository.save(data);
-  }
-
-  async findById(id: string): Promise<PersonDataEntity | null> {
-    return this.personDataRepository.findOne({ where: { id } });
+  async create(data: Partial<PersonDataEntity>): Promise<PersonDataEntity> {
+    const personData = this.repository.create(data);
+    return this.repository.save(personData);
   }
 
   async findByCustomerId(customerId: string): Promise<PersonDataEntity | null> {
-    return this.personDataRepository.findOne({ where: { customerId } });
+    return this.repository.findOne({ where: { customerId } });
   }
 
-  async findByDocumentNumber(documentNumber: string): Promise<PersonDataEntity | null> {
-    return this.personDataRepository.findOne({ where: { documentNumber } });
+  async checkCpfExists(cpf: string, excludeCustomerId?: string): Promise<boolean> {
+    const query = this.repository.createQueryBuilder('pd')
+      .innerJoin('pd.customer', 'customer')
+      .where('pd.cpf = :cpf', { cpf })
+      .andWhere('customer.deleted_at IS NULL');
+
+    if (excludeCustomerId) {
+      query.andWhere('pd.customer_id != :excludeCustomerId', { excludeCustomerId });
+    }
+
+    const count = await query.getCount();
+    return count > 0;
   }
 
-  async update(id: string, personData: Partial<PersonDataEntity>): Promise<PersonDataEntity | null> {
-    await this.personDataRepository.update(id, personData);
-    return this.findById(id);
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.personDataRepository.delete(id);
+  async update(customerId: string, data: Partial<PersonDataEntity>): Promise<PersonDataEntity | null> {
+    await this.repository.update({ customerId }, data);
+    return this.findByCustomerId(customerId);
   }
 }
-
