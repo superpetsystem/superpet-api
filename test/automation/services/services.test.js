@@ -7,7 +7,7 @@ const BASE_URL = 'http://localhost:3000';
 let accessToken = null;
 let serviceId = null;
 let customServiceId = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('💼 Iniciando testes de Services\n');
 
@@ -19,7 +19,36 @@ async function login() {
   console.log('\n✅ Autenticado para testes de Services\n');
 }
 
-// Test 1: Listar services
+// Helper: Criar loja para testes
+async function createStore() {
+  const response = await axios.post(`${BASE_URL}/v1/stores`, {
+    code: `SVC_STORE_${Date.now()}`,
+    name: 'Loja para Services',
+    timezone: 'America/Manaus',
+    openingHours: { mon: [['08:00', '18:00']] },
+    resourcesCatalog: ['GROOMER'],
+    capacity: { GROOMER: 2 },
+  }, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  
+  storeId = response.data.id;
+  console.log(`   ✅ Loja criada: ${storeId}`);
+  
+  // Habilitar feature CUSTOM_SERVICE na loja
+  try {
+    await axios.put(
+      `${BASE_URL}/v1/stores/${storeId}/features/CUSTOM_SERVICE`,
+      { enabled: true },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    console.log(`   ✅ Feature CUSTOM_SERVICE habilitada\n`);
+  } catch (error) {
+    console.log(`   ⚠️  Feature CUSTOM_SERVICE não disponível - testes podem falhar\n`);
+  }
+}
+
+// Test 1: Listar services (pode estar vazio)
 async function test1_ListServices() {
   console.log('Test 1: GET /v1/services');
   
@@ -30,7 +59,6 @@ async function test1_ListServices() {
 
     assert.strictEqual(response.status, 200, 'Status deve ser 200');
     assert(Array.isArray(response.data), 'Deve retornar array');
-    assert(response.data.length >= 11, 'Deve ter pelo menos 11 serviços (do seed)');
 
     console.log(`   ✅ ${response.data.length} serviços encontrados`);
   } catch (error) {
@@ -85,7 +113,7 @@ async function test3_CreateCustomService() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/custom-services`,
+      `${BASE_URL}/v1/stores/${storeId}/custom-services`,
       {
         serviceId: serviceId,
         priceOverrideCents: 4500, // R$ 45 (desconto de R$ 50 para R$ 45)
@@ -122,7 +150,7 @@ async function test4_PublishCustomService() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/custom-services/${customServiceId}/publish`,
+      `${BASE_URL}/v1/stores/${storeId}/custom-services/${customServiceId}/publish`,
       {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -144,7 +172,7 @@ async function test5_ListCustomServices() {
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/custom-services`,
+      `${BASE_URL}/v1/stores/${storeId}/custom-services`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -194,7 +222,7 @@ async function test7_ArchiveCustomService() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/custom-services/${customServiceId}/archive`,
+      `${BASE_URL}/v1/stores/${storeId}/custom-services/${customServiceId}/archive`,
       {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -217,6 +245,7 @@ async function runAllTests() {
 
   try {
     await login();
+    await createStore();
     await test1_ListServices();
     await test2_CreateService();
     await test3_CreateCustomService();

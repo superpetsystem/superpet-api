@@ -14,8 +14,17 @@ async function resetDatabase() {
   try {
     await connection.execute(`SET FOREIGN_KEY_CHECKS = 0`);
     
-    // Deletar todas as tabelas na ordem correta
+    // Deletar todas as tabelas na ordem correta (do dependente para o independente)
     const tables = [
+      // Novos módulos
+      'bookings',
+      'veterinary_vaccinations',
+      'veterinary_records',
+      'stock_transfers',
+      'stock_movements',
+      'stock_alerts',
+      'products',
+      // Módulos existentes
       'live_cam_streams',
       'pickups',
       'store_features',
