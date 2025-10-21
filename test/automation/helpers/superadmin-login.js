@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost:3000';
 
 const SUPERADMIN_CREDENTIALS = {
   email: 'superadmin@superpet.com.br',
-  password: 'superadmin123',
+  password: 'Super@2024!Admin',
 };
 
 async function loginAsSuperAdmin() {

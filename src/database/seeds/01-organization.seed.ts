@@ -23,9 +23,9 @@ export async function seedOrganization(dataSource: DataSource): Promise<Organiza
     status: OrganizationStatus.ACTIVE,
     plan: OrganizationPlan.PRO,
     limits: {
-      employees: 100,
-      stores: 50,
-      monthlyAppointments: 5000,
+      employees: 1000, // Aumentado para suportar testes
+      stores: 200, // Aumentado para suportar testes
+      monthlyAppointments: 10000,
     },
   });
 

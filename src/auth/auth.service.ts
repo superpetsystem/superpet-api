@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException, Inject, forward
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersRepository } from '../users/users.repository';
-import { UserEntity, UserStatus } from '../users/entities/user.entity';
+import { UserEntity, UserStatus, UserRole } from '../users/entities/user.entity';
 import { EmployeesRepository } from '../employees/repositories/employees.repository';
 import { EmployeeRole, JobTitle } from '../employees/entities/employee.entity';
 import { PasswordResetRepository } from './repositories/password-reset.repository';
@@ -51,6 +51,7 @@ export class AuthService {
       email: user.email,
       sub: user.id,
       organizationId: user.organizationId,
+      role: user.role, // Adicionar role do USER (SUPER_ADMIN ou USER)
     };
 
     return {

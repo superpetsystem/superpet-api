@@ -34,9 +34,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       name: user.name,
       organizationId: user.organizationId,
+      role: user.role, // Role do USER (SUPER_ADMIN ou USER)
       employee: employee ? {
         id: employee.id,
-        role: employee.role,
+        role: employee.role, // Role do EMPLOYEE (OWNER, ADMIN, STAFF, VIEWER)
         active: employee.active,
       } : null,
     };

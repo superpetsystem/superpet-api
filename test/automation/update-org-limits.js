@@ -10,7 +10,7 @@ async function updateOrgLimits() {
   });
 
   try {
-    const limits = JSON.stringify({ employees: 500, stores: 100, monthlyAppointments: 50000 });
+    const limits = JSON.stringify({ employees: 5000, stores: 1000, monthlyAppointments: 50000 });
     
     // Atualizar Org 1
     await connection.execute(
@@ -29,8 +29,8 @@ async function updateOrgLimits() {
     );
 
     console.log('✅ Limites das Orgs atualizados:');
-    console.log('   Employees: 500');
-    console.log('   Stores: 100');
+    console.log('   Employees: 5000');
+    console.log('   Stores: 1000');
     console.log('   Monthly Appointments: 50000');
 
     // Verificar

@@ -71,6 +71,76 @@ export async function seedFeatures(dataSource: DataSource): Promise<void> {
         displayOrder: 4,
       },
     },
+    {
+      id: '00000000-0000-0000-0000-000000000F05',
+      key: 'INVENTORY_MANAGEMENT',
+      name: 'Gestão de Estoque',
+      description: 'Controle completo de estoque de produtos e insumos',
+      category: FeatureCategory.OPERATIONS,
+      minPlanRequired: OrganizationPlan.BASIC,
+      active: true,
+      defaultLimits: {
+        maxProducts: 1000,
+        maxMovementsPerMonth: 5000,
+      },
+      metadata: {
+        icon: 'warehouse',
+        color: '#9C27B0',
+        displayOrder: 5,
+      },
+    },
+    {
+      id: '00000000-0000-0000-0000-000000000F06',
+      key: 'REPORTS_DASHBOARD',
+      name: 'Relatórios e Dashboard',
+      description: 'Relatórios gerenciais e dashboard com KPIs',
+      category: FeatureCategory.ANALYTICS,
+      minPlanRequired: OrganizationPlan.PRO,
+      active: true,
+      defaultLimits: {
+        exportReportsPerMonth: 50,
+      },
+      metadata: {
+        icon: 'chart-bar',
+        color: '#3F51B5',
+        displayOrder: 6,
+      },
+    },
+    {
+      id: '00000000-0000-0000-0000-000000000F07',
+      key: 'ONLINE_BOOKING',
+      name: 'Agendamento Online',
+      description: 'Sistema de agendamento online para clientes',
+      category: FeatureCategory.CUSTOMER,
+      minPlanRequired: OrganizationPlan.BASIC,
+      active: true,
+      defaultLimits: {
+        maxBookingsPerDay: 100,
+        advanceBookingDays: 30,
+      },
+      metadata: {
+        icon: 'calendar-check',
+        color: '#00BCD4',
+        displayOrder: 7,
+      },
+    },
+    {
+      id: '00000000-0000-0000-0000-000000000F08',
+      key: 'VETERINARY_RECORDS',
+      name: 'Prontuários Veterinários',
+      description: 'Sistema completo de prontuários médicos e vacinação',
+      category: FeatureCategory.SERVICES,
+      minPlanRequired: OrganizationPlan.PRO,
+      active: true,
+      defaultLimits: {
+        maxRecordsPerPet: 1000,
+      },
+      metadata: {
+        icon: 'file-medical',
+        color: '#F44336',
+        displayOrder: 8,
+      },
+    },
   ];
 
   for (const featureData of features) {
