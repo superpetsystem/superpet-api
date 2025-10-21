@@ -1,0 +1,343 @@
+{
+	"info": {
+		"_postman_id": "services-collection-001",
+		"name": "SuperPet - Services & Custom Pricing",
+		"description": "Service catalog management with store-level price customization.\n\n**Features:**\n- Create global service catalog\n- Store-specific pricing overrides\n- Service state management (DRAFT, PUBLISHED, ARCHIVED)\n- Resource requirements and duration tracking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Services Catalog",
+			"item": [
+				{
+					"name": "1. Create Service",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"BANHO-COMPLETO\",\n  \"name\": \"Banho Completo\",\n  \"description\": \"Banho completo com shampoo premium, secagem e perfume\",\n  \"durationMinutes\": 60,\n  \"bufferBefore\": 10,\n  \"bufferAfter\": 10,\n  \"resourcesRequired\": [\"GROOMER\", \"BATHER\"],\n  \"visibility\": \"PUBLIC\",\n  \"priceBaseCents\": 8000,\n  \"taxCode\": \"SERV_001\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/services",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "services"]
+						}
+					}
+				},
+				{
+					"name": "2. List All Services",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/services",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "services"]
+						}
+					}
+				},
+				{
+					"name": "3. Get Service by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/services/{{service_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "services", "{{service_id}}"]
+						}
+					}
+				},
+				{
+					"name": "4. Update Service",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Banho Premium\",\n  \"priceBaseCents\": 9000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/services/{{service_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "services", "{{service_id}}"]
+						}
+					}
+				},
+				{
+					"name": "5. Update Service Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"INACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/services/{{service_id}}/status",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "services", "{{service_id}}", "status"]
+						},
+						"description": "Status: ACTIVE | INACTIVE"
+					}
+				},
+				{
+					"name": "6. Update Service Addons",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"addons\": [\n    {\n      \"code\": \"SHAMPOO_PREMIUM\",\n      \"name\": \"Shampoo Premium\",\n      \"priceCents\": 1500\n    },\n    {\n      \"code\": \"PERFUME\",\n      \"name\": \"Perfume Importado\",\n      \"priceCents\": 2000\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/services/{{service_id}}/addons",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "services", "{{service_id}}", "addons"]
+						},
+						"description": "Add optional addons to service"
+					}
+				}
+			]
+		},
+		{
+			"name": "Custom Services (Store Pricing)",
+			"item": [
+				{
+					"name": "1. Create Custom Service (DRAFT)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"serviceId\": \"{{service_id}}\",\n  \"priceOverrideCents\": 7500,\n  \"durationOverride\": 50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services"]
+						},
+						"description": "Create custom service pricing for a specific store (starts as DRAFT)"
+					}
+				},
+				{
+					"name": "2. Publish Custom Service",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}/publish",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}", "publish"]
+						},
+						"description": "Publish custom service (makes it active for the store)"
+					}
+				},
+				{
+					"name": "3. List Store Custom Services",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services"]
+						}
+					}
+				},
+				{
+					"name": "4. Update Custom Service",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"priceOverrideCents\": 8000,\n  \"durationOverride\": 55\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}"]
+						},
+						"description": "Update custom service pricing or duration"
+					}
+				},
+				{
+					"name": "5. Archive Custom Service",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}/archive",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}", "archive"]
+						},
+						"description": "Archive custom service (store reverts to base pricing)"
+					}
+				},
+				{
+					"name": "6. Delete Custom Service",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}"]
+						},
+						"description": "Permanently delete custom service"
+					}
+				},
+				{
+					"name": "7. Get Custom Service by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "Bearer YOUR_TOKEN_HERE",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "00000000-0000-0000-0000-000000000101",
+			"type": "string"
+		},
+		{
+			"key": "service_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "custom_service_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

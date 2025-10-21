@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "pets-collection-001",
+		"name": "SuperPet - Pets",
+		"description": "Complete pet management system with multi-species support.\n\n**Features:**\n- Multi-species support (DOG, CAT, BIRD, etc)\n- Health tracking (weight, allergies, vaccinations)\n- Status management (ACTIVE, INACTIVE, DECEASED)\n- Microchip registration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Create Pet (Dog)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Thor\",\n  \"species\": \"DOG\",\n  \"breed\": \"Labrador\",\n  \"birthdate\": \"2020-01-15\",\n  \"weightKg\": 32.5,\n  \"allergies\": [\"Frango\"],\n  \"microchip\": \"CHIP123456789\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "customers", "{{customer_id}}", "pets"]
+				},
+				"description": "Create new pet for a customer"
+			}
+		},
+		{
+			"name": "2. Create Pet (Cat)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Mimi\",\n  \"species\": \"CAT\",\n  \"breed\": \"Siamês\",\n  \"birthdate\": \"2021-03-20\",\n  \"weightKg\": 4.2,\n  \"allergies\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "customers", "{{customer_id}}", "pets"]
+				}
+			}
+		},
+		{
+			"name": "3. List Customer Pets",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "customers", "{{customer_id}}", "pets"]
+				},
+				"description": "List all pets for a specific customer"
+			}
+		},
+		{
+			"name": "4. Get Pet by ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/v1/pets/{{pet_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "pets", "{{pet_id}}"]
+				},
+				"description": "Get pet details including customer information"
+			}
+		},
+		{
+			"name": "5. Update Pet",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Thor Odinson\",\n  \"weightKg\": 33.0,\n  \"allergies\": [\"Frango\", \"Soja\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/pets/{{pet_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "pets", "{{pet_id}}"]
+				}
+			}
+		},
+		{
+			"name": "6. Update Pet Status (DECEASED)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"DECEASED\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/pets/{{pet_id}}/status",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "pets", "{{pet_id}}", "status"]
+				},
+				"description": "Status: ACTIVE | INACTIVE | DECEASED"
+			}
+		},
+		{
+			"name": "7. Update Pet Status (ACTIVE)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"ACTIVE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/pets/{{pet_id}}/status",
+					"host": ["{{base_url}}"],
+					"path": ["v1", "pets", "{{pet_id}}", "status"]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "Bearer YOUR_TOKEN_HERE",
+			"type": "string"
+		},
+		{
+			"key": "customer_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pet_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
