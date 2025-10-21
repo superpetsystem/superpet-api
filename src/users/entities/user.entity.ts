@@ -8,6 +8,11 @@ export enum UserStatus {
   DELETED = 'DELETED',
 }
 
+export enum UserRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  USER = 'USER',
+}
+
 @Entity('users')
 export class UserEntity extends BaseEntity {
   @Column({ name: 'organization_id' })
@@ -35,6 +40,13 @@ export class UserEntity extends BaseEntity {
     default: UserStatus.ACTIVE,
   })
   status: UserStatus;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
   @Column({ name: 'email_verified', type: 'boolean', default: false })
   emailVerified: boolean;

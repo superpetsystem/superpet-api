@@ -13,6 +13,11 @@ import { StoresModule } from './stores/stores.module';
 import { ServicesModule } from './services/services.module';
 import { PickupsModule } from './pickups/pickups.module';
 import { LiveCamModule } from './live-cam/live-cam.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { ReportsModule } from './reports/reports.module';
+import { BookingsModule } from './bookings/bookings.module';
+import { VeterinaryModule } from './veterinary/veterinary.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -39,6 +44,11 @@ import { LiveCamModule } from './live-cam/live-cam.module';
     ServicesModule,
     PickupsModule,
     LiveCamModule,
+    InventoryModule,
+    ReportsModule,
+    BookingsModule,
+    VeterinaryModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

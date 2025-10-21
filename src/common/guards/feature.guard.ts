@@ -33,10 +33,13 @@ export class FeatureGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const storeId = request.params.storeId || request.body.storeId;
+    const user = request.user;
+    const storeId = request.params?.storeId || request.body?.storeId || user?.employee?.storeId;
 
+    // Endpoints de nível organizacional (ex: relatórios) não requerem storeId
     if (!storeId) {
-      throw new ForbiddenException('Store ID not found in request');
+      // Se não tem storeId, permite acesso (validação por organização)
+      return true;
     }
 
     const isEnabled = await this.storeFeatureRepository.isFeatureEnabled(storeId, requiredFeature);

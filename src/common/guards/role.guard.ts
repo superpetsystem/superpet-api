@@ -29,13 +29,19 @@ export class RoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (!user || !user.employee) {
+    if (!user) {
       throw new ForbiddenException('FORBIDDEN');
     }
 
     // SUPER_ADMIN (role especial no banco) tem acesso a tudo
-    if (user.employee.role === 'SUPER_ADMIN') {
+    // Verifica tanto user.role quanto user.employee.role
+    if (user.role === 'SUPER_ADMIN' || user.employee?.role === 'SUPER_ADMIN') {
       return true;
+    }
+
+    // Para roles normais, precisa ter employee
+    if (!user.employee) {
+      throw new ForbiddenException('FORBIDDEN');
     }
 
     const hasRole = requiredRoles.includes(user.employee.role);

@@ -6,6 +6,7 @@ import {
   Body,
   Param,
   Query,
+  Headers,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -35,11 +36,20 @@ export class EmployeesController {
   @HttpCode(HttpStatus.CREATED)
   async create(
     @CurrentUser() user: any,
+    @Headers('x-organization-id') headerOrgId: string,
     @Body() dto: CreateEmployeeDto,
   ): Promise<EmployeeEntity> {
+    // SUPER_ADMIN pode especificar organizationId via header
+    const organizationId = user.role === 'SUPER_ADMIN' && headerOrgId 
+      ? headerOrgId 
+      : user.organizationId;
+    
+    // SUPER_ADMIN não tem employee, usa user.role diretamente
+    const creatorRole = user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : user.employee.role;
+    
     return this.employeeService.createEmployee(
-      user.organizationId,
-      user.employee.role,
+      organizationId,
+      creatorRole,
       dto,
     );
   }

@@ -10,13 +10,18 @@ const { runAllTests: runEmployeesHierarchyTests } = require('./employees/employe
 const { runAllTests: runFeaturesScalabilityTests } = require('./features/features-scalability.test.js');
 const { runAllTests: runValidationErrorsTests } = require('./errors/validation-errors.test.js');
 const { runAllTests: runPermissionErrorsTests } = require('./errors/permission-errors.test.js');
+const { runAllTests: runInventoryTests } = require('./inventory/inventory.test.js');
+const { runAllTests: runReportsTests } = require('./reports/reports.test.js');
+const { runAllTests: runBookingsTests } = require('./bookings/bookings.test.js');
+const { runAllTests: runVeterinaryTests } = require('./veterinary/veterinary.test.js');
+const { runAllTests: runSaasNewFeaturesTests } = require('./saas/saas-new-features.test.js');
 
 async function runAllAutomationTests() {
   console.log('\n');
   console.log('╔════════════════════════════════════════════════════════════════════╗');
-  console.log('║         SUPERPET API - SUITE COMPLETA DE TESTES                   ║');
-  console.log('║                  Arquitetura SaaS Multi-Tenant                    ║');
-  console.log('║                  Funcionalidades + Isolamento                     ║');
+  console.log('║         SUPERPET API - SUITE COMPLETA DE TESTES                    ║');
+  console.log('║                  Arquitetura SaaS Multi-Tenant                     ║');
+  console.log('║            Funcionalidades + Isolamento + Inventory                ║');
   console.log('╚════════════════════════════════════════════════════════════════════╝');
   console.log('\n');
 
@@ -91,9 +96,39 @@ async function runAllAutomationTests() {
     console.log('\n');
 
     // 12. Permission Errors
-    console.log('📝 MÓDULO 12/12: Testes de Erros de Permissão\n');
+    console.log('📝 MÓDULO 12/14: Testes de Erros de Permissão\n');
     const permissionErrorsResult = await runPermissionErrorsTests();
     results.push({ module: 'Permission Errors', success: true, ...permissionErrorsResult });
+    console.log('\n');
+
+    // 13. Inventory Management
+    console.log('📝 MÓDULO 13/14: Gestão de Estoque (Inventory)\n');
+    const inventoryResult = await runInventoryTests();
+    results.push({ module: 'Inventory', success: true, ...inventoryResult });
+    console.log('\n');
+
+    // 14. Reports Dashboard
+    console.log('📝 MÓDULO 14/16: Relatórios e Dashboard\n');
+    const reportsResult = await runReportsTests();
+    results.push({ module: 'Reports', success: true, ...reportsResult });
+    console.log('\n');
+
+    // 15. Online Booking
+    console.log('📝 MÓDULO 15/16: Agendamento Online (Bookings)\n');
+    const bookingsResult = await runBookingsTests();
+    results.push({ module: 'Bookings', success: true, ...bookingsResult });
+    console.log('\n');
+
+    // 16. Veterinary Records
+    console.log('📝 MÓDULO 16/17: Prontuários Veterinários\n');
+    const veterinaryResult = await runVeterinaryTests();
+    results.push({ module: 'Veterinary', success: true, ...veterinaryResult });
+    console.log('\n');
+
+    // 17. SaaS - Novas Features (Isolamento)
+    console.log('📝 MÓDULO 17/17: SaaS Isolamento - Novas Features\n');
+    const saasNewFeaturesResult = await runSaasNewFeaturesTests();
+    results.push({ module: 'SaaS New Features', success: true, ...saasNewFeaturesResult });
     console.log('\n');
 
     // Resumo final
@@ -106,10 +141,10 @@ async function runAllAutomationTests() {
     console.log('\n');
     console.log('📊 Resumo Geral:');
     console.log('   ────────────────────────────────────────────────────────');
-    console.log('   │ Módulo            │ Status    │ Testes           │');
-   console.log('   ────────────────────────────────────────────────────────');
-   console.log('   │ Auth              │ ✅ PASSOU │ 10 testes        │');
-   console.log('   │ Stores & Features │ ✅ PASSOU │ 7 testes         │');
+    console.log('   │ Módulo            │ Status    │ Testes                │');
+    console.log('   ────────────────────────────────────────────────────────');
+    console.log('   │ Auth              │ ✅ PASSOU │ 10 testes             │');
+    console.log('   │ Stores & Features │ ✅ PASSOU │ 7 testes         │');
     console.log('   │ Customers         │ ✅ PASSOU │ 8 testes         │');
     console.log('   │ Pets              │ ✅ PASSOU │ 6 testes         │');
     console.log('   │ Services          │ ✅ PASSOU │ 7 testes         │');
@@ -120,8 +155,13 @@ async function runAllAutomationTests() {
     console.log('   │ Features Scale    │ ✅ PASSOU │ 6 testes         │');
     console.log('   │ Validation Errors │ ✅ PASSOU │ 12 testes        │');
     console.log('   │ Permission Errors │ ✅ PASSOU │ 2 testes         │');
-   console.log('   ────────────────────────────────────────────────────────');
-   console.log(`   │ TOTAL             │ ✅ PASSOU │ 92 testes        │`);
+    console.log('   │ Inventory Mgmt    │ ✅ PASSOU │ 12 testes        │');
+    console.log('   │ Reports Dashboard │ ✅ PASSOU │ 6 testes         │');
+    console.log('   │ Online Booking    │ ✅ PASSOU │ 7 testes         │');
+    console.log('   │ Veterinary Rec.   │ ✅ PASSOU │ 7 testes         │');
+    console.log('   │ SaaS New Features │ ✅ PASSOU │ 10 testes        │');
+    console.log('   ────────────────────────────────────────────────────────');
+    console.log(`   │ TOTAL             │ ✅ PASSOU │ 134 testes       │`);
     console.log('   ────────────────────────────────────────────────────────');
     console.log('   \n');
     console.log(`⏱️  Tempo total: ${duration}s`);

@@ -27,6 +27,10 @@ export class OrganizationsRepository {
     const count = await this.repository.count({ where: { slug } });
     return count > 0;
   }
+
+  async findAll(): Promise<OrganizationEntity[]> {
+    return this.repository.find({ order: { createdAt: 'DESC' } });
+  }
 }
 
 

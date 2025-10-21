@@ -96,12 +96,16 @@ export async function seedStores(dataSource: DataSource): Promise<StoreEntity[]>
       { storeId: store.id, featureKey: 'CUSTOM_SERVICE', enabled: true, limits: null },
       { storeId: store.id, featureKey: 'TELEPICKUP', enabled: true, limits: { dailyPickups: 30 } },
       { storeId: store.id, featureKey: 'LIVE_CAM', enabled: true, limits: { maxActiveStreams: 5 } },
+      { storeId: store.id, featureKey: 'INVENTORY_MANAGEMENT', enabled: true, limits: { maxProducts: 1000 } },
+      { storeId: store.id, featureKey: 'REPORTS_DASHBOARD', enabled: true, limits: { exportReportsPerMonth: 50 } },
+      { storeId: store.id, featureKey: 'ONLINE_BOOKING', enabled: true, limits: { maxBookingsPerDay: 100 } },
+      { storeId: store.id, featureKey: 'VETERINARY_RECORDS', enabled: true, limits: { maxRecordsPerPet: 1000 } },
     ];
 
     const featureEntities = features.map((f) => featureRepository.create(f));
     await featureRepository.save(featureEntities);
     
-    console.log(`   ✅ ${store.name}: 4 features habilitadas`);
+    console.log(`   ✅ ${store.name}: 8 features habilitadas`);
   }
 
   return savedStores;
