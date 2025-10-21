@@ -9,7 +9,7 @@ let customerId = null;
 let petId = null;
 let pickupId = null;
 let streamId = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('🎯 Iniciando testes de Features (TELEPICKUP e LIVE_CAM)\n');
 
@@ -23,6 +23,36 @@ async function setup() {
   const petsResult = await petsTests.runAllTests();
   customerId = petsResult.customerId;
   petId = petsResult.petId;
+
+  // Criar loja e habilitar features
+  const storeResponse = await axios.post(`${BASE_URL}/v1/stores`, {
+    code: `FEAT_STORE_${Date.now()}`,
+    name: 'Loja para Features',
+    timezone: 'America/Manaus',
+    openingHours: { mon: [['08:00', '18:00']] },
+    resourcesCatalog: ['GROOMER'],
+    capacity: { GROOMER: 2 },
+  }, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  
+  storeId = storeResponse.data.id;
+  
+  // Habilitar features TELEPICKUP e LIVE_CAM
+  try {
+    await axios.put(
+      `${BASE_URL}/v1/stores/${storeId}/features/TELEPICKUP`,
+      { enabled: true },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    await axios.put(
+      `${BASE_URL}/v1/stores/${storeId}/features/LIVE_CAM`,
+      { enabled: true },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    // Features podem não existir em banco limpo
+  }
 
   console.log('\n✅ Setup completo para testes de Features\n');
 }
@@ -39,7 +69,7 @@ async function test1_CreatePickup() {
     windowEnd.setHours(windowEnd.getHours() + 2);
 
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups`,
+      `${BASE_URL}/v1/stores/${storeId}/pickups`,
       {
         customerId: customerId,
         petId: petId,
@@ -74,7 +104,7 @@ async function test2_UpdatePickupStatus() {
   
   try {
     const response = await axios.patch(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups/${pickupId}/status`,
+      `${BASE_URL}/v1/stores/${storeId}/pickups/${pickupId}/status`,
       { status: 'CONFIRMED' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -97,7 +127,7 @@ async function test3_ListPickups() {
     const today = new Date().toISOString().split('T')[0];
     
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups?date=${today}`,
+      `${BASE_URL}/v1/stores/${storeId}/pickups?date=${today}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -120,7 +150,7 @@ async function test4_CreateStream() {
     expiresAt.setHours(expiresAt.getHours() + 24);
 
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/live-cam/streams`,
+      `${BASE_URL}/v1/stores/${storeId}/live-cam/streams`,
       {
         petId: petId,
         streamUrl: 'https://player.example.com/live/test123',
@@ -175,7 +205,7 @@ async function test6_DeleteStream() {
   
   try {
     const response = await axios.delete(
-      `${BASE_URL}/v1/stores/${STORE_ID}/live-cam/streams/${streamId}`,
+      `${BASE_URL}/v1/stores/${storeId}/live-cam/streams/${streamId}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -198,7 +228,7 @@ async function test7_CreatePickupInvalidWindow() {
     windowEnd.setMinutes(windowEnd.getMinutes() + 10); // Apenas 10min (< 30min mínimo)
 
     await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups`,
+      `${BASE_URL}/v1/stores/${storeId}/pickups`,
       {
         customerId: customerId,
         petId: petId,
