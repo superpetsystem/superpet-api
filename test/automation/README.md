@@ -11,7 +11,7 @@ Este diretório contém testes automatizados end-to-end para a API SuperPet, val
 Este comando **reseta o banco completamente** e roda todos os testes:
 
 ```bash
-npm run test:automation:scratch
+npm run test:automation:all:from-scratch
 ```
 
 **O que este comando faz:**
@@ -25,7 +25,7 @@ npm run test:automation:scratch
 Se o banco já está configurado e você só quer rodar os testes:
 
 ```bash
-npm run test:automation
+npm run test:automation:all
 ```
 
 ### Opção 3: Resetar Banco Apenas
@@ -33,7 +33,7 @@ npm run test:automation
 Para limpar o banco sem rodar os testes:
 
 ```bash
-npm run test:reset-db
+npm run test:database:reset
 ```
 
 ## 📦 Pré-requisitos
@@ -45,7 +45,7 @@ npm run test:reset-db
 
 2. **Banco de dados criado:**
    - Database: `superpet_test`
-   - Migrations aplicadas: `npm run migration:run:local`
+   - Migrations aplicadas: `npm run database:migration:run:local`
 
 3. **Configuração do banco:**
    - Host: `localhost`
@@ -171,20 +171,20 @@ Os testes salvam IDs importantes para uso posterior:
 ➡️ API não está rodando. Execute: `npm run start:local`
 
 ### Erro: "ER_NO_SUCH_TABLE"
-➡️ Migrations não aplicadas. Execute: `npm run migration:run:local`
+➡️ Migrations não aplicadas. Execute: `npm run database:migration:run:local`
 
 ### Erro: "Database does not exist"
 ➡️ Criar o banco: `CREATE DATABASE superpet_test;`
 
 ### Erro: "Invalid credentials" no SUPER_ADMIN
-➡️ Execute o reset completo: `npm run test:automation:scratch`
+➡️ Execute o reset completo: `npm run test:automation:all:from-scratch`
 
 ### Testes falhando por ordem
-➡️ Use sempre `npm run test:automation:scratch` para garantir estado limpo
+➡️ Use sempre `npm run test:automation:all:from-scratch` para garantir estado limpo
 
 ## 🎯 Boas Práticas
 
-1. **Sempre use `npm run test:automation:scratch`** para garantir que o banco está limpo
+1. **Sempre use `npm run test:automation:all:from-scratch`** para garantir que o banco está limpo
 2. **Não modifique o banco manualmente** durante os testes
 3. **Aguarde API estar pronta** antes de rodar testes
 4. **Rode todos os testes** após mudanças no código
@@ -204,7 +204,7 @@ Os testes cobrem:
 
 ## 🚦 Status dos Testes
 
-Execute `npm run test:automation:scratch` para ver o status completo de todos os módulos!
+Execute `npm run test:automation:all:from-scratch` para ver o status completo de todos os módulos!
 
 ---
 

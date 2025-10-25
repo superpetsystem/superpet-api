@@ -58,7 +58,7 @@ export class VeterinaryController {
   async getPetRecords(@CurrentUser() user: any, @Param('petId') petId: string) {
     this.logger.log(`📋 List pet records - Pet: ${petId}`);
 
-    const records = await this.veterinaryService.findRecordsByPet(petId);
+    const records = await this.veterinaryService.findRecordsByPet(petId, user.organizationId);
 
     this.logger.log(`✅ Found ${records.length} records`);
     return records;

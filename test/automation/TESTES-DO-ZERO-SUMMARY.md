@@ -9,7 +9,7 @@ Os testes agora rodam **completamente do zero** sem depender de nenhum dado pré
 ### Comando Principal
 
 ```bash
-npm run test:automation:scratch
+npm run test:automation:from-scratch
 ```
 
 Este comando:
@@ -23,10 +23,10 @@ Este comando:
 
 ```bash
 # Apenas resetar banco
-npm run test:reset-db
+npm run test:database:reset
 
 # Rodar testes com banco existente
-npm run test:automation
+npm run test:automation:all
 ```
 
 ## 📊 Módulos que Passam 100%
@@ -221,7 +221,7 @@ Os demais módulos seguirão o mesmo padrão:
 
 ```
 ┌──────────────────────────────────────┐
-│  Banco Vazio  →  npm run test:automation:scratch  →  Todos os Testes Passam  │
+│  Banco Vazio  →  npm run test:automation:from-scratch  →  Todos os Testes Passam  │
 └──────────────────────────────────────┘
 ```
 

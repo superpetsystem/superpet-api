@@ -58,7 +58,7 @@ export class BookingsController {
   async getCustomerBookings(@CurrentUser() user: any, @Param('customerId') customerId: string) {
     this.logger.log(`📋 List customer bookings - Customer: ${customerId}`);
 
-    const bookings = await this.bookingService.findByCustomer(customerId);
+    const bookings = await this.bookingService.findByCustomer(customerId, user.organizationId);
 
     this.logger.log(`✅ Found ${bookings.length} bookings`);
     return bookings;

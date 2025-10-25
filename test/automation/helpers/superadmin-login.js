@@ -3,7 +3,7 @@ const axios = require('axios');
 const BASE_URL = 'http://localhost:3000';
 
 const SUPERADMIN_CREDENTIALS = {
-  email: 'superadmin@superpet.com.br',
+  email: 'superadmin@superpet.com',
   password: 'Super@2024!Admin',
 };
 

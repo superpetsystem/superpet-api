@@ -5,7 +5,7 @@ const BASE_URL = 'http://localhost:3000';
 
 // Variáveis compartilhadas
 let accessToken = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('📊 Iniciando testes de Reports Dashboard\n');
 
@@ -15,6 +15,40 @@ async function login() {
   const result = await authTests.runAllTests();
   accessToken = result.accessToken;
   console.log('\n✅ Autenticado para testes de Reports\n');
+}
+
+// Helper: Criar loja com feature habilitada
+async function createStoreWithFeature() {
+  console.log('🏪 Criando loja com feature REPORTS_DASHBOARD...');
+  
+  try {
+    // Criar loja
+    const storeResponse = await axios.post(`${BASE_URL}/v1/stores`, {
+      code: `REP_STORE_${Date.now()}`,
+      name: 'Loja Reports Test',
+      timezone: 'America/Manaus',
+      openingHours: { mon: [['08:00', '18:00']] },
+      resourcesCatalog: ['GROOMER'],
+      capacity: { GROOMER: 2 },
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    storeId = storeResponse.data.id;
+    console.log(`   ✅ Loja criada: ${storeId}`);
+
+    // Habilitar feature REPORTS_DASHBOARD
+    await axios.put(`${BASE_URL}/v1/stores/${storeId}/features/REPORTS_DASHBOARD`, {
+      enabled: true,
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    console.log(`   ✅ Feature REPORTS_DASHBOARD habilitada`);
+  } catch (error) {
+    console.error('   ❌ Erro ao criar loja:', error.response?.data || error.message);
+    throw error;
+  }
 }
 
 // Test 1: Dashboard overview
@@ -95,7 +129,7 @@ async function test4_StorePerformance() {
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/reports/stores/${STORE_ID}/performance`,
+      `${BASE_URL}/v1/reports/stores/${storeId}/performance`,
       {
         params: { period: 'MONTH' },
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -177,6 +211,7 @@ async function runAllTests() {
 
   try {
     await login();
+    await createStoreWithFeature();
     await test1_DashboardOverview();
     await test2_CustomerReport();
     await test3_PetReport();

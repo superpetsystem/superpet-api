@@ -34,6 +34,13 @@ async function setup() {
   });
   storeId = storesResponse.data[0].id;
 
+  // Habilitar feature ONLINE_BOOKING na loja
+  await axios.put(`${BASE_URL}/v1/stores/${storeId}/features/ONLINE_BOOKING`, {
+    enabled: true,
+  }, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
   const servicesResponse = await axios.get(`${BASE_URL}/v1/services`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
@@ -41,7 +48,8 @@ async function setup() {
 
   console.log('\n✅ Setup completo para testes de Bookings');
   console.log(`   • Store ID: ${storeId}`);
-  console.log(`   • Service ID: ${serviceId}\n`);
+  console.log(`   • Service ID: ${serviceId}`);
+  console.log(`   • Feature ONLINE_BOOKING habilitada\n`);
 }
 
 // Test 1: Criar agendamento

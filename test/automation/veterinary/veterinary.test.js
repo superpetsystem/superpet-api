@@ -44,9 +44,17 @@ async function setup() {
     veterinarianId = allEmployees.data[0].id;
   }
 
+  // Habilitar feature VETERINARY_RECORDS na loja
+  await axios.put(`${BASE_URL}/v1/stores/${storeId}/features/VETERINARY_RECORDS`, {
+    enabled: true,
+  }, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
   console.log('\n✅ Setup completo para testes de Veterinary');
   console.log(`   • Store ID: ${storeId}`);
-  console.log(`   • Veterinarian ID: ${veterinarianId}\n`);
+  console.log(`   • Veterinarian ID: ${veterinarianId}`);
+  console.log(`   • Feature VETERINARY_RECORDS habilitada\n`);
 }
 
 // Test 1: Criar prontuário veterinário

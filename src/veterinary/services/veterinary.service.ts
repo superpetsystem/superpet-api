@@ -51,8 +51,8 @@ export class VeterinaryService {
     return record;
   }
 
-  async findRecordsByPet(petId: string): Promise<VeterinaryRecordEntity[]> {
-    return this.recordRepository.findByPet(petId);
+  async findRecordsByPet(petId: string, organizationId: string): Promise<VeterinaryRecordEntity[]> {
+    return this.recordRepository.findByPet(petId, organizationId);
   }
 
   async updateRecord(id: string, dto: Partial<CreateVeterinaryRecordDto>): Promise<VeterinaryRecordEntity> {

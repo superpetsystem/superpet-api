@@ -6,7 +6,7 @@ const BASE_URL = 'http://localhost:3000';
 // Variáveis compartilhadas
 let accessToken = null;
 let productId = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('📦 Iniciando testes de Inventory Management\n');
 
@@ -16,6 +16,40 @@ async function login() {
   const result = await authTests.runAllTests();
   accessToken = result.accessToken;
   console.log('\n✅ Autenticado para testes de Inventory\n');
+}
+
+// Helper: Criar loja com feature habilitada
+async function createStoreWithFeature() {
+  console.log('🏪 Criando loja com feature INVENTORY_MANAGEMENT...');
+  
+  try {
+    // Criar loja
+    const storeResponse = await axios.post(`${BASE_URL}/v1/stores`, {
+      code: `INV_STORE_${Date.now()}`,
+      name: 'Loja Inventory Test',
+      timezone: 'America/Manaus',
+      openingHours: { mon: [['08:00', '18:00']] },
+      resourcesCatalog: ['GROOMER'],
+      capacity: { GROOMER: 2 },
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    storeId = storeResponse.data.id;
+    console.log(`   ✅ Loja criada: ${storeId}`);
+
+    // Habilitar feature INVENTORY_MANAGEMENT
+    await axios.put(`${BASE_URL}/v1/stores/${storeId}/features/INVENTORY_MANAGEMENT`, {
+      enabled: true,
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    console.log(`   ✅ Feature INVENTORY_MANAGEMENT habilitada`);
+  } catch (error) {
+    console.error('   ❌ Erro ao criar loja:', error.response?.data || error.message);
+    throw error;
+  }
 }
 
 // Test 1: Criar produto
@@ -126,7 +160,7 @@ async function test5_RegisterEntry() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/v1/stores/${storeId}/stock/movements`,
       {
         productId: productId,
         type: 'ENTRY',
@@ -157,7 +191,7 @@ async function test6_GetStoreStock() {
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock`,
+      `${BASE_URL}/v1/stores/${storeId}/stock`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -182,7 +216,7 @@ async function test7_RegisterExit() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/v1/stores/${storeId}/stock/movements`,
       {
         productId: productId,
         type: 'EXIT',
@@ -210,7 +244,7 @@ async function test8_AdjustStock() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/adjust`,
+      `${BASE_URL}/v1/stores/${storeId}/stock/adjust`,
       {
         productId: productId,
         newQuantity: 30,
@@ -236,7 +270,7 @@ async function test9_GetMovements() {
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/v1/stores/${storeId}/stock/movements`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -288,7 +322,7 @@ async function test11_InsufficientStock() {
   
   try {
     await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/v1/stores/${storeId}/stock/movements`,
       {
         productId: productId,
         type: 'EXIT',
@@ -316,7 +350,7 @@ async function test12_LowStockAlerts() {
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/alerts`,
+      `${BASE_URL}/v1/stores/${storeId}/stock/alerts`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -338,6 +372,7 @@ async function runAllTests() {
 
   try {
     await login();
+    await createStoreWithFeature();
     await test1_CreateProduct();
     await test2_ListProducts();
     await test3_GetProductById();

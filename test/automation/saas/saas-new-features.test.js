@@ -2,7 +2,7 @@ const axios = require('axios');
 const assert = require('assert');
 
 const BASE_URL = 'http://localhost:3000';
-const SUPER_ADMIN_EMAIL = 'superadmin@superpet.com.br';
+const SUPER_ADMIN_EMAIL = 'superadmin@superpet.com';
 const SUPER_ADMIN_PASSWORD = 'Super@2024!Admin';
 
 // Variáveis compartilhadas
@@ -25,13 +25,15 @@ console.log('🏢 Iniciando testes de Isolamento SaaS - Novas Features\n');
 async function setup() {
   console.log('🔧 Setup: Criando ambiente multi-tenant via SUPER_ADMIN...\n');
 
-  // 1. Login como SUPER_ADMIN
-  const superAdminLogin = await axios.post(`${BASE_URL}/auth/login`, {
-    email: SUPER_ADMIN_EMAIL,
-    password: SUPER_ADMIN_PASSWORD,
-  });
-  superAdminToken = superAdminLogin.data.access_token;
-  console.log('✅ SUPER_ADMIN autenticado\n');
+  try {
+    // 1. Login como SUPER_ADMIN
+    console.log('1. Fazendo login como SUPER_ADMIN...');
+    const superAdminLogin = await axios.post(`${BASE_URL}/auth/login`, {
+      email: SUPER_ADMIN_EMAIL,
+      password: SUPER_ADMIN_PASSWORD,
+    });
+    superAdminToken = superAdminLogin.data.access_token;
+    console.log('✅ SUPER_ADMIN autenticado\n');
 
   // 2. Criar 2 organizações
   const timestamp = Date.now();
@@ -178,6 +180,10 @@ async function setup() {
     console.log('✅ 2 Pets criados\n');
   } catch (error) {
     console.error('❌ Erro ao criar pets:', error.response?.data || error.message);
+    throw error;
+  }
+  } catch (error) {
+    console.error('❌ Erro no setup:', error.response?.data || error.message);
     throw error;
   }
 }

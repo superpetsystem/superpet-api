@@ -38,9 +38,9 @@ export class BookingRepository {
     return query.orderBy('booking.bookingDate', 'ASC').addOrderBy('booking.startTime', 'ASC').getMany();
   }
 
-  async findByCustomer(customerId: string): Promise<BookingEntity[]> {
+  async findByCustomer(customerId: string, organizationId: string): Promise<BookingEntity[]> {
     return this.repository.find({
-      where: { customerId },
+      where: { customerId, organizationId },
       relations: ['store', 'service', 'pet', 'employee'],
       order: { bookingDate: 'DESC', startTime: 'DESC' },
     });

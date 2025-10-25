@@ -22,9 +22,9 @@ export class VeterinaryRecordRepository {
     });
   }
 
-  async findByPet(petId: string): Promise<VeterinaryRecordEntity[]> {
+  async findByPet(petId: string, organizationId: string): Promise<VeterinaryRecordEntity[]> {
     return this.repository.find({
-      where: { petId },
+      where: { petId, organizationId },
       relations: ['veterinarian', 'store'],
       order: { visitDate: 'DESC' },
     });
