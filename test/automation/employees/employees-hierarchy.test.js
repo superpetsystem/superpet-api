@@ -40,7 +40,10 @@ async function test1_SuperAdminCreatesOwner() {
       role: 'OWNER',
       jobTitle: 'OWNER',
     }, {
-      headers: { Authorization: `Bearer ${superAdminToken}` },
+      headers: { 
+        Authorization: `Bearer ${superAdminToken}`,
+        'X-Organization-Id': ORG_ID,
+      },
     });
 
     assert.strictEqual(response.status, 201);

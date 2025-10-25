@@ -44,7 +44,7 @@ async function createOrganization(id, slug, name) {
   }
 }
 
-// Setup: Login como SUPER_ADMIN e criar 2 organizações
+// Setup: Login como SUPER_ADMIN e criar/atualizar 2 organizações
 async function setup() {
   console.log('🔧 Setup: Login como SUPER_ADMIN...\n');
   
@@ -56,8 +56,25 @@ async function setup() {
   
   console.log('🔧 Setup: Criando 2 organizações separadas...\n');
   
-  // Organização 1 (já existe do seed)
-  const org1Id = '00000000-0000-0000-0000-000000000001';
+  // Atualizar Organização 1 (default) para ter plano PRO e limites maiores
+  const mysql = require('mysql2/promise');
+  const connection = await mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'root',
+    database: 'superpet_test',
+  });
+  
+  await connection.execute(
+    `UPDATE organizations 
+     SET plan = 'PRO', 
+         limits = ? 
+     WHERE id = '00000000-0000-0000-0000-000000000001'`,
+    [JSON.stringify({ employees: 50, stores: 20, monthlyAppointments: 5000 })]
+  );
+  
+  await connection.end();
   
   // Organização 2 (nova)
   const org2Id = '00000000-0000-0000-0000-000000000002';
