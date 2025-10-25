@@ -19,7 +19,7 @@ import { VeterinaryService } from './services/veterinary.service';
 import { CreateVeterinaryRecordDto } from './dto/create-veterinary-record.dto';
 import { CreateVaccinationDto } from './dto/create-vaccination.dto';
 
-@Controller('v1/veterinary')
+@Controller('veterinary')
 @UseGuards(JwtAuthGuard, FeatureGuard)
 @RequireFeature('VETERINARY_RECORDS' as any)
 export class VeterinaryController {

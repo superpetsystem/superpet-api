@@ -24,7 +24,7 @@ import { StoreFeatureEntity } from './entities/store-feature.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { EmployeeRole } from '../employees/entities/employee.entity';
 
-@Controller('v1/stores')
+@Controller('stores')
 @UseGuards(JwtAuthGuard)
 export class StoresController {
   constructor(

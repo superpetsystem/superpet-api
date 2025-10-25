@@ -24,13 +24,13 @@ async function setup() {
   petId = petResult.petId;
 
   // Pegar store e veterinarian IDs do banco
-  const storesResponse = await axios.get(`${BASE_URL}/v1/stores`, {
+  const storesResponse = await axios.get(`${BASE_URL}/stores`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   storeId = storesResponse.data[0].id;
 
   // Pegar employees (filtra por OWNER/ADMIN que podem criar registros)
-  const employeesResponse = await axios.get(`${BASE_URL}/v1/employees?role=OWNER`, {
+  const employeesResponse = await axios.get(`${BASE_URL}/employees?role=OWNER`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   
@@ -38,14 +38,14 @@ async function setup() {
     veterinarianId = employeesResponse.data[0].id;
   } else {
     // Fallback: pegar qualquer employee
-    const allEmployees = await axios.get(`${BASE_URL}/v1/employees`, {
+    const allEmployees = await axios.get(`${BASE_URL}/employees`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     veterinarianId = allEmployees.data[0].id;
   }
 
   // Habilitar feature VETERINARY_RECORDS na loja
-  await axios.put(`${BASE_URL}/v1/stores/${storeId}/features/VETERINARY_RECORDS`, {
+  await axios.put(`${BASE_URL}/stores/${storeId}/features/VETERINARY_RECORDS`, {
     enabled: true,
   }, {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -59,11 +59,11 @@ async function setup() {
 
 // Test 1: Criar prontuário veterinário
 async function test1_CreateRecord() {
-  console.log('Test 1: POST /v1/veterinary/records');
+  console.log('Test 1: POST /veterinary/records');
 
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/veterinary/records`,
+      `${BASE_URL}/veterinary/records`,
       {
         petId: petId,
         storeId: storeId,
@@ -98,10 +98,10 @@ async function test1_CreateRecord() {
 
 // Test 2: Ver prontuário por ID
 async function test2_GetRecord() {
-  console.log('\nTest 2: GET /v1/veterinary/records/:id');
+  console.log('\nTest 2: GET /veterinary/records/:id');
 
   try {
-    const response = await axios.get(`${BASE_URL}/v1/veterinary/records/${recordId}`, {
+    const response = await axios.get(`${BASE_URL}/veterinary/records/${recordId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -119,10 +119,10 @@ async function test2_GetRecord() {
 
 // Test 3: Listar prontuários do pet
 async function test3_ListPetRecords() {
-  console.log('\nTest 3: GET /v1/veterinary/pets/:petId/records');
+  console.log('\nTest 3: GET /veterinary/pets/:petId/records');
 
   try {
-    const response = await axios.get(`${BASE_URL}/v1/veterinary/pets/${petId}/records`, {
+    const response = await axios.get(`${BASE_URL}/veterinary/pets/${petId}/records`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -139,11 +139,11 @@ async function test3_ListPetRecords() {
 
 // Test 4: Atualizar prontuário
 async function test4_UpdateRecord() {
-  console.log('\nTest 4: PUT /v1/veterinary/records/:id');
+  console.log('\nTest 4: PUT /veterinary/records/:id');
 
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/veterinary/records/${recordId}`,
+      `${BASE_URL}/veterinary/records/${recordId}`,
       {
         diagnosis: 'Saúde excelente - atualizado',
         notes: 'Pet muito bem cuidado',
@@ -163,11 +163,11 @@ async function test4_UpdateRecord() {
 
 // Test 5: Criar vacinação
 async function test5_CreateVaccination() {
-  console.log('\nTest 5: POST /v1/veterinary/vaccinations');
+  console.log('\nTest 5: POST /veterinary/vaccinations');
 
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/veterinary/vaccinations`,
+      `${BASE_URL}/veterinary/vaccinations`,
       {
         petId: petId,
         vaccineName: 'V10 (Múltipla)',
@@ -201,10 +201,10 @@ async function test5_CreateVaccination() {
 
 // Test 6: Listar vacinações do pet
 async function test6_ListPetVaccinations() {
-  console.log('\nTest 6: GET /v1/veterinary/pets/:petId/vaccinations');
+  console.log('\nTest 6: GET /veterinary/pets/:petId/vaccinations');
 
   try {
-    const response = await axios.get(`${BASE_URL}/v1/veterinary/pets/${petId}/vaccinations`, {
+    const response = await axios.get(`${BASE_URL}/veterinary/pets/${petId}/vaccinations`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -221,11 +221,11 @@ async function test6_ListPetVaccinations() {
 
 // Test 7: Listar vacinações próximas
 async function test7_UpcomingVaccinations() {
-  console.log('\nTest 7: GET /v1/veterinary/pets/:petId/vaccinations/upcoming');
+  console.log('\nTest 7: GET /veterinary/pets/:petId/vaccinations/upcoming');
 
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/veterinary/pets/${petId}/vaccinations/upcoming`,
+      `${BASE_URL}/veterinary/pets/${petId}/vaccinations/upcoming`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 

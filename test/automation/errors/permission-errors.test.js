@@ -15,57 +15,98 @@ console.log('🔒 Iniciando testes de Erros de Permissão (403)\n');
 
 // Setup
 async function setup() {
+  console.log('🔧 Setup: Login como SUPER_ADMIN...');
   const { loginAsSuperAdmin } = require('../helpers/superadmin-login.js');
   const result = await loginAsSuperAdmin();
   superAdminToken = result.accessToken;
+  console.log('✅ Autenticado como SUPER_ADMIN');
+  
+  // Criar organização separada para evitar limites
+  console.log('🔧 Setup: Criando organização separada...');
+  let testOrgId;
+  try {
+    const orgResponse = await axios.post(`${BASE_URL}/admin/organizations`, {
+      name: 'Permission Test Org',
+      slug: `perm-test-${Date.now()}`,
+      plan: 'PRO',
+    }, {
+      headers: { Authorization: `Bearer ${superAdminToken}` },
+    });
+    testOrgId = orgResponse.data.id;
+    console.log('✅ Organização criada:', testOrgId);
+  } catch (error) {
+    console.error('❌ Erro ao criar organização:', error.response?.data || error.message);
+    throw error;
+  }
   
   // Criar OWNER
+  console.log('🔧 Setup: Criando OWNER...');
   const ownerEmail = `owner_perm_${Date.now()}@test.com`;
-  const bcrypt = require('bcrypt');
-  const mysql = require('mysql2/promise');
-  const connection = await mysql.createConnection({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'root',
-    database: 'superpet_test',
-  });
+  try {
+    const bcrypt = require('bcrypt');
+    const mysql = require('mysql2/promise');
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      port: 3306,
+      user: 'root',
+      password: 'root',
+      database: 'superpet_test',
+    });
 
-  const passwordHash = await bcrypt.hash('senha123', 10);
-  const userId = 'user-perm-' + Date.now();
-  
-  await connection.execute(
-    `INSERT INTO users (id, organization_id, email, name, password, status, created_at, updated_at)
-     VALUES (?, '00000000-0000-0000-0000-000000000001', ?, 'Owner Perm', ?, 'ACTIVE', NOW(), NOW())`,
-    [userId, ownerEmail, passwordHash]
-  );
-  
-  await connection.execute(
-    `INSERT INTO employees (id, organization_id, user_id, role, job_title, active, created_at, updated_at)
-     VALUES (?, '00000000-0000-0000-0000-000000000001', ?, 'OWNER', 'OWNER', 1, NOW(), NOW())`,
-    ['emp-' + userId, userId]
-  );
-  
-  await connection.end();
+    const passwordHash = await bcrypt.hash('senha123', 10);
+    const userId = 'user-perm-' + Date.now();
+    
+    await connection.execute(
+      `INSERT INTO users (id, organization_id, email, name, password, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, 'ACTIVE', NOW(), NOW())`,
+      [userId, testOrgId, ownerEmail, 'Owner Perm', passwordHash]
+    );
+    
+    await connection.execute(
+      `INSERT INTO employees (id, organization_id, user_id, role, job_title, active, created_at, updated_at)
+       VALUES (?, ?, ?, 'OWNER', 'OWNER', 1, NOW(), NOW())`,
+      ['emp-' + userId, testOrgId, userId]
+    );
+    
+    await connection.end();
+    console.log('✅ OWNER criado');
+  } catch (error) {
+    console.error('❌ Erro ao criar OWNER:', error.message);
+    throw error;
+  }
 
-  const loginOwner = await axios.post(`${BASE_URL}/auth/login`, {
-    email: ownerEmail,
-    password: 'senha123',
-  });
-  ownerToken = loginOwner.data.access_token;
+  console.log('🔧 Setup: Fazendo login do OWNER...');
+  try {
+    const loginOwner = await axios.post(`${BASE_URL}/auth/login`, {
+      email: ownerEmail,
+      password: 'senha123',
+    });
+    ownerToken = loginOwner.data.access_token;
+    console.log('✅ OWNER logado');
+  } catch (error) {
+    console.error('❌ Erro ao fazer login do OWNER:', error.response?.data || error.message);
+    throw error;
+  }
   
   // Criar STAFF
-  const staffResponse = await axios.post(`${BASE_URL}/v1/employees`, {
-    email: `staff_perm_${Date.now()}@test.com`,
-    name: 'Staff Perm',
-    password: 'senha123',
-    role: 'STAFF',
-    jobTitle: 'GROOMER',
-  }, {
-    headers: { Authorization: `Bearer ${ownerToken}` },
-  });
-  
-  staffEmployeeId = staffResponse.data.id;
+  console.log('🔧 Setup: Criando STAFF...');
+  try {
+    const staffResponse = await axios.post(`${BASE_URL}/employees`, {
+      email: `staff_perm_${Date.now()}@test.com`,
+      name: 'Staff Perm',
+      password: 'senha123',
+      role: 'STAFF',
+      jobTitle: 'GROOMER',
+    }, {
+      headers: { Authorization: `Bearer ${ownerToken}` },
+    });
+    
+    staffEmployeeId = staffResponse.data.id;
+    console.log('✅ STAFF criado');
+  } catch (error) {
+    console.error('❌ Erro ao criar STAFF:', error.response?.data || error.message);
+    throw error;
+  }
   
   const loginStaff = await axios.post(`${BASE_URL}/auth/login`, {
     email: `staff_perm_${Date.now() - 1000}@test.com`,
@@ -77,7 +118,7 @@ async function setup() {
   }
   
   // Criar 2 stores
-  const store1 = await axios.post(`${BASE_URL}/v1/stores`, {
+  const store1 = await axios.post(`${BASE_URL}/stores`, {
     code: `STORE_PERM_1_${Date.now()}`,
     name: 'Store Permission Test 1',
     timezone: 'America/Manaus',
@@ -86,7 +127,7 @@ async function setup() {
   });
   storeId = store1.data.id;
   
-  const store2 = await axios.post(`${BASE_URL}/v1/stores`, {
+  const store2 = await axios.post(`${BASE_URL}/stores`, {
     code: `STORE_PERM_2_${Date.now()}`,
     name: 'Store Permission Test 2',
     timezone: 'America/Manaus',
@@ -100,11 +141,11 @@ async function setup() {
 
 // Test 1: VIEWER não pode criar (403)
 async function test1_ViewerCannotCreate() {
-  console.log('Test 1: POST /v1/employees (VIEWER tenta criar - deve falhar)');
+  console.log('Test 1: POST /employees (VIEWER tenta criar - deve falhar)');
   
   // Criar VIEWER
   const viewerEmail = `viewer_${Date.now()}@test.com`;
-  await axios.post(`${BASE_URL}/v1/employees`, {
+  await axios.post(`${BASE_URL}/employees`, {
     email: viewerEmail,
     name: 'Viewer Test',
     password: 'senha123',
@@ -121,7 +162,7 @@ async function test1_ViewerCannotCreate() {
   viewerToken = loginViewer.data.access_token;
   
   try {
-    await axios.post(`${BASE_URL}/v1/employees`, {
+    await axios.post(`${BASE_URL}/employees`, {
       email: `new_${Date.now()}@test.com`,
       name: 'New Employee',
       password: 'senha123',
@@ -146,7 +187,7 @@ async function test1_ViewerCannotCreate() {
 
 // Test 2: Acesso sem employee (403)
 async function test2_NoEmployeeAccess() {
-  console.log('\nTest 2: POST /v1/stores (usuário sem employee - deve falhar)');
+  console.log('\nTest 2: POST /stores (usuário sem employee - deve falhar)');
   
   // Criar usuário puro (sem employee)
   const pureUserEmail = `pureuser_${Date.now()}@test.com`;
@@ -178,7 +219,7 @@ async function test2_NoEmployeeAccess() {
   const pureToken = loginPure.data.access_token;
   
   try {
-    await axios.post(`${BASE_URL}/v1/stores`, {
+    await axios.post(`${BASE_URL}/stores`, {
       code: `FAIL_${Date.now()}`,
       name: 'Should Fail',
       timezone: 'America/Manaus',

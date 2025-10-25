@@ -23,10 +23,10 @@ async function login() {
 
 // Test 1: Listar stores (pode estar vazio)
 async function test1_ListStores() {
-  console.log('Test 1: GET /v1/stores');
+  console.log('Test 1: GET /stores');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/stores`, {
+    const response = await axios.get(`${BASE_URL}/stores`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -42,11 +42,11 @@ async function test1_ListStores() {
 
 // Test 2: Criar primeira store
 async function test2_CreateStore() {
-  console.log('\nTest 2: POST /v1/stores (primeira loja)');
+  console.log('\nTest 2: POST /stores (primeira loja)');
   
   try {
     storeCode = `STORE_${Date.now()}`;
-    const response = await axios.post(`${BASE_URL}/v1/stores`, {
+    const response = await axios.post(`${BASE_URL}/stores`, {
       code: storeCode,
       name: 'Loja Principal',
       timezone: 'America/Manaus',
@@ -78,10 +78,10 @@ async function test2_CreateStore() {
 
 // Test 3: Ver loja específica
 async function test3_GetStoreById() {
-  console.log('\nTest 3: GET /v1/stores/:id');
+  console.log('\nTest 3: GET /stores/:id');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/stores/${storeId}`, {
+    const response = await axios.get(`${BASE_URL}/stores/${storeId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -100,10 +100,10 @@ async function test3_GetStoreById() {
 
 // Test 4: Listar features da loja
 async function test4_GetStoreFeatures() {
-  console.log('\nTest 4: GET /v1/stores/:storeId/features');
+  console.log('\nTest 4: GET /stores/:storeId/features');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/stores/${storeId}/features`, {
+    const response = await axios.get(`${BASE_URL}/stores/${storeId}/features`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -124,11 +124,11 @@ async function test4_GetStoreFeatures() {
 
 // Test 5: Configurar feature
 async function test5_ConfigureFeature() {
-  console.log('\nTest 5: PUT /v1/stores/:storeId/features/:key');
+  console.log('\nTest 5: PUT /stores/:storeId/features/:key');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/stores/${storeId}/features/TELEPICKUP`,
+      `${BASE_URL}/stores/${storeId}/features/TELEPICKUP`,
       {
         enabled: true,
         limits: { dailyPickups: 50 },
@@ -155,11 +155,11 @@ async function test5_ConfigureFeature() {
 
 // Test 6: Atualizar store
 async function test6_UpdateStore() {
-  console.log('\nTest 6: PUT /v1/stores/:id');
+  console.log('\nTest 6: PUT /stores/:id');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/stores/${storeId}`,
+      `${BASE_URL}/stores/${storeId}`,
       { name: 'Loja Principal - Atualizada' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -176,10 +176,10 @@ async function test6_UpdateStore() {
 
 // Test 7: Criar store com code duplicado
 async function test7_CreateDuplicateCode() {
-  console.log('\nTest 7: POST /v1/stores (code duplicado)');
+  console.log('\nTest 7: POST /stores (code duplicado)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/stores`, {
+    await axios.post(`${BASE_URL}/stores`, {
       code: storeCode, // Usar o mesmo code da loja criada
       name: 'Loja Duplicada',
       timezone: 'America/Manaus',

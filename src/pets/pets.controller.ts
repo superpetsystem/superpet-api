@@ -18,12 +18,18 @@ import { UpdatePetDto } from './dto/update-pet.dto';
 import { PetEntity, PetStatus } from './entities/pet.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-@Controller('v1')
+@Controller('pets')
 @UseGuards(JwtAuthGuard)
 export class PetsController {
   constructor(private readonly petService: PetService) {}
 
-  @Get('customers/:customerId/pets')
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Query('status') status?: PetStatus): Promise<PetEntity[]> {
+    return this.petService.findAll(status);
+  }
+
+  @Get('customers/:customerId')
   @HttpCode(HttpStatus.OK)
   async findByCustomer(
     @Param('customerId') customerId: string,
@@ -32,23 +38,22 @@ export class PetsController {
     return this.petService.findByCustomer(customerId, status);
   }
 
-  @Get('pets/:id')
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: string): Promise<PetEntity> {
     return this.petService.findById(id);
   }
 
-  @Post('customers/:customerId/pets')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
     @CurrentUser() user: any,
-    @Param('customerId') customerId: string,
     @Body() dto: CreatePetDto,
   ): Promise<PetEntity> {
-    return this.petService.create(user.organizationId, customerId, dto);
+    return this.petService.create(user.organizationId, dto);
   }
 
-  @Put('pets/:id')
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -57,7 +62,7 @@ export class PetsController {
     return this.petService.update(id, dto);
   }
 
-  @Patch('pets/:id/status')
+  @Patch(':id/status')
   @HttpCode(HttpStatus.OK)
   async updateStatus(
     @Param('id') id: string,

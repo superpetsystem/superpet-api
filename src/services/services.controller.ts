@@ -20,7 +20,7 @@ import { ServiceEntity, ServiceVisibility } from './entities/service.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { EmployeeRole } from '../employees/entities/employee.entity';
 
-@Controller('v1/services')
+@Controller('services')
 @UseGuards(JwtAuthGuard)
 export class ServicesController {
   constructor(private readonly serviceService: ServiceService) {}

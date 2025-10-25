@@ -18,7 +18,7 @@ import { CreatePickupDto } from './dto/create-pickup.dto';
 import { PickupEntity, PickupStatus } from './entities/pickup.entity';
 import { FeatureKey } from '../stores/entities/store-feature.entity';
 
-@Controller('v1/stores/:storeId/pickups')
+@Controller('stores/:storeId/pickups')
 @UseGuards(JwtAuthGuard)
 @RequireFeature(FeatureKey.TELEPICKUP)
 @UseGuards(FeatureGuard)

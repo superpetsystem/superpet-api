@@ -29,19 +29,19 @@ async function setup() {
   petId = petResult.petId;
 
   // Pegar store e service IDs do banco
-  const storesResponse = await axios.get(`${BASE_URL}/v1/stores`, {
+  const storesResponse = await axios.get(`${BASE_URL}/stores`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   storeId = storesResponse.data[0].id;
 
   // Habilitar feature ONLINE_BOOKING na loja
-  await axios.put(`${BASE_URL}/v1/stores/${storeId}/features/ONLINE_BOOKING`, {
+  await axios.put(`${BASE_URL}/stores/${storeId}/features/ONLINE_BOOKING`, {
     enabled: true,
   }, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 
-  const servicesResponse = await axios.get(`${BASE_URL}/v1/services`, {
+  const servicesResponse = await axios.get(`${BASE_URL}/services`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   serviceId = servicesResponse.data[0].id;
@@ -54,14 +54,14 @@ async function setup() {
 
 // Test 1: Criar agendamento
 async function test1_CreateBooking() {
-  console.log('Test 1: POST /v1/bookings');
+  console.log('Test 1: POST /bookings');
 
   try {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const response = await axios.post(
-      `${BASE_URL}/v1/bookings`,
+      `${BASE_URL}/bookings`,
       {
         storeId: storeId,
         customerId: customerId,
@@ -91,10 +91,10 @@ async function test1_CreateBooking() {
 
 // Test 2: Listar bookings da loja
 async function test2_ListStoreBookings() {
-  console.log('\nTest 2: GET /v1/bookings/stores/:storeId');
+  console.log('\nTest 2: GET /bookings/stores/:storeId');
 
   try {
-    const response = await axios.get(`${BASE_URL}/v1/bookings/stores/${storeId}`, {
+    const response = await axios.get(`${BASE_URL}/bookings/stores/${storeId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -110,10 +110,10 @@ async function test2_ListStoreBookings() {
 
 // Test 3: Listar bookings do customer
 async function test3_ListCustomerBookings() {
-  console.log('\nTest 3: GET /v1/bookings/customers/:customerId');
+  console.log('\nTest 3: GET /bookings/customers/:customerId');
 
   try {
-    const response = await axios.get(`${BASE_URL}/v1/bookings/customers/${customerId}`, {
+    const response = await axios.get(`${BASE_URL}/bookings/customers/${customerId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -130,11 +130,11 @@ async function test3_ListCustomerBookings() {
 
 // Test 4: Confirmar booking
 async function test4_ConfirmBooking() {
-  console.log('\nTest 4: PATCH /v1/bookings/:id/confirm');
+  console.log('\nTest 4: PATCH /bookings/:id/confirm');
 
   try {
     const response = await axios.patch(
-      `${BASE_URL}/v1/bookings/${bookingId}/confirm`,
+      `${BASE_URL}/bookings/${bookingId}/confirm`,
       {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -153,11 +153,11 @@ async function test4_ConfirmBooking() {
 
 // Test 5: Completar booking
 async function test5_CompleteBooking() {
-  console.log('\nTest 5: PATCH /v1/bookings/:id/complete');
+  console.log('\nTest 5: PATCH /bookings/:id/complete');
 
   try {
     const response = await axios.patch(
-      `${BASE_URL}/v1/bookings/${bookingId}/complete`,
+      `${BASE_URL}/bookings/${bookingId}/complete`,
       {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -176,14 +176,14 @@ async function test5_CompleteBooking() {
 
 // Test 6: Criar novo booking para cancelar
 async function test6_CreateAndCancelBooking() {
-  console.log('\nTest 6: POST + PATCH /v1/bookings/:id/cancel');
+  console.log('\nTest 6: POST + PATCH /bookings/:id/cancel');
 
   try {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 2);
 
     const createResponse = await axios.post(
-      `${BASE_URL}/v1/bookings`,
+      `${BASE_URL}/bookings`,
       {
         storeId: storeId,
         customerId: customerId,
@@ -198,7 +198,7 @@ async function test6_CreateAndCancelBooking() {
     const newBookingId = createResponse.data.id;
 
     const cancelResponse = await axios.patch(
-      `${BASE_URL}/v1/bookings/${newBookingId}/cancel`,
+      `${BASE_URL}/bookings/${newBookingId}/cancel`,
       { reason: 'Cliente solicitou cancelamento' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -217,14 +217,14 @@ async function test6_CreateAndCancelBooking() {
 
 // Test 7: Tentar criar booking em horário conflitante
 async function test7_ConflictingBooking() {
-  console.log('\nTest 7: POST /v1/bookings (horário conflitante)');
+  console.log('\nTest 7: POST /bookings (horário conflitante)');
 
   try {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     await axios.post(
-      `${BASE_URL}/v1/bookings`,
+      `${BASE_URL}/bookings`,
       {
         storeId: storeId,
         customerId: customerId,

@@ -18,6 +18,7 @@ import { ReportsModule } from './reports/reports.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { VeterinaryModule } from './veterinary/veterinary.module';
 import { AdminModule } from './admin/admin.module';
+import { PdvModule } from './pdv/pdv.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { AdminModule } from './admin/admin.module';
     BookingsModule,
     VeterinaryModule,
     AdminModule,
+    PdvModule,
   ],
   controllers: [AppController],
   providers: [AppService],

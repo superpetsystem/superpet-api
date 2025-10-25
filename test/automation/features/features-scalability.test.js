@@ -52,7 +52,7 @@ async function setup() {
   ownerToken = login.data.access_token;
 
   // Criar store
-  const storeResponse = await axios.post(`${BASE_URL}/v1/stores`, {
+  const storeResponse = await axios.post(`${BASE_URL}/stores`, {
     code: `FEAT_TEST_${Date.now()}`,
     name: 'Loja Features Test',
     timezone: 'America/Manaus',
@@ -101,11 +101,11 @@ async function test1_CreateNewFeatureInSystem() {
 
 // Test 2: Habilitar nova feature na loja
 async function test2_EnableNewFeatureInStore() {
-  console.log('\nTest 2: PUT /v1/stores/:storeId/features/ONLINE_BOOKING');
+  console.log('\nTest 2: PUT /stores/:storeId/features/ONLINE_BOOKING');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/stores/${storeId}/features/ONLINE_BOOKING`,
+      `${BASE_URL}/stores/${storeId}/features/ONLINE_BOOKING`,
       {
         enabled: true,
         limits: { maxConcurrent: 50 },
@@ -127,10 +127,10 @@ async function test2_EnableNewFeatureInStore() {
 
 // Test 3: Listar todas features da loja (deve incluir a nova)
 async function test3_ListAllFeaturesIncludingNew() {
-  console.log('\nTest 3: GET /v1/stores/:storeId/features');
+  console.log('\nTest 3: GET /stores/:storeId/features');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/stores/${storeId}/features`, {
+    const response = await axios.get(`${BASE_URL}/stores/${storeId}/features`, {
       headers: { Authorization: `Bearer ${ownerToken}` },
     });
 
@@ -200,14 +200,14 @@ async function test5_EnableMultipleFeatures() {
     
     for (const key of featuresToEnable) {
       await axios.put(
-        `${BASE_URL}/v1/stores/${storeId}/features/${key}`,
+        `${BASE_URL}/stores/${storeId}/features/${key}`,
         { enabled: true, limits: {} },
         { headers: { Authorization: `Bearer ${ownerToken}` } }
       );
     }
 
     // Listar todas
-    const response = await axios.get(`${BASE_URL}/v1/stores/${storeId}/features`, {
+    const response = await axios.get(`${BASE_URL}/stores/${storeId}/features`, {
       headers: { Authorization: `Bearer ${ownerToken}` },
     });
 
@@ -223,11 +223,11 @@ async function test5_EnableMultipleFeatures() {
 
 // Test 6: Desabilitar feature
 async function test6_DisableFeature() {
-  console.log('\nTest 6: PUT /v1/stores/:storeId/features/:key (disable)');
+  console.log('\nTest 6: PUT /stores/:storeId/features/:key (disable)');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/stores/${storeId}/features/ONLINE_BOOKING`,
+      `${BASE_URL}/stores/${storeId}/features/ONLINE_BOOKING`,
       { enabled: false },
       { headers: { Authorization: `Bearer ${ownerToken}` } }
     );

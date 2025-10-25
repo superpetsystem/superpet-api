@@ -102,10 +102,10 @@ async function setup() {
 
 // Test 1: Criar primeira store (dentro do limite)
 async function test1_CreateFirstStore() {
-  console.log('Test 1: POST /v1/stores (primeira store - dentro do limite)');
+  console.log('Test 1: POST /stores (primeira store - dentro do limite)');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/stores`, {
+    const response = await axios.post(`${BASE_URL}/stores`, {
       code: `LIMITED_STORE_1`,
       name: 'Primeira Loja',
       timezone: 'America/Manaus',
@@ -123,10 +123,10 @@ async function test1_CreateFirstStore() {
 
 // Test 2: Tentar criar segunda store (excede limite)
 async function test2_CreateSecondStoreExceedsLimit() {
-  console.log('\nTest 2: POST /v1/stores (segunda store - deve exceder limite)');
+  console.log('\nTest 2: POST /stores (segunda store - deve exceder limite)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/stores`, {
+    await axios.post(`${BASE_URL}/stores`, {
       code: `LIMITED_STORE_2`,
       name: 'Segunda Loja',
       timezone: 'America/Manaus',
@@ -151,10 +151,10 @@ async function test2_CreateSecondStoreExceedsLimit() {
 
 // Test 3: Criar primeiro employee adicional (dentro do limite)
 async function test3_CreateFirstEmployee() {
-  console.log('\nTest 3: POST /v1/employees (primeiro employee - dentro do limite)');
+  console.log('\nTest 3: POST /employees (primeiro employee - dentro do limite)');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/employees`, {
+    const response = await axios.post(`${BASE_URL}/employees`, {
       email: `employee1_${Date.now()}@test.com`,
       name: 'Employee 1',
       password: 'senha123',
@@ -175,10 +175,10 @@ async function test3_CreateFirstEmployee() {
 
 // Test 4: Tentar criar terceiro employee (excede limite)
 async function test4_CreateThirdEmployeeExceedsLimit() {
-  console.log('\nTest 4: POST /v1/employees (terceiro employee - deve exceder limite)');
+  console.log('\nTest 4: POST /employees (terceiro employee - deve exceder limite)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/employees`, {
+    await axios.post(`${BASE_URL}/employees`, {
       email: `employee3_${Date.now()}@test.com`,
       name: 'Employee 3',
       password: 'senha123',

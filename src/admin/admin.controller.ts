@@ -33,7 +33,7 @@ import { EmployeeRole, JobTitle } from '../employees/entities/employee.entity';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-@Controller('v1/admin')
+@Controller('admin')
 @UseGuards(JwtAuthGuard)
 export class AdminController {
   private readonly logger = new Logger(AdminController.name);

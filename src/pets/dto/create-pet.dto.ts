@@ -1,7 +1,10 @@
-import { IsString, IsEnum, IsOptional, IsNumber, IsArray, Min, Max, IsDateString } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNumber, IsArray, Min, Max, IsDateString, IsUUID } from 'class-validator';
 import { PetSpecies } from '../entities/pet.entity';
 
 export class CreatePetDto {
+  @IsUUID(4, { message: 'Customer ID deve ser um UUID válido' })
+  customerId: string;
+
   @IsString({ message: 'Nome é obrigatório' })
   name: string;
 

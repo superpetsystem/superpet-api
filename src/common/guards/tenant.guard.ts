@@ -34,9 +34,20 @@ export class TenantGuard implements CanActivate {
       }
     }
 
-    // Se não encontrou organizationId, rejeitar
+    // Se não encontrou organizationId, verificar se é SUPER_ADMIN
     if (!organizationId) {
-      throw new UnauthorizedException('TENANT_REQUIRED');
+      if (user && user.role === 'SUPER_ADMIN') {
+        // SUPER_ADMIN pode usar header X-Org-Id ou usar organização padrão
+        const headerOrgId = request.headers['x-org-id'];
+        if (headerOrgId && typeof headerOrgId === 'string') {
+          organizationId = headerOrgId;
+        } else {
+          // Para SUPER_ADMIN sem organizationId, usar null (será tratado nos services)
+          organizationId = null;
+        }
+      } else {
+        throw new UnauthorizedException('TENANT_REQUIRED');
+      }
     }
 
     // Adicionar ao request para uso nos services

@@ -34,7 +34,14 @@ export class FeatureGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    const storeId = request.params?.storeId || request.body?.storeId || user?.employee?.storeId;
+    let storeId = request.params?.storeId || request.body?.storeId || user?.employee?.storeId;
+
+    // Para endpoints de carrinho (ex: /carts/:cartId/items), obter storeId do carrinho
+    if (!storeId && request.params?.cartId) {
+      // Para evitar dependências circulares, vamos usar uma abordagem diferente
+      // O storeId será obtido do contexto da requisição ou do body
+      storeId = request.body?.storeId || user?.employee?.storeId;
+    }
 
     // Endpoints de nível organizacional (ex: relatórios) não requerem storeId
     if (!storeId) {

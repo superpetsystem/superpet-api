@@ -29,11 +29,11 @@ async function setup() {
 
 // Test 1: SUPER_ADMIN cria OWNER
 async function test1_SuperAdminCreatesOwner() {
-  console.log('Test 1: POST /v1/employees (SUPER_ADMIN → OWNER)');
+  console.log('Test 1: POST /employees (SUPER_ADMIN → OWNER)');
   
   try {
     const email = `owner_${Date.now()}@test.com`;
-    const response = await axios.post(`${BASE_URL}/v1/employees`, {
+    const response = await axios.post(`${BASE_URL}/employees`, {
       email,
       name: 'Test Owner',
       password: 'senha123',
@@ -66,11 +66,11 @@ async function test1_SuperAdminCreatesOwner() {
 
 // Test 2: OWNER cria ADMIN
 async function test2_OwnerCreatesAdmin() {
-  console.log('\nTest 2: POST /v1/employees (OWNER → ADMIN)');
+  console.log('\nTest 2: POST /employees (OWNER → ADMIN)');
   
   try {
     const email = `admin_${Date.now()}@test.com`;
-    const response = await axios.post(`${BASE_URL}/v1/employees`, {
+    const response = await axios.post(`${BASE_URL}/employees`, {
       email,
       name: 'Test Admin',
       password: 'senha123',
@@ -100,11 +100,11 @@ async function test2_OwnerCreatesAdmin() {
 
 // Test 3: ADMIN cria STAFF
 async function test3_AdminCreatesStaff() {
-  console.log('\nTest 3: POST /v1/employees (ADMIN → STAFF)');
+  console.log('\nTest 3: POST /employees (ADMIN → STAFF)');
   
   try {
     const email = `staff_${Date.now()}@test.com`;
-    const response = await axios.post(`${BASE_URL}/v1/employees`, {
+    const response = await axios.post(`${BASE_URL}/employees`, {
       email,
       name: 'Test Staff',
       password: 'senha123',
@@ -134,11 +134,11 @@ async function test3_AdminCreatesStaff() {
 
 // Test 4: ADMIN cria VIEWER
 async function test4_AdminCreatesViewer() {
-  console.log('\nTest 4: POST /v1/employees (ADMIN → VIEWER)');
+  console.log('\nTest 4: POST /employees (ADMIN → VIEWER)');
   
   try {
     const email = `viewer_${Date.now()}@test.com`;
-    const response = await axios.post(`${BASE_URL}/v1/employees`, {
+    const response = await axios.post(`${BASE_URL}/employees`, {
       email,
       name: 'Test Viewer',
       password: 'senha123',
@@ -161,10 +161,10 @@ async function test4_AdminCreatesViewer() {
 
 // Test 5: STAFF NÃO pode criar employees
 async function test5_StaffCannotCreateEmployees() {
-  console.log('\nTest 5: POST /v1/employees (STAFF não pode criar)');
+  console.log('\nTest 5: POST /employees (STAFF não pode criar)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/employees`, {
+    await axios.post(`${BASE_URL}/employees`, {
       email: `test_${Date.now()}@test.com`,
       name: 'Test',
       password: 'senha123',
@@ -188,10 +188,10 @@ async function test5_StaffCannotCreateEmployees() {
 
 // Test 6: ADMIN NÃO pode criar OWNER
 async function test6_AdminCannotCreateOwner() {
-  console.log('\nTest 6: POST /v1/employees (ADMIN não pode criar OWNER)');
+  console.log('\nTest 6: POST /employees (ADMIN não pode criar OWNER)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/employees`, {
+    await axios.post(`${BASE_URL}/employees`, {
       email: `owner2_${Date.now()}@test.com`,
       name: 'Test Owner 2',
       password: 'senha123',
@@ -215,10 +215,10 @@ async function test6_AdminCannotCreateOwner() {
 
 // Test 7: Listar employees com filtros de role
 async function test7_ListEmployeesByRole() {
-  console.log('\nTest 7: GET /v1/employees?role=STAFF');
+  console.log('\nTest 7: GET /employees?role=STAFF');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/employees?role=STAFF`, {
+    const response = await axios.get(`${BASE_URL}/employees?role=STAFF`, {
       headers: { Authorization: `Bearer ${ownerToken}` },
     });
 
@@ -238,10 +238,10 @@ async function test7_ListEmployeesByRole() {
 
 // Test 8: Listar employees com filtro de jobTitle
 async function test8_ListEmployeesByJobTitle() {
-  console.log('\nTest 8: GET /v1/employees?jobTitle=GROOMER');
+  console.log('\nTest 8: GET /employees?jobTitle=GROOMER');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/employees?jobTitle=GROOMER`, {
+    const response = await axios.get(`${BASE_URL}/employees?jobTitle=GROOMER`, {
       headers: { Authorization: `Bearer ${ownerToken}` },
     });
 
@@ -271,7 +271,7 @@ async function test9_CreateMultipleJobTitles() {
     ];
 
     for (const job of jobTitles) {
-      await axios.post(`${BASE_URL}/v1/employees`, {
+      await axios.post(`${BASE_URL}/employees`, {
         email: `${job.jobTitle.toLowerCase()}_${Date.now()}@test.com`,
         name: job.name,
         password: 'senha123',
@@ -292,10 +292,10 @@ async function test9_CreateMultipleJobTitles() {
 
 // Test 10: Validar total de employees
 async function test10_ListAllEmployees() {
-  console.log('\nTest 10: GET /v1/employees (listar todos)');
+  console.log('\nTest 10: GET /employees (listar todos)');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/employees`, {
+    const response = await axios.get(`${BASE_URL}/employees`, {
       headers: { Authorization: `Bearer ${ownerToken}` },
     });
 

@@ -19,7 +19,7 @@ import { EmployeeRole } from '../employees/entities/employee.entity';
 import { BookingService } from './services/booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 
-@Controller('v1/bookings')
+@Controller('bookings')
 @UseGuards(JwtAuthGuard, FeatureGuard)
 @RequireFeature('ONLINE_BOOKING' as any)
 export class BookingsController {

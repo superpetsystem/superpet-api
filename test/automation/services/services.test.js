@@ -21,7 +21,7 @@ async function login() {
 
 // Helper: Criar loja para testes
 async function createStore() {
-  const response = await axios.post(`${BASE_URL}/v1/stores`, {
+  const response = await axios.post(`${BASE_URL}/stores`, {
     code: `SVC_STORE_${Date.now()}`,
     name: 'Loja para Services',
     timezone: 'America/Manaus',
@@ -38,7 +38,7 @@ async function createStore() {
   // Habilitar feature CUSTOM_SERVICE na loja
   try {
     await axios.put(
-      `${BASE_URL}/v1/stores/${storeId}/features/CUSTOM_SERVICE`,
+      `${BASE_URL}/stores/${storeId}/features/CUSTOM_SERVICE`,
       { enabled: true },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -50,10 +50,10 @@ async function createStore() {
 
 // Test 1: Listar services (pode estar vazio)
 async function test1_ListServices() {
-  console.log('Test 1: GET /v1/services');
+  console.log('Test 1: GET /services');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/services`, {
+    const response = await axios.get(`${BASE_URL}/services`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -69,10 +69,10 @@ async function test1_ListServices() {
 
 // Test 2: Criar service
 async function test2_CreateService() {
-  console.log('\nTest 2: POST /v1/services');
+  console.log('\nTest 2: POST /services');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/services`, {
+    const response = await axios.post(`${BASE_URL}/services`, {
       code: `TEST_SERV_${Date.now()}`,
       name: 'Serviço de Teste',
       description: 'Descrição do serviço de teste',
@@ -104,7 +104,7 @@ async function test2_CreateService() {
 
 // Test 3: Criar custom service (override por loja)
 async function test3_CreateCustomService() {
-  console.log('\nTest 3: POST /v1/stores/:storeId/custom-services');
+  console.log('\nTest 3: POST /stores/:storeId/custom-services');
   
   if (!serviceId) {
     console.log('   ⚠️  Pulado (sem serviceId)');
@@ -113,7 +113,7 @@ async function test3_CreateCustomService() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${storeId}/custom-services`,
+      `${BASE_URL}/stores/${storeId}/custom-services`,
       {
         serviceId: serviceId,
         priceOverrideCents: 4500, // R$ 45 (desconto de R$ 50 para R$ 45)
@@ -141,7 +141,7 @@ async function test3_CreateCustomService() {
 
 // Test 4: Publicar custom service
 async function test4_PublishCustomService() {
-  console.log('\nTest 4: POST /v1/stores/:storeId/custom-services/:id/publish');
+  console.log('\nTest 4: POST /stores/:storeId/custom-services/:id/publish');
   
   if (!customServiceId) {
     console.log('   ⚠️  Pulado (sem customServiceId)');
@@ -150,7 +150,7 @@ async function test4_PublishCustomService() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${storeId}/custom-services/${customServiceId}/publish`,
+      `${BASE_URL}/stores/${storeId}/custom-services/${customServiceId}/publish`,
       {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -168,11 +168,11 @@ async function test4_PublishCustomService() {
 
 // Test 5: Listar custom services
 async function test5_ListCustomServices() {
-  console.log('\nTest 5: GET /v1/stores/:storeId/custom-services');
+  console.log('\nTest 5: GET /stores/:storeId/custom-services');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${storeId}/custom-services`,
+      `${BASE_URL}/stores/${storeId}/custom-services`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -188,10 +188,10 @@ async function test5_ListCustomServices() {
 
 // Test 6: Criar service com duração inválida
 async function test6_CreateServiceInvalidDuration() {
-  console.log('\nTest 6: POST /v1/services (duração inválida)');
+  console.log('\nTest 6: POST /services (duração inválida)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/services`, {
+    await axios.post(`${BASE_URL}/services`, {
       code: `INVALID_${Date.now()}`,
       name: 'Serviço Inválido',
       durationMinutes: 0, // Inválido (mínimo 1)
@@ -213,7 +213,7 @@ async function test6_CreateServiceInvalidDuration() {
 
 // Test 7: Arquivar custom service
 async function test7_ArchiveCustomService() {
-  console.log('\nTest 7: POST /v1/stores/:storeId/custom-services/:id/archive');
+  console.log('\nTest 7: POST /stores/:storeId/custom-services/:id/archive');
   
   if (!customServiceId) {
     console.log('   ⚠️  Pulado (sem customServiceId)');
@@ -222,7 +222,7 @@ async function test7_ArchiveCustomService() {
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${storeId}/custom-services/${customServiceId}/archive`,
+      `${BASE_URL}/stores/${storeId}/custom-services/${customServiceId}/archive`,
       {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
