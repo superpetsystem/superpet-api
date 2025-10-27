@@ -27,9 +27,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "customers", "{{customer_id}}", "pets"]
+					"raw": "{{base_url}}/customers/{{customer_id}}/pets",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"customers",
+						"{{customer_id}}",
+						"pets"
+					]
 				},
 				"description": "Create new pet for a customer"
 			}
@@ -55,9 +61,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "customers", "{{customer_id}}", "pets"]
+					"raw": "{{base_url}}/customers/{{customer_id}}/pets",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"customers",
+						"{{customer_id}}",
+						"pets"
+					]
 				}
 			}
 		},
@@ -73,9 +85,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "customers", "{{customer_id}}", "pets"]
+					"raw": "{{base_url}}/customers/{{customer_id}}/pets",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"customers",
+						"{{customer_id}}",
+						"pets"
+					]
 				},
 				"description": "List all pets for a specific customer"
 			}
@@ -92,9 +110,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/pets/{{pet_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "pets", "{{pet_id}}"]
+					"raw": "{{base_url}}/pets/{{pet_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"pets",
+						"{{pet_id}}"
+					]
 				},
 				"description": "Get pet details including customer information"
 			}
@@ -120,9 +143,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/pets/{{pet_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "pets", "{{pet_id}}"]
+					"raw": "{{base_url}}/pets/{{pet_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"pets",
+						"{{pet_id}}"
+					]
 				}
 			}
 		},
@@ -147,9 +175,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/pets/{{pet_id}}/status",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "pets", "{{pet_id}}", "status"]
+					"raw": "{{base_url}}/pets/{{pet_id}}/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"pets",
+						"{{pet_id}}",
+						"status"
+					]
 				},
 				"description": "Status: ACTIVE | INACTIVE | DECEASED"
 			}
@@ -175,9 +209,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/pets/{{pet_id}}/status",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "pets", "{{pet_id}}", "status"]
+					"raw": "{{base_url}}/pets/{{pet_id}}/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"pets",
+						"{{pet_id}}",
+						"status"
+					]
 				}
 			}
 		}

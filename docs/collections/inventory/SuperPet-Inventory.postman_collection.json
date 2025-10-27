@@ -1,0 +1,488 @@
+{
+	"info": {
+		"_postman_id": "inventory-collection-001",
+		"name": "SuperPet - Inventory Management",
+		"description": "Complete inventory and stock management system.\n\n**Features:**\n- Product catalog management\n- Stock movements (entry, exit, adjustment)\n- Multi-store stock control\n- Transfer between stores\n- Low stock alerts\n- Expiring products tracking\n\n**Requires:** INVENTORY_MANAGEMENT feature enabled on store",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "1. Create Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('product_id', response.id);",
+									"    console.log('✅ Product ID saved!');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"SHP_{{$randomInt}}\",\n  \"name\": \"Shampoo Premium\",\n  \"description\": \"Shampoo hipoalergênico para pets\",\n  \"category\": \"HYGIENE\",\n  \"unit\": \"UN\",\n  \"minStockLevel\": 10,\n  \"maxStockLevel\": 100,\n  \"costPrice\": 2500,\n  \"salePrice\": 4500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Create a new product.\n\n**Categories:**\n- FOOD\n- HYGIENE\n- MEDICATION\n- ACCESSORIES\n- TOYS\n- OTHER\n\n**Prices:** In cents (2500 = R$ 25.00)"
+					},
+					"response": []
+				},
+				{
+					"name": "2. List Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products?category=HYGIENE",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "HYGIENE",
+									"description": "Filter by category"
+								},
+								{
+									"key": "search",
+									"value": "shampoo",
+									"description": "Search by name or code",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List all products.\n\n**Filters:**\n- category\n- search (name or code)"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "Get product details."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Shampoo Premium Plus\",\n  \"salePrice\": 5000,\n  \"description\": \"Shampoo hipoalergênico premium\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "Update product information."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "Delete a product (soft delete)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stock Management",
+			"item": [
+				{
+					"name": "6. Get Store Stock",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock"
+							]
+						},
+						"description": "Get current stock for all products in a store."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Add Stock Movement (Entry)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"type\": \"ENTRY\",\n  \"quantity\": 50,\n  \"reason\": \"Compra de fornecedor\",\n  \"notes\": \"Lote 001/2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"movements"
+							]
+						},
+						"description": "Add stock entry.\n\n**Type:** ENTRY (positive quantity)\n\n**Use Case:** Purchase from supplier, production"
+					},
+					"response": []
+				},
+				{
+					"name": "8. Add Stock Movement (Exit)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"type\": \"EXIT\",\n  \"quantity\": 10,\n  \"reason\": \"Venda ao cliente\",\n  \"saleId\": \"sale-uuid\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"movements"
+							]
+						},
+						"description": "Add stock exit.\n\n**Type:** EXIT (positive quantity, decreases stock)\n\n**Use Case:** Sales, usage in services\n\n**Validation:** Checks if sufficient stock available"
+					},
+					"response": []
+				},
+				{
+					"name": "9. Adjust Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"newQuantity\": 30,\n  \"reason\": \"Correção de inventário\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/adjust",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"adjust"
+							]
+						},
+						"description": "Manually adjust stock to specific quantity.\n\n**Type:** ADJUSTMENT\n\n**Use Case:** Physical inventory, corrections"
+					},
+					"response": []
+				},
+				{
+					"name": "10. List Stock Movements",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/movements?productId={{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"movements"
+							],
+							"query": [
+								{
+									"key": "productId",
+									"value": "{{product_id}}",
+									"description": "Filter by product"
+								},
+								{
+									"key": "type",
+									"value": "ENTRY",
+									"description": "Filter by type",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List stock movements history.\n\n**Types:** ENTRY, EXIT, ADJUSTMENT, TRANSFER_IN, TRANSFER_OUT"
+					},
+					"response": []
+				},
+				{
+					"name": "11. Get Low Stock Alerts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/alerts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"alerts"
+							]
+						},
+						"description": "Get products with stock below minimum level.\n\n**Use Case:** Reorder alerts, inventory management"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transfers",
+			"item": [
+				{
+					"name": "12. Transfer Between Stores",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"fromStoreId\": \"{{store_id}}\",\n  \"toStoreId\": \"{{store_id_2}}\",\n  \"quantity\": 10,\n  \"notes\": \"Transferência entre lojas\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/transfers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transfers"
+							]
+						},
+						"description": "Transfer products between stores.\n\n**Validations:**\n- Both stores must be in same organization\n- Sufficient stock in source store\n- Creates EXIT in source, ENTRY in destination"
+					},
+					"response": []
+				},
+				{
+					"name": "13. Get Expiring Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/expiring?days=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"expiring"
+							],
+							"query": [
+								{
+									"key": "days",
+									"value": "30",
+									"description": "Days until expiration"
+								}
+							]
+						},
+						"description": "Get products expiring soon.\n\n**Use Case:** Prevent losses, plan promotions"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id_2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

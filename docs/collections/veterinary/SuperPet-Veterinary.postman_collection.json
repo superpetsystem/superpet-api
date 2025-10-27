@@ -1,0 +1,320 @@
+{
+	"info": {
+		"_postman_id": "veterinary-collection-001",
+		"name": "SuperPet - Veterinary Records",
+		"description": "Complete veterinary records and vaccination management system.\n\n**Features:**\n- Medical records (consultations, exams, surgeries)\n- Vaccination tracking\n- Upcoming vaccination reminders\n- Complete medical history per pet\n\n**Requires:** VETERINARY_RECORDS feature enabled on store",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Medical Records",
+			"item": [
+				{
+					"name": "1. Create Medical Record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('record_id', response.id);",
+									"    console.log('✅ Record ID saved!');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"petId\": \"{{pet_id}}\",\n  \"storeId\": \"{{store_id}}\",\n  \"veterinarianId\": \"{{employee_id}}\",\n  \"type\": \"CONSULTATION\",\n  \"visitDate\": \"2025-10-21T14:00:00.000Z\",\n  \"reason\": \"Consulta de rotina\",\n  \"symptoms\": \"Pet saudável, sem sintomas\",\n  \"diagnosis\": \"Saúde normal\",\n  \"treatment\": \"Manter dieta balanceada e exercícios regulares\",\n  \"weightKg\": 32.5,\n  \"temperatureCelsius\": 38.5,\n  \"notes\": \"Pet muito bem cuidado\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/veterinary/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"records"
+							]
+						},
+						"description": "Create a veterinary medical record.\n\n**Types:**\n- CONSULTATION\n- EXAM\n- SURGERY\n- EMERGENCY\n- OTHER"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Record by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/veterinary/records/{{record_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"records",
+								"{{record_id}}"
+							]
+						},
+						"description": "Get a specific medical record."
+					},
+					"response": []
+				},
+				{
+					"name": "3. List Pet Records",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/veterinary/pets/{{pet_id}}/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"pets",
+								"{{pet_id}}",
+								"records"
+							]
+						},
+						"description": "List all medical records for a pet.\n\n**Returns:** Complete medical history ordered by date"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Update Record",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"diagnosis\": \"Saúde excelente - atualizado\",\n  \"treatment\": \"Continuar com os cuidados atuais\",\n  \"notes\": \"Pet respondeu muito bem ao tratamento\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/veterinary/records/{{record_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"records",
+								"{{record_id}}"
+							]
+						},
+						"description": "Update an existing medical record."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vaccinations",
+			"item": [
+				{
+					"name": "5. Create Vaccination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('vaccination_id', response.id);",
+									"    console.log('✅ Vaccination ID saved!');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"petId\": \"{{pet_id}}\",\n  \"vaccineName\": \"V10 (Múltipla)\",\n  \"manufacturer\": \"Zoetis\",\n  \"batchNumber\": \"BATCH-2025-001\",\n  \"applicationDate\": \"2025-10-21\",\n  \"nextDoseDate\": \"2026-04-21\",\n  \"notes\": \"Primeira dose - Reforço em 6 meses\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/veterinary/vaccinations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"vaccinations"
+							]
+						},
+						"description": "Register a vaccination.\n\n**Common Vaccines:**\n- V10 (Múltipla)\n- V8\n- Antirrábica\n- Giárdia\n- Gripe Canina"
+					},
+					"response": []
+				},
+				{
+					"name": "6. List Pet Vaccinations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/veterinary/pets/{{pet_id}}/vaccinations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"pets",
+								"{{pet_id}}",
+								"vaccinations"
+							]
+						},
+						"description": "List all vaccinations for a pet."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Upcoming Vaccinations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/veterinary/pets/{{pet_id}}/vaccinations/upcoming?days=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"pets",
+								"{{pet_id}}",
+								"vaccinations",
+								"upcoming"
+							],
+							"query": [
+								{
+									"key": "days",
+									"value": "30",
+									"description": "Look ahead days (default: 30)"
+								}
+							]
+						},
+						"description": "Get upcoming vaccinations for reminders.\n\n**Use Case:** Send reminder notifications to pet owners"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pet_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "service_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "employee_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "booking_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "record_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "vaccination_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

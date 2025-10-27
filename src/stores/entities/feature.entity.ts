@@ -54,5 +54,8 @@ export class FeatureEntity extends BaseEntity {
 
   @Column({ type: 'json', nullable: true })
   metadata: any; // Configurações extras (ícone, cor, ordem de exibição, etc)
+
+  @Column({ type: 'boolean', default: false })
+  divisible: boolean; // Se a feature pode ser dividida entre loja e cliente
 }
 

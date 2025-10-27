@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { StoreFeatureEntity } from '../entities/store-feature.entity';
+import { StoreFeatureEntity, FeatureAccessType } from '../entities/store-feature.entity';
 
 @Injectable()
 export class StoreFeatureRepository {
@@ -23,20 +23,57 @@ export class StoreFeatureRepository {
     return this.repository.findOne({ where: { storeId, featureKey } });
   }
 
+  async findByStoreKeyAndAccessType(
+    storeId: string, 
+    featureKey: string, 
+    accessType: FeatureAccessType
+  ): Promise<StoreFeatureEntity | null> {
+    return this.repository.findOne({ 
+      where: { storeId, featureKey, accessType } 
+    });
+  }
+
   async isFeatureEnabled(storeId: string, featureKey: string): Promise<boolean> {
     const feature = await this.findByStoreAndKey(storeId, featureKey);
     return feature?.enabled || false;
   }
 
-  async upsert(storeId: string, featureKey: string, enabled: boolean, limits?: any): Promise<StoreFeatureEntity> {
-    const existing = await this.findByStoreAndKey(storeId, featureKey);
+  async isFeatureEnabledForAccessType(
+    storeId: string, 
+    featureKey: string, 
+    accessType: FeatureAccessType
+  ): Promise<boolean> {
+    const feature = await this.findByStoreKeyAndAccessType(storeId, featureKey, accessType);
+    return feature?.enabled || false;
+  }
+
+  async upsert(
+    storeId: string, 
+    featureKey: string, 
+    accessType: FeatureAccessType,
+    enabled: boolean, 
+    limits?: any
+  ): Promise<StoreFeatureEntity> {
+    const existing = await this.findByStoreKeyAndAccessType(storeId, featureKey, accessType);
 
     if (existing) {
       await this.repository.update(existing.id, { enabled, limits });
       return this.repository.findOne({ where: { id: existing.id } }) as Promise<StoreFeatureEntity>;
     }
 
-    return this.create({ storeId, featureKey, enabled, limits });
+    return this.create({ storeId, featureKey, accessType, enabled, limits });
+  }
+
+  async deleteByStoreAndKey(storeId: string, featureKey: string): Promise<void> {
+    await this.repository.delete({ storeId, featureKey });
+  }
+
+  async findByStoreAndAccessType(storeId: string, accessType: FeatureAccessType): Promise<StoreFeatureEntity[]> {
+    return this.repository.find({ 
+      where: { storeId, accessType },
+      relations: ['feature'],
+      order: { createdAt: 'ASC' }
+    });
   }
 }
 

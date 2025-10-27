@@ -19,7 +19,7 @@ import { CreateCustomServiceDto } from '../dto/create-custom-service.dto';
 import { CustomServiceEntity, CustomServiceState } from '../entities/custom-service.entity';
 import { EmployeeRole } from '../../employees/entities/employee.entity';
 
-@Controller('v1/stores/:storeId/custom-services')
+@Controller('stores/:storeId/custom-services')
 @UseGuards(JwtAuthGuard)
 export class CustomServicesController {
   constructor(private readonly customServiceService: CustomServiceService) {}

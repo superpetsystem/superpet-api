@@ -131,10 +131,10 @@ async function test4_MultipleValidationErrors() {
 
 // Test 5: Customer não encontrado (404)
 async function test5_CustomerNotFound() {
-  console.log('\nTest 5: GET /v1/customers/:id (ID inexistente)');
+  console.log('\nTest 5: GET /customers/:id (ID inexistente)');
   
   try {
-    await axios.get(`${BASE_URL}/v1/customers/00000000-0000-0000-0000-999999999999`, {
+    await axios.get(`${BASE_URL}/customers/00000000-0000-0000-0000-999999999999`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -152,10 +152,10 @@ async function test5_CustomerNotFound() {
 
 // Test 6: Pet não encontrado (404)
 async function test6_PetNotFound() {
-  console.log('\nTest 6: GET /v1/pets/:id (ID inexistente)');
+  console.log('\nTest 6: GET /pets/:id (ID inexistente)');
   
   try {
-    await axios.get(`${BASE_URL}/v1/pets/00000000-0000-0000-0000-999999999999`, {
+    await axios.get(`${BASE_URL}/pets/00000000-0000-0000-0000-999999999999`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -173,10 +173,10 @@ async function test6_PetNotFound() {
 
 // Test 7: Store não encontrada (404)
 async function test7_StoreNotFound() {
-  console.log('\nTest 7: GET /v1/stores/:id (ID inexistente)');
+  console.log('\nTest 7: GET /stores/:id (ID inexistente)');
   
   try {
-    await axios.get(`${BASE_URL}/v1/stores/00000000-0000-0000-0000-999999999999`, {
+    await axios.get(`${BASE_URL}/stores/00000000-0000-0000-0000-999999999999`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -194,10 +194,10 @@ async function test7_StoreNotFound() {
 
 // Test 8: Customer com nome vazio
 async function test8_CustomerEmptyName() {
-  console.log('\nTest 8: POST /v1/customers (nome vazio)');
+  console.log('\nTest 8: POST /customers (nome vazio)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/customers`, {
+    await axios.post(`${BASE_URL}/customers`, {
       name: '',  // Nome vazio
       email: `test_${Date.now()}@test.com`,
       phone: '+5511999999999',
@@ -223,10 +223,10 @@ async function test8_CustomerEmptyName() {
 
 // Test 9: Pet com nome vazio
 async function test9_PetEmptyName() {
-  console.log('\nTest 9: POST /v1/customers/:customerId/pets (nome vazio)');
+  console.log('\nTest 9: POST /customers/:customerId/pets (nome vazio)');
   
   // Criar customer primeiro
-  const customerRes = await axios.post(`${BASE_URL}/v1/customers`, {
+  const customerRes = await axios.post(`${BASE_URL}/customers`, {
     name: 'Customer Temp',
     email: `temp_${Date.now()}@test.com`,
     phone: '+5511888888888',
@@ -237,7 +237,8 @@ async function test9_PetEmptyName() {
   customerId = customerRes.data.id;
   
   try {
-    await axios.post(`${BASE_URL}/v1/customers/${customerId}/pets`, {
+    await axios.post(`${BASE_URL}/pets`, {
+      customerId: customerId,
       name: '',  // Nome vazio
       species: 'DOG',
       weightKg: 10,
@@ -263,10 +264,10 @@ async function test9_PetEmptyName() {
 
 // Test 10: Service com código vazio
 async function test10_ServiceEmptyCode() {
-  console.log('\nTest 10: POST /v1/services (código vazio)');
+  console.log('\nTest 10: POST /services (código vazio)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/services`, {
+    await axios.post(`${BASE_URL}/services`, {
       code: '',  // Código vazio
       name: 'Serviço Teste',
       durationMinutes: 60,
@@ -293,10 +294,11 @@ async function test10_ServiceEmptyCode() {
 
 // Test 11: Pet peso negativo
 async function test11_PetNegativeWeight() {
-  console.log('\nTest 11: POST /v1/customers/:customerId/pets (peso negativo)');
+  console.log('\nTest 11: POST /customers/:customerId/pets (peso negativo)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/customers/${customerId}/pets`, {
+    await axios.post(`${BASE_URL}/pets`, {
+      customerId: customerId,
       name: 'Pet Test',
       species: 'DOG',
       weightKg: -5,  // Peso negativo
@@ -318,10 +320,11 @@ async function test11_PetNegativeWeight() {
 
 // Test 12: Pet peso acima do máximo (200kg)
 async function test12_PetWeightTooHigh() {
-  console.log('\nTest 12: POST /v1/customers/:customerId/pets (peso > 200kg)');
+  console.log('\nTest 12: POST /customers/:customerId/pets (peso > 200kg)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/customers/${customerId}/pets`, {
+    await axios.post(`${BASE_URL}/pets`, {
+      customerId: customerId,
       name: 'Elephant',
       species: 'OTHER',
       weightKg: 500,  // Acima do máximo

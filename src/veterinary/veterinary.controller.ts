@@ -19,7 +19,7 @@ import { VeterinaryService } from './services/veterinary.service';
 import { CreateVeterinaryRecordDto } from './dto/create-veterinary-record.dto';
 import { CreateVaccinationDto } from './dto/create-vaccination.dto';
 
-@Controller('v1/veterinary')
+@Controller('veterinary')
 @UseGuards(JwtAuthGuard, FeatureGuard)
 @RequireFeature('VETERINARY_RECORDS' as any)
 export class VeterinaryController {
@@ -58,7 +58,7 @@ export class VeterinaryController {
   async getPetRecords(@CurrentUser() user: any, @Param('petId') petId: string) {
     this.logger.log(`📋 List pet records - Pet: ${petId}`);
 
-    const records = await this.veterinaryService.findRecordsByPet(petId);
+    const records = await this.veterinaryService.findRecordsByPet(petId, user.organizationId);
 
     this.logger.log(`✅ Found ${records.length} records`);
     return records;

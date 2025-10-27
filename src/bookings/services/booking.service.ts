@@ -66,8 +66,8 @@ export class BookingService {
     return this.bookingRepository.findByStore(storeId, date);
   }
 
-  async findByCustomer(customerId: string): Promise<BookingEntity[]> {
-    return this.bookingRepository.findByCustomer(customerId);
+  async findByCustomer(customerId: string, organizationId: string): Promise<BookingEntity[]> {
+    return this.bookingRepository.findByCustomer(customerId, organizationId);
   }
 
   async confirm(id: string): Promise<BookingEntity> {

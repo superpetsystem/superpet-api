@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "stores-collection-001",
 		"name": "SuperPet - Stores & Features",
-		"description": "Store management with multi-location support and dynamic feature configuration.\n\n**Features:**\n- Create and manage stores\n- Configure store features (SERVICE_CATALOG, TELEPICKUP, LIVE_CAM, etc)\n- Set feature limits per store\n- Enable/disable features dynamically",
+		"description": "Store management with multi-location support and dynamic feature configuration.\n\n**Features:**\n- Create and manage stores\n- Configure store features (SERVICE_CATALOG, TELEPICKUP, LIVE_CAM, etc)\n- Set feature limits per store\n- Enable/disable features dynamically\n- SaaS Division: Configure features for STORE only or STORE + CUSTOMER access",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -30,9 +30,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores"]
+							"raw": "{{base_url}}/stores",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores"
+							]
 						}
 					}
 				},
@@ -48,9 +52,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores"]
+							"raw": "{{base_url}}/stores",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores"
+							]
 						}
 					}
 				},
@@ -66,9 +74,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}"]
+							"raw": "{{base_url}}/stores/{{store_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}"
+							]
 						}
 					}
 				},
@@ -93,9 +106,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}"]
+							"raw": "{{base_url}}/stores/{{store_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}"
+							]
 						}
 					}
 				},
@@ -120,9 +138,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "status"]
+							"raw": "{{base_url}}/stores/{{store_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"status"
+							]
 						},
 						"description": "Status: ACTIVE | INACTIVE | MAINTENANCE"
 					}
@@ -148,9 +172,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/opening-hours",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "opening-hours"]
+							"raw": "{{base_url}}/stores/{{store_id}}/opening-hours",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"opening-hours"
+							]
 						}
 					}
 				},
@@ -175,9 +205,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/capacity",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "capacity"]
+							"raw": "{{base_url}}/stores/{{store_id}}/capacity",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"capacity"
+							]
 						}
 					}
 				},
@@ -202,9 +238,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/blackouts",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "blackouts"]
+							"raw": "{{base_url}}/stores/{{store_id}}/blackouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"blackouts"
+							]
 						},
 						"description": "Set blackout dates when store is closed"
 					}
@@ -226,9 +268,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/features",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "features"]
+							"raw": "{{base_url}}/stores/{{store_id}}/features",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"features"
+							]
 						},
 						"description": "List all available features for the store"
 					}
@@ -254,9 +302,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/features/TELEPICKUP",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "features", "TELEPICKUP"]
+							"raw": "{{base_url}}/stores/{{store_id}}/features/TELEPICKUP",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"features",
+								"TELEPICKUP"
+							]
 						}
 					}
 				},
@@ -281,14 +336,81 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/features/LIVE_CAM",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "features", "LIVE_CAM"]
+							"raw": "{{base_url}}/stores/{{store_id}}/features/LIVE_CAM",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"features",
+								"LIVE_CAM"
+							]
 						}
 					}
 				},
 				{
-					"name": "4. Disable Feature",
+					"name": "4. Enable Feature with STORE + CUSTOMER Access",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"featureKey\": \"SERVICE_CATALOG\",\n  \"enabled\": true,\n  \"storeLimits\": {\n    \"maxServicesPerDay\": 50\n  },\n  \"customerLimits\": {\n    \"allowSelfService\": true,\n    \"requireApproval\": false,\n    \"maxDailyUsage\": 5\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/features",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"features"
+							]
+						},
+						"description": "Enable a divisible feature (creates both STORE and CUSTOMER entries)"
+					}
+				},
+				{
+					"name": "5. Get Customer Features",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stores/{{store_id}}/features/customer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"features",
+								"customer"
+							]
+						},
+						"description": "List all features available to customers"
+					}
+				},
+				{
+					"name": "6. Disable Feature",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -308,9 +430,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/features/TELEPICKUP",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "features", "TELEPICKUP"]
+							"raw": "{{base_url}}/stores/{{store_id}}/features/TELEPICKUP",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"features",
+								"TELEPICKUP"
+							]
 						}
 					}
 				}
@@ -335,4 +464,3 @@
 		}
 	]
 }
-

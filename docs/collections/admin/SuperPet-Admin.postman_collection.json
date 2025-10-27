@@ -1,0 +1,424 @@
+{
+	"info": {
+		"_postman_id": "admin-collection-001",
+		"name": "SuperPet - Admin (SUPER_ADMIN)",
+		"description": "SUPER_ADMIN endpoints for managing organizations, stores, owners and features.\n\n**Authentication:** Requires SUPER_ADMIN role (created via SQL only)\n\n**Credentials:**\n- Email: superadmin@superpet.com.br\n- Password: Super@2024!Admin\n\n**Features:**\n- Create organizations\n- Create stores for any organization\n- Create OWNERs for organizations\n- Manage features (enable/disable)\n- View organization-wide feature status",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Login as SUPER_ADMIN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('access_token', 'Bearer ' + response.access_token);",
+							"    pm.collectionVariables.set('super_admin_id', response.user.id);",
+							"    console.log('✅ SUPER_ADMIN token saved!');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"superadmin@superpet.com.br\",\n  \"password\": \"Super@2024!Admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				},
+				"description": "Login as SUPER_ADMIN to access admin endpoints.\n\n**Note:** SUPER_ADMIN can only be created via SQL script (apply-superadmin.js)"
+			},
+			"response": []
+		},
+		{
+			"name": "2. List All Features",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/admin/features",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"features"
+					]
+				},
+				"description": "List all available features in the system.\n\n**Returns:** Array of 13 features with categories, plans, and default limits"
+			},
+			"response": []
+		},
+		{
+			"name": "3. List Organizations",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/admin/organizations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations"
+					]
+				},
+				"description": "List all organizations in the system."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Create Organization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('organization_id', response.id);",
+							"    console.log('✅ Organization ID saved!');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"PetShop ABC\",\n  \"slug\": \"petshop-abc-{{$randomInt}}\",\n  \"plan\": \"PRO\",\n  \"limits\": {\n    \"employees\": 100,\n    \"stores\": 20,\n    \"monthlyAppointments\": 10000\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/organizations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations"
+					]
+				},
+				"description": "Create a new organization.\n\n**Plans:** FREE, BASIC, PRO, ENTERPRISE"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Create Store for Organization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('store_id', response.id);",
+							"    console.log('✅ Store ID saved!');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"STORE_{{$randomInt}}\",\n  \"name\": \"Loja Centro\",\n  \"timezone\": \"America/Manaus\",\n  \"phone\": \"(92) 3232-1000\",\n  \"email\": \"centro@petshop.com\",\n  \"address\": {\n    \"street\": \"Av. Eduardo Ribeiro\",\n    \"number\": \"500\",\n    \"district\": \"Centro\",\n    \"city\": \"Manaus\",\n    \"state\": \"AM\",\n    \"zip\": \"69010001\",\n    \"country\": \"BR\"\n  },\n  \"openingHours\": {\n    \"mon\": [[\"08:00\", \"18:00\"]],\n    \"tue\": [[\"08:00\", \"18:00\"]],\n    \"wed\": [[\"08:00\", \"18:00\"]],\n    \"thu\": [[\"08:00\", \"18:00\"]],\n    \"fri\": [[\"08:00\", \"18:00\"]],\n    \"sat\": [[\"08:00\", \"13:00\"]]\n  },\n  \"resourcesCatalog\": [\"GROOMER\", \"TABLE\", \"VET_ROOM\"],\n  \"capacity\": {\n    \"GROOMER\": 3,\n    \"TABLE\": 4,\n    \"VET_ROOM\": 1\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/organizations/{{organization_id}}/stores",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations",
+						"{{organization_id}}",
+						"stores"
+					]
+				},
+				"description": "Create a store for a specific organization."
+			},
+			"response": []
+		},
+		{
+			"name": "6. Create OWNER for Organization",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"owner_{{$randomInt}}@petshop.com\",\n  \"password\": \"senha123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/organizations/{{organization_id}}/owners",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations",
+						"{{organization_id}}",
+						"owners"
+					]
+				},
+				"description": "Create OWNER for an organization.\n\n**Creates:**\n- User with USER role\n- Employee with OWNER role"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Get Store Features",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features"
+					]
+				},
+				"description": "List all features enabled for a specific store."
+			},
+			"response": []
+		},
+		{
+			"name": "8. Enable Feature for Store",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"enabled\": true,\n  \"limits\": {\n    \"dailyPickups\": 50,\n    \"maxDistanceKm\": 20\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features/TELEPICKUP",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features",
+						"TELEPICKUP"
+					]
+				},
+				"description": "Enable or configure a feature for a store.\n\n**Features Available:**\n- TELEPICKUP\n- LIVE_CAM\n- INVENTORY_MANAGEMENT\n- REPORTS_DASHBOARD\n- ONLINE_BOOKING\n- VETERINARY_RECORDS\n- And 7 more..."
+			},
+			"response": []
+		},
+		{
+			"name": "9. Update Feature Limits",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"limits\": {\n    \"dailyPickups\": 100,\n    \"maxDistanceKm\": 30\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features/TELEPICKUP/limits",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features",
+						"TELEPICKUP",
+						"limits"
+					]
+				},
+				"description": "Update limits for an already enabled feature."
+			},
+			"response": []
+		},
+		{
+			"name": "10. Disable Feature",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features/TELEPICKUP",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features",
+						"TELEPICKUP"
+					]
+				},
+				"description": "Disable a feature for a store."
+			},
+			"response": []
+		},
+		{
+			"name": "11. Get Organization Stores & Features",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/admin/organizations/{{organization_id}}/stores-features",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations",
+						"{{organization_id}}",
+						"stores-features"
+					]
+				},
+				"description": "Get all stores and their enabled features for an organization.\n\n**Use Case:** Audit features across all stores in an organization"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "super_admin_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "organization_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "bookings-collection-001",
+		"name": "SuperPet - Online Booking",
+		"description": "Online booking system for pet services.\n\n**Features:**\n- Create bookings with date/time\n- Confirm bookings\n- Complete bookings\n- Cancel bookings with reason\n- List bookings by store or customer\n- Conflict detection\n\n**Requires:** ONLINE_BOOKING feature enabled on store",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Create Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('booking_id', response.id);",
+							"    console.log('✅ Booking ID saved!');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"storeId\": \"{{store_id}}\",\n  \"customerId\": \"{{customer_id}}\",\n  \"petId\": \"{{pet_id}}\",\n  \"serviceId\": \"{{service_id}}\",\n  \"bookingDate\": \"2025-10-25\",\n  \"startTime\": \"10:00\",\n  \"notes\": \"Primeira vez do pet\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bookings",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings"
+					]
+				},
+				"description": "Create a new booking.\n\n**Status:** PENDING\n\n**Validations:**\n- Store must have ONLINE_BOOKING feature enabled\n- No conflicting bookings\n- Service must exist\n\n**Errors:**\n- 403: FEATURE_NOT_ENABLED\n- 400: BOOKING_CONFLICT"
+			},
+			"response": []
+		},
+		{
+			"name": "2. List Store Bookings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/bookings/stores/{{store_id}}?date=2025-10-25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"stores",
+						"{{store_id}}"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2025-10-25",
+							"description": "Filter by date (YYYY-MM-DD)"
+						},
+						{
+							"key": "status",
+							"value": "PENDING",
+							"description": "Filter by status",
+							"disabled": true
+						}
+					]
+				},
+				"description": "List all bookings for a store.\n\n**Filters:**\n- date (YYYY-MM-DD)\n- status (PENDING, CONFIRMED, COMPLETED, CANCELLED)"
+			},
+			"response": []
+		},
+		{
+			"name": "3. List Customer Bookings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/bookings/customers/{{customer_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"customers",
+						"{{customer_id}}"
+					]
+				},
+				"description": "List all bookings for a customer."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Confirm Booking",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/bookings/{{booking_id}}/confirm",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"{{booking_id}}",
+						"confirm"
+					]
+				},
+				"description": "Confirm a booking.\n\n**Status:** PENDING → CONFIRMED\n\n**Requires:** OWNER, ADMIN or STAFF role"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Complete Booking",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/bookings/{{booking_id}}/complete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"{{booking_id}}",
+						"complete"
+					]
+				},
+				"description": "Mark booking as completed.\n\n**Status:** CONFIRMED → COMPLETED\n\n**Requires:** OWNER, ADMIN or STAFF role"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Cancel Booking",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"reason\": \"Cliente solicitou cancelamento\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bookings/{{booking_id}}/cancel",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"{{booking_id}}",
+						"cancel"
+					]
+				},
+				"description": "Cancel a booking with reason.\n\n**Status:** ANY → CANCELLED"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pet_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "service_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "booking_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

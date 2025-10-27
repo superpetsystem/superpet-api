@@ -33,7 +33,7 @@ import { EmployeeRole, JobTitle } from '../employees/entities/employee.entity';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-@Controller('v1/admin')
+@Controller('admin')
 @UseGuards(JwtAuthGuard)
 export class AdminController {
   private readonly logger = new Logger(AdminController.name);
@@ -321,6 +321,7 @@ export class AdminController {
     const storeFeature = await this.storeFeatureRepository.upsert(
       storeId,
       featureKey,
+      'STORE' as any, // Usar STORE como padrão para admin
       dto.enabled,
       dto.limits || feature.defaultLimits,
     );
@@ -367,7 +368,7 @@ export class AdminController {
     }
 
     // Atualizar limites
-    const updated = await this.storeFeatureRepository.upsert(storeId, featureKey, storeFeature.enabled, dto.limits);
+    const updated = await this.storeFeatureRepository.upsert(storeId, featureKey, 'STORE' as any, storeFeature.enabled, dto.limits);
 
     this.logger.log(`✅ [SUPER_ADMIN] Feature limits updated`);
 
@@ -402,7 +403,7 @@ export class AdminController {
     }
 
     // Desabilitar feature
-    const storeFeature = await this.storeFeatureRepository.upsert(storeId, featureKey, false, null);
+    const storeFeature = await this.storeFeatureRepository.upsert(storeId, featureKey, 'STORE' as any, false, null);
 
     this.logger.log(`✅ [SUPER_ADMIN] Feature ${featureKey} disabled`);
 

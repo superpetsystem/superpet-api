@@ -1,0 +1,611 @@
+{
+	"info": {
+		"name": "PDV/Caixa - SuperPet API",
+		"description": "Coleção de endpoints para o sistema de PDV/Caixa do SuperPet",
+		"version": "1.0.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "cartId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "itemId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "storeId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customerId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "productId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "serviceId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"superadmin@superpet.com\",\n  \"password\": \"Super@2024!Admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', response.accessToken);",
+									"    pm.collectionVariables.set('storeId', response.user.stores[0]?.id || '');",
+									"    console.log('Token salvo:', response.accessToken);",
+									"}"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Carrinho",
+			"item": [
+				{
+					"name": "Criar Carrinho",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"storeId\": \"{{storeId}}\",\n  \"customerId\": \"{{customerId}}\",\n  \"employeeId\": \"{{employeeId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('cartId', response.id);",
+									"    console.log('Carrinho criado:', response.id);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Buscar Carrinho por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Carrinhos por Loja",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/stores/{{storeId}}/carts?status=OPEN",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"stores",
+								"{{storeId}}",
+								"carts"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "OPEN"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Carrinhos por Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/customers/{{customerId}}/carts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"customers",
+								"{{customerId}}",
+								"carts"
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Carrinho Ativo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/stores/{{storeId}}/carts/active?customerId={{customerId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"stores",
+								"{{storeId}}",
+								"carts",
+								"active"
+							],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "{{customerId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Atualizar Status do Carrinho",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"COMPLETED\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"status"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Itens do Carrinho",
+			"item": [
+				{
+					"name": "Adicionar Produto ao Carrinho",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"PRODUCT\",\n  \"productId\": \"{{productId}}\",\n  \"name\": \"Produto Teste\",\n  \"unitPrice\": 25.50,\n  \"quantity\": 2,\n  \"discountAmount\": 2.00,\n  \"taxAmount\": 1.00\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('itemId', response.id);",
+									"    console.log('Item adicionado:', response.id);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Adicionar Serviço ao Carrinho",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"SERVICE\",\n  \"serviceId\": \"{{serviceId}}\",\n  \"name\": \"Serviço Teste\",\n  \"unitPrice\": 50.00,\n  \"quantity\": 1,\n  \"discountAmount\": 5.00,\n  \"taxAmount\": 2.50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Itens do Carrinho",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
+						}
+					}
+				},
+				{
+					"name": "Atualizar Item do Carrinho",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": 3,\n  \"discountAmount\": 5.00,\n  \"taxAmount\": 1.50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/items/{{itemId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"items",
+								"{{itemId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Remover Item do Carrinho",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/items/{{itemId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"items",
+								"{{itemId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Totais",
+			"item": [
+				{
+					"name": "Calcular Totais do Carrinho",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/totals",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"totals"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Pagamento",
+			"item": [
+				{
+					"name": "Processar Pagamento",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 100.00,\n  \"paymentMethod\": \"PIX\",\n  \"transactionDetails\": \"Pagamento via PIX\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/payment",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"payment"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Transações do Carrinho",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"transactions"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Recibos",
+			"item": [
+				{
+					"name": "Gerar Recibo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notes\": \"Recibo de venda\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/receipt",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"receipt"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Recibos do Carrinho",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts/{{cartId}}/receipts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts",
+								"{{cartId}}",
+								"receipts"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Relatórios",
+			"item": [
+				{
+					"name": "Resumo de Vendas Diárias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/stores/{{storeId}}/sales/daily?date=2024-10-24",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"stores",
+								"{{storeId}}",
+								"sales",
+								"daily"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-10-24"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Busca Avançada",
+			"item": [
+				{
+					"name": "Buscar Carrinhos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pdv/carts?storeId={{storeId}}&status=COMPLETED&startDate=2024-10-01&endDate=2024-10-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pdv",
+								"carts"
+							],
+							"query": [
+								{
+									"key": "storeId",
+									"value": "{{storeId}}"
+								},
+								{
+									"key": "status",
+									"value": "COMPLETED"
+								},
+								{
+									"key": "startDate",
+									"value": "2024-10-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-10-31"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

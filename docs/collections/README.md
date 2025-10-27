@@ -8,15 +8,20 @@ Complete Postman collections for all API modules with automated tests and variab
 
 | # | Collection | Endpoints | Description |
 |---|------------|-----------|-------------|
-| 1 | [**Auth**](./auth/) | 3 | Authentication & user profile |
-| 2 | [**Employees**](./employees/) | 10 | Employee management with roles & job titles |
-| 3 | [**Stores**](./stores/) | 12 | Store management & feature configuration |
-| 4 | [**Customers**](./customers/) | 11 | Customer, addresses & personal data |
-| 5 | [**Pets**](./pets/) | 7 | Pet management with multi-species support |
-| 6 | [**Services**](./services/) | 13 | Service catalog & store-specific pricing |
-| 7 | [**Features**](./features/) | 8 | TelePickup & Live Camera features |
+| 1 | [**Auth**](./auth/) | 7 | Authentication, password recovery & refresh token ✨ |
+| 2 | [**Admin**](./admin/) | 11 | SUPER_ADMIN: organizations, stores, owners & features 🆕 |
+| 3 | [**Employees**](./employees/) | 10 | Employee management with roles & job titles |
+| 4 | [**Stores**](./stores/) | 12 | Store management & feature configuration |
+| 5 | [**Customers**](./customers/) | 11 | Customer, addresses & personal data |
+| 6 | [**Pets**](./pets/) | 7 | Pet management with multi-species support |
+| 7 | [**Services**](./services/) | 13 | Service catalog & store-specific pricing |
+| 8 | [**Features**](./features/) | 8 | TelePickup & Live Camera features |
+| 9 | [**Bookings**](./bookings/) | 6 | Online booking system 🆕 |
+| 10 | [**Veterinary**](./veterinary/) | 7 | Medical records & vaccinations 🆕 |
+| 11 | [**Inventory**](./inventory/) | 13 | Stock & product management 🆕 |
+| 12 | [**Reports**](./reports/) | 4 | Analytics & business intelligence 🆕 |
 
-**Total: 64 endpoints documented**
+**Total: 109 endpoints documented** (was 64)
 
 ---
 
@@ -53,15 +58,22 @@ Create a Postman Environment with:
 
 ## 📋 Collection Details
 
-### 🔐 Auth Collection (3 endpoints)
+### 🔐 Auth Collection (7 endpoints)
+**Authentication:**
 - POST /auth/register
 - POST /auth/login
 - GET /auth/me
 
+**Password Management:** ✨
+- POST /auth/change-password
+- POST /auth/forgot-password
+- POST /auth/reset-password
+- POST /auth/refresh
+
 **Features:**
-- Auto-saves JWT token
-- Sets user_id variable
-- Automatic Bearer prefix
+- Auto-saves JWT token & refresh token
+- Password recovery flow with 64-char tokens
+- Token expiry: access 15min, refresh 7d
 
 ### 👥 Employees Collection (10 endpoints)
 - POST /v1/employees (create with role)
@@ -147,6 +159,70 @@ Create a Postman Environment with:
 - GET /v1/customers/:customerId/pets/:petId/live-cam
 - DELETE /v1/stores/:storeId/live-cam/streams/:id
 
+### 👨‍💼 Admin Collection (11 endpoints) 🆕
+**SUPER_ADMIN Only:**
+- GET /v1/admin/organizations
+- POST /v1/admin/organizations
+- POST /v1/admin/organizations/:id/stores
+- POST /v1/admin/organizations/:id/owners
+
+**Feature Orchestration:**
+- GET /v1/admin/features
+- GET /v1/admin/stores/:storeId/features
+- POST /v1/admin/stores/:storeId/features/:key
+- PUT /v1/admin/stores/:storeId/features/:key/limits
+- DELETE /v1/admin/stores/:storeId/features/:key
+- GET /v1/admin/organizations/:orgId/stores-features
+
+### 📅 Bookings Collection (6 endpoints) 🆕
+- POST /v1/bookings
+- GET /v1/bookings/stores/:storeId
+- GET /v1/bookings/customers/:customerId
+- PATCH /v1/bookings/:id/confirm
+- PATCH /v1/bookings/:id/complete
+- PATCH /v1/bookings/:id/cancel
+
+**Status Flow:** PENDING → CONFIRMED → COMPLETED
+
+### 🏥 Veterinary Collection (7 endpoints) 🆕
+**Medical Records:**
+- POST /v1/veterinary/records
+- GET /v1/veterinary/records/:id
+- GET /v1/veterinary/pets/:petId/records
+- PUT /v1/veterinary/records/:id
+
+**Vaccinations:**
+- POST /v1/veterinary/vaccinations
+- GET /v1/veterinary/pets/:petId/vaccinations
+- GET /v1/veterinary/pets/:petId/vaccinations/upcoming
+
+### 📦 Inventory Collection (13 endpoints) 🆕
+**Products:**
+- POST /v1/products
+- GET /v1/products
+- GET /v1/products/:id
+- PUT /v1/products/:id
+- DELETE /v1/products/:id
+
+**Stock Management:**
+- GET /v1/stores/:storeId/stock
+- POST /v1/stores/:storeId/stock/movements
+- POST /v1/stores/:storeId/stock/adjust
+- GET /v1/stores/:storeId/stock/movements
+- GET /v1/stores/:storeId/stock/alerts
+
+**Transfers:**
+- POST /v1/transfers
+- GET /v1/stores/:storeId/expiring
+
+### 📊 Reports Collection (4 endpoints) 🆕
+- GET /v1/reports/dashboard
+- GET /v1/reports/customers
+- GET /v1/reports/pets
+- GET /v1/reports/stores/:storeId/performance
+
+**Periods:** DAY, WEEK, MONTH, YEAR, CUSTOM
+
 ---
 
 ## 🔄 Workflow Example
@@ -181,7 +257,11 @@ Collections automatically save these variables on successful responses:
 | Collection | Variable | Saved From |
 |-----------|----------|------------|
 | Auth | `access_token` | Register/Login response |
+| Auth | `refresh_token` | Login response ✨ |
+| Auth | `reset_token` | Forgot password response ✨ |
 | Auth | `user_id` | User ID from response |
+| Admin | `super_admin_id` | SUPER_ADMIN login 🆕 |
+| Admin | `organization_id` | Create organization 🆕 |
 | Employees | `employee_id` | Create employee response |
 | Stores | `store_id` | Create store response |
 | Customers | `customer_id` | Create customer response |
@@ -190,6 +270,10 @@ Collections automatically save these variables on successful responses:
 | Services | `custom_service_id` | Create custom service response |
 | Features | `pickup_id` | Create pickup response |
 | Features | `stream_id` | Create stream response |
+| Bookings | `booking_id` | Create booking 🆕 |
+| Veterinary | `record_id` | Create record 🆕 |
+| Veterinary | `vaccination_id` | Create vaccination 🆕 |
+| Inventory | `product_id` | Create product 🆕 |
 
 ---
 

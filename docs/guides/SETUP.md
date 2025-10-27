@@ -18,10 +18,10 @@ cp env/template.env env/local.env
 # 2. Edit env/local.env with your database credentials
 
 # 3. Run migrations
-npm run migration:run:local
+npm run database:migration:run:local
 
 # 4. Seed database
-npm run seed:local
+npm run database:seed
 
 # 5. Start API
 npm run start:local
@@ -59,7 +59,7 @@ NODE_ENV=local|staging|production
 
 ```bash
 npm run start:local        # Start with hot-reload
-npm run start:debug        # Start with debugger
+npm run start:local:debug  # Start with debugger
 npm run build              # Build for production
 ```
 
@@ -67,50 +67,50 @@ npm run build              # Build for production
 
 ```bash
 # Create empty migration
-npm run migration:create src/database/migrations/Name
+npm run database:migration:create src/database/migrations/Name
 
 # Generate from entities
-npm run migration:generate:local src/database/migrations/Name
+npm run database:migration:generate:local src/database/migrations/Name
 
 # Run migrations
-npm run migration:run:local
-npm run migration:run:staging
-npm run migration:run:production
+npm run database:migration:run:local
+npm run database:migration:run:staging
+npm run database:migration:run:production
 
 # Revert last migration
-npm run migration:revert:local
+npm run database:migration:revert:local
 
 # Show migration status
-npm run migration:show:local
+npm run database:migration:status:local
 ```
 
 ### Database
 
 ```bash
-npm run seed:local         # Seed with test data
-npm run seed:staging       # Seed staging
-npm run seed:prod          # Seed production
+npm run database:seed         # Seed with test data (local)
 
-npm run schema:drop        # ⚠️  Drop all tables
-npm run schema:sync        # ⚠️  Sync schema (dev only)
+npm run database:schema:drop  # ⚠️  Drop all tables
+npm run database:schema:sync  # ⚠️  Sync schema (dev only)
 ```
 
 ### Testing
 
 ```bash
-npm test                   # Unit tests
+npm run test:unit          # Unit tests
 npm run test:e2e           # E2E tests
-npm run test:cov           # Coverage report
+npm run test:coverage      # Coverage report
 
-# Automation tests (88 tests)
-node test/automation/run-all-tests.js
+# Automation tests (134 tests)
+npm run test:automation:all
+npm run test:automation:from-scratch
+npm run test:database:reset
 ```
 
 ### Code Quality
 
 ```bash
-npm run lint               # Run ESLint
-npm run format             # Run Prettier
+npm run lint:fix           # Run ESLint with fix
+npm run format:code        # Run Prettier
 ```
 
 ---
@@ -132,7 +132,7 @@ npm run format             # Run Prettier
 
 ```bash
 # Local environment
-npm run seed:local
+npm run database:seed
 ```
 
 **Output:**
@@ -157,12 +157,12 @@ Located in `src/database/seeds/`:
 
 ```bash
 # Drop and recreate
-npm run schema:drop
-npm run migration:run:local
-npm run seed:local
+npm run database:schema:drop
+npm run database:migration:run:local
+npm run database:seed
 ```
 
-**⚠️  Warning:** `schema:drop` deletes ALL data!
+**⚠️  Warning:** `database:schema:drop` deletes ALL data!
 
 ---
 
@@ -184,10 +184,10 @@ CREATE DATABASE superpet_db;
 exit
 
 # 4. Run migrations
-npm run migration:run:local
+npm run database:migration:run:local
 
 # 5. Seed data
-npm run seed:local
+npm run database:seed
 
 # 6. Start server
 npm run start:local
@@ -204,7 +204,7 @@ curl http://localhost:3000
 npm run start:local
 
 # In another terminal: Run tests
-node test/automation/run-all-tests.js
+npm run test:automation:all
 ```
 
 ### Before Deployment
@@ -225,12 +225,12 @@ npm run start:staging
 # 1. Create entity in src/*/entities/
 
 # 2. Generate migration
-npm run migration:generate:local src/database/migrations/AddNewTable
+npm run database:migration:generate:local src/database/migrations/AddNewTable
 
 # 3. Review generated migration
 
 # 4. Run migration
-npm run migration:run:local
+npm run database:migration:run:local
 
 # 5. Test
 npm run start:local
@@ -282,7 +282,7 @@ After setup, verify:
 - [ ] Database connection established
 - [ ] http://localhost:3000 returns "Hello World!"
 - [ ] http://localhost:3000/auth/me returns 401 (expected)
-- [ ] `node test/automation/run-all-tests.js` passes 88 tests
+- [ ] `npm run test:automation:all` passes 134 tests
 
 ---
 
@@ -306,11 +306,11 @@ mysql -u root -p superpet_db
 
 ```bash
 # Check migration status
-npm run migration:show:local
+npm run database:migration:status:local
 
 # If stuck, revert and retry
-npm run migration:revert:local
-npm run migration:run:local
+npm run database:migration:revert:local
+npm run database:migration:run:local
 ```
 
 ### Port Already in Use
@@ -332,9 +332,9 @@ lsof -ti:3000 | xargs kill
 
 ```bash
 # Reset database
-npm run schema:drop
-npm run migration:run:local
-npm run seed:local
+npm run database:schema:drop
+npm run database:migration:run:local
+npm run database:seed
 ```
 
 ---

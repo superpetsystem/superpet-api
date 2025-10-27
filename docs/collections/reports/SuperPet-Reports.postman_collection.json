@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "reports-collection-001",
+		"name": "SuperPet - Reports & Analytics",
+		"description": "Business intelligence and reporting system.\n\n**Features:**\n- Dashboard overview with KPIs\n- Customer analytics\n- Pet statistics\n- Store performance metrics\n- Custom date periods\n\n**Requires:** REPORTS_DASHBOARD feature enabled on store",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Dashboard Overview",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/reports/dashboard",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"dashboard"
+					]
+				},
+				"description": "Get organization-wide dashboard metrics.\n\n**Returns:**\n- Total customers\n- Total pets  \n- Total stores\n- Active employees\n- Recent activity"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Customer Analytics",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/reports/customers?period=MONTH&startDate=2025-09-01&endDate=2025-10-01",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"customers"
+					],
+					"query": [
+						{
+							"key": "period",
+							"value": "MONTH",
+							"description": "DAY, WEEK, MONTH, YEAR, CUSTOM"
+						},
+						{
+							"key": "startDate",
+							"value": "2025-09-01",
+							"description": "For CUSTOM period (YYYY-MM-DD)"
+						},
+						{
+							"key": "endDate",
+							"value": "2025-10-01",
+							"description": "For CUSTOM period (YYYY-MM-DD)"
+						}
+					]
+				},
+				"description": "Get customer analytics.\n\n**Metrics:**\n- New customers in period\n- Total customers\n- Growth rate\n- Status distribution"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Pet Statistics",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/reports/pets?period=WEEK",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"pets"
+					],
+					"query": [
+						{
+							"key": "period",
+							"value": "WEEK",
+							"description": "DAY, WEEK, MONTH, YEAR"
+						}
+					]
+				},
+				"description": "Get pet statistics.\n\n**Metrics:**\n- Total pets\n- By species (DOG, CAT, BIRD, etc)\n- By size\n- New registrations"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Store Performance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/reports/stores/{{store_id}}/performance?period=MONTH",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"stores",
+						"{{store_id}}",
+						"performance"
+					],
+					"query": [
+						{
+							"key": "period",
+							"value": "MONTH",
+							"description": "Performance period"
+						}
+					]
+				},
+				"description": "Get store performance metrics.\n\n**Metrics:**\n- Appointments count\n- Revenue\n- Top services\n- Occupancy rate"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "store_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -9,7 +9,7 @@ let customerId = null;
 let petId = null;
 let pickupId = null;
 let streamId = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('🎯 Iniciando testes de Features (TELEPICKUP e LIVE_CAM)\n');
 
@@ -24,12 +24,42 @@ async function setup() {
   customerId = petsResult.customerId;
   petId = petsResult.petId;
 
+  // Criar loja e habilitar features
+  const storeResponse = await axios.post(`${BASE_URL}/stores`, {
+    code: `FEAT_STORE_${Date.now()}`,
+    name: 'Loja para Features',
+    timezone: 'America/Manaus',
+    openingHours: { mon: [['08:00', '18:00']] },
+    resourcesCatalog: ['GROOMER'],
+    capacity: { GROOMER: 2 },
+  }, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  
+  storeId = storeResponse.data.id;
+  
+  // Habilitar features TELEPICKUP e LIVE_CAM
+  try {
+    await axios.put(
+      `${BASE_URL}/stores/${storeId}/features/TELEPICKUP`,
+      { enabled: true },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    await axios.put(
+      `${BASE_URL}/stores/${storeId}/features/LIVE_CAM`,
+      { enabled: true },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    // Features podem não existir em banco limpo
+  }
+
   console.log('\n✅ Setup completo para testes de Features\n');
 }
 
 // Test 1: Criar Pickup (TELEPICKUP)
 async function test1_CreatePickup() {
-  console.log('Test 1: POST /v1/stores/:storeId/pickups');
+  console.log('Test 1: POST /stores/:storeId/pickups');
   
   try {
     const windowStart = new Date();
@@ -39,7 +69,7 @@ async function test1_CreatePickup() {
     windowEnd.setHours(windowEnd.getHours() + 2);
 
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups`,
+      `${BASE_URL}/stores/${storeId}/pickups`,
       {
         customerId: customerId,
         petId: petId,
@@ -65,7 +95,7 @@ async function test1_CreatePickup() {
 
 // Test 2: Atualizar status do pickup
 async function test2_UpdatePickupStatus() {
-  console.log('\nTest 2: PATCH /v1/stores/:storeId/pickups/:id/status');
+  console.log('\nTest 2: PATCH /stores/:storeId/pickups/:id/status');
   
   if (!pickupId) {
     console.log('   ⚠️  Pulado (sem pickupId)');
@@ -74,7 +104,7 @@ async function test2_UpdatePickupStatus() {
   
   try {
     const response = await axios.patch(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups/${pickupId}/status`,
+      `${BASE_URL}/stores/${storeId}/pickups/${pickupId}/status`,
       { status: 'CONFIRMED' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -91,13 +121,13 @@ async function test2_UpdatePickupStatus() {
 
 // Test 3: Listar pickups
 async function test3_ListPickups() {
-  console.log('\nTest 3: GET /v1/stores/:storeId/pickups');
+  console.log('\nTest 3: GET /stores/:storeId/pickups');
   
   try {
     const today = new Date().toISOString().split('T')[0];
     
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups?date=${today}`,
+      `${BASE_URL}/stores/${storeId}/pickups?date=${today}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -113,14 +143,14 @@ async function test3_ListPickups() {
 
 // Test 4: Criar stream (LIVE_CAM)
 async function test4_CreateStream() {
-  console.log('\nTest 4: POST /v1/stores/:storeId/live-cam/streams');
+  console.log('\nTest 4: POST /live-cam/stores/:storeId/streams');
   
   try {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
 
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/live-cam/streams`,
+      `${BASE_URL}/live-cam/stores/${storeId}/streams`,
       {
         petId: petId,
         streamUrl: 'https://player.example.com/live/test123',
@@ -146,11 +176,11 @@ async function test4_CreateStream() {
 
 // Test 5: Cliente ver streams do pet
 async function test5_GetPetStreams() {
-  console.log('\nTest 5: GET /v1/customers/:customerId/pets/:petId/live-cam');
+  console.log('\nTest 5: GET /live-cam/customers/:customerId/pets/:petId');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/customers/${customerId}/pets/${petId}/live-cam`,
+      `${BASE_URL}/live-cam/customers/${customerId}/pets/${petId}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -166,7 +196,7 @@ async function test5_GetPetStreams() {
 
 // Test 6: Deletar stream
 async function test6_DeleteStream() {
-  console.log('\nTest 6: DELETE /v1/stores/:storeId/live-cam/streams/:id');
+  console.log('\nTest 6: DELETE /live-cam/stores/:storeId/streams/:id');
   
   if (!streamId) {
     console.log('   ⚠️  Pulado (sem streamId)');
@@ -175,7 +205,7 @@ async function test6_DeleteStream() {
   
   try {
     const response = await axios.delete(
-      `${BASE_URL}/v1/stores/${STORE_ID}/live-cam/streams/${streamId}`,
+      `${BASE_URL}/live-cam/stores/${storeId}/streams/${streamId}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -190,7 +220,7 @@ async function test6_DeleteStream() {
 
 // Test 7: Criar pickup com janela inválida
 async function test7_CreatePickupInvalidWindow() {
-  console.log('\nTest 7: POST /v1/stores/:storeId/pickups (janela inválida)');
+  console.log('\nTest 7: POST /stores/:storeId/pickups (janela inválida)');
   
   try {
     const windowStart = new Date();
@@ -198,7 +228,7 @@ async function test7_CreatePickupInvalidWindow() {
     windowEnd.setMinutes(windowEnd.getMinutes() + 10); // Apenas 10min (< 30min mínimo)
 
     await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/pickups`,
+      `${BASE_URL}/stores/${storeId}/pickups`,
       {
         customerId: customerId,
         petId: petId,

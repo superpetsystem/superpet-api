@@ -15,6 +15,16 @@ export class PetsRepository {
     return this.repository.save(pet);
   }
 
+  async findAll(status?: PetStatus): Promise<PetEntity[]> {
+    const where: any = { deletedAt: IsNull() };
+    
+    if (status) {
+      where.status = status;
+    }
+
+    return this.repository.find({ where });
+  }
+
   async findById(id: string): Promise<PetEntity | null> {
     return this.repository.findOne({
       where: { id, deletedAt: IsNull() },

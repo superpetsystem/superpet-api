@@ -6,7 +6,7 @@ const BASE_URL = 'http://localhost:3000';
 // Variáveis compartilhadas
 let accessToken = null;
 let productId = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('📦 Iniciando testes de Inventory Management\n');
 
@@ -18,12 +18,46 @@ async function login() {
   console.log('\n✅ Autenticado para testes de Inventory\n');
 }
 
-// Test 1: Criar produto
-async function test1_CreateProduct() {
-  console.log('Test 1: POST /v1/products');
+// Helper: Criar loja com feature habilitada
+async function createStoreWithFeature() {
+  console.log('🏪 Criando loja com feature INVENTORY_MANAGEMENT...');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/products`, {
+    // Criar loja
+    const storeResponse = await axios.post(`${BASE_URL}/stores`, {
+      code: `INV_STORE_${Date.now()}`,
+      name: 'Loja Inventory Test',
+      timezone: 'America/Manaus',
+      openingHours: { mon: [['08:00', '18:00']] },
+      resourcesCatalog: ['GROOMER'],
+      capacity: { GROOMER: 2 },
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    storeId = storeResponse.data.id;
+    console.log(`   ✅ Loja criada: ${storeId}`);
+
+    // Habilitar feature INVENTORY_MANAGEMENT
+    await axios.put(`${BASE_URL}/stores/${storeId}/features/INVENTORY_MANAGEMENT`, {
+      enabled: true,
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    console.log(`   ✅ Feature INVENTORY_MANAGEMENT habilitada`);
+  } catch (error) {
+    console.error('   ❌ Erro ao criar loja:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Test 1: Criar produto
+async function test1_CreateProduct() {
+  console.log('Test 1: POST /inventory/products');
+  
+  try {
+    const response = await axios.post(`${BASE_URL}/inventory/products`, {
       code: `PROD_${Date.now()}`,
       name: 'Shampoo Premium',
       description: 'Shampoo para pets de pelo longo',
@@ -54,10 +88,10 @@ async function test1_CreateProduct() {
 
 // Test 2: Listar produtos
 async function test2_ListProducts() {
-  console.log('\nTest 2: GET /v1/products');
+  console.log('\nTest 2: GET /inventory/products');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/products`, {
+    const response = await axios.get(`${BASE_URL}/inventory/products`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -74,10 +108,10 @@ async function test2_ListProducts() {
 
 // Test 3: Ver produto por ID
 async function test3_GetProductById() {
-  console.log('\nTest 3: GET /v1/products/:id');
+  console.log('\nTest 3: GET /inventory/products/:id');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/products/${productId}`, {
+    const response = await axios.get(`${BASE_URL}/inventory/products/${productId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -95,11 +129,11 @@ async function test3_GetProductById() {
 
 // Test 4: Atualizar produto
 async function test4_UpdateProduct() {
-  console.log('\nTest 4: PUT /v1/products/:id');
+  console.log('\nTest 4: PUT /inventory/products/:id');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/products/${productId}`,
+      `${BASE_URL}/inventory/products/${productId}`,
       {
         name: 'Shampoo Premium Plus',
         salePriceCents: 4000,
@@ -122,11 +156,11 @@ async function test4_UpdateProduct() {
 
 // Test 5: Registrar entrada de estoque
 async function test5_RegisterEntry() {
-  console.log('\nTest 5: POST /v1/stores/:storeId/stock/movements (ENTRY)');
+  console.log('\nTest 5: POST /inventory/stores/:storeId/stock/movements (ENTRY)');
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock/movements`,
       {
         productId: productId,
         type: 'ENTRY',
@@ -153,11 +187,11 @@ async function test5_RegisterEntry() {
 
 // Test 6: Ver estoque da loja
 async function test6_GetStoreStock() {
-  console.log('\nTest 6: GET /v1/stores/:storeId/stock');
+  console.log('\nTest 6: GET /inventory/stores/:storeId/stock');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -178,11 +212,11 @@ async function test6_GetStoreStock() {
 
 // Test 7: Registrar saída de estoque
 async function test7_RegisterExit() {
-  console.log('\nTest 7: POST /v1/stores/:storeId/stock/movements (EXIT)');
+  console.log('\nTest 7: POST /inventory/stores/:storeId/stock/movements (EXIT)');
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock/movements`,
       {
         productId: productId,
         type: 'EXIT',
@@ -206,11 +240,11 @@ async function test7_RegisterExit() {
 
 // Test 8: Ajustar estoque manualmente
 async function test8_AdjustStock() {
-  console.log('\nTest 8: POST /v1/stores/:storeId/stock/adjust');
+  console.log('\nTest 8: POST /inventory/stores/:storeId/stock/adjust');
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/adjust`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock/adjust`,
       {
         productId: productId,
         newQuantity: 30,
@@ -232,11 +266,11 @@ async function test8_AdjustStock() {
 
 // Test 9: Ver histórico de movimentações
 async function test9_GetMovements() {
-  console.log('\nTest 9: GET /v1/stores/:storeId/stock/movements');
+  console.log('\nTest 9: GET /inventory/stores/:storeId/stock/movements');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock/movements`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -254,16 +288,16 @@ async function test9_GetMovements() {
 
 // Test 10: Criar produto com código duplicado (deve falhar)
 async function test10_DuplicateProductCode() {
-  console.log('\nTest 10: POST /v1/products (código duplicado)');
+  console.log('\nTest 10: POST /inventory/products (código duplicado)');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/products`, {
+    const response = await axios.get(`${BASE_URL}/inventory/products`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     
     const existingCode = response.data[0].code;
 
-    await axios.post(`${BASE_URL}/v1/products`, {
+    await axios.post(`${BASE_URL}/inventory/products`, {
       code: existingCode,
       name: 'Produto Duplicado',
       category: 'OTHER',
@@ -284,11 +318,11 @@ async function test10_DuplicateProductCode() {
 
 // Test 11: Registrar saída com estoque insuficiente (deve falhar)
 async function test11_InsufficientStock() {
-  console.log('\nTest 11: POST /v1/stores/:storeId/stock/movements (estoque insuficiente)');
+  console.log('\nTest 11: POST /inventory/stores/:storeId/stock/movements (estoque insuficiente)');
   
   try {
     await axios.post(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/movements`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock/movements`,
       {
         productId: productId,
         type: 'EXIT',
@@ -312,11 +346,11 @@ async function test11_InsufficientStock() {
 
 // Test 12: Ver alertas de estoque baixo
 async function test12_LowStockAlerts() {
-  console.log('\nTest 12: GET /v1/stores/:storeId/stock/alerts');
+  console.log('\nTest 12: GET /inventory/stores/:storeId/stock/alerts');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/stores/${STORE_ID}/stock/alerts`,
+      `${BASE_URL}/inventory/stores/${storeId}/stock/alerts`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -338,6 +372,7 @@ async function runAllTests() {
 
   try {
     await login();
+    await createStoreWithFeature();
     await test1_CreateProduct();
     await test2_ListProducts();
     await test3_GetProductById();

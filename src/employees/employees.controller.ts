@@ -19,7 +19,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { EmployeeEntity, EmployeeRole, JobTitle } from './entities/employee.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-@Controller('v1/employees')
+@Controller('employees')
 @UseGuards(JwtAuthGuard)
 export class EmployeesController {
   constructor(private readonly employeeService: EmployeeService) {}

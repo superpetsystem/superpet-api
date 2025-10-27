@@ -27,9 +27,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/employees",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"]
+					"raw": "{{base_url}}/employees",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					]
 				},
 				"description": "Create a new employee. \n\n**Role Permissions:**\n- OWNER can create: OWNER, ADMIN, STAFF, VIEWER\n- ADMIN can create: STAFF, VIEWER\n- STAFF/VIEWER cannot create employees\n\n**Possible Errors:**\n- 400: Email already exists\n- 400: EMPLOYEE_LIMIT_EXCEEDED (plan limit)\n- 403: Insufficient permissions (ADMIN trying to create OWNER)\n- 403: STAFF/VIEWER cannot create employees"
 			},
@@ -55,9 +59,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/employees",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "employees"]
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
 						}
 					},
 					"status": "Created",
@@ -92,9 +100,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/employees",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "employees"]
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -129,9 +141,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/employees",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "employees"]
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
 						}
 					},
 					"status": "Forbidden",
@@ -166,9 +182,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/employees",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "employees"]
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -205,9 +225,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/employees",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"]
+					"raw": "{{base_url}}/employees",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					]
 				}
 			}
 		},
@@ -232,9 +256,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/employees",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"]
+					"raw": "{{base_url}}/employees",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					]
 				}
 			}
 		},
@@ -250,9 +278,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/employees",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"]
+					"raw": "{{base_url}}/employees",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					]
 				},
 				"description": "List all employees in the organization"
 			}
@@ -269,9 +301,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/employees?role=STAFF",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"],
+					"raw": "{{base_url}}/employees?role=STAFF",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					],
 					"query": [
 						{
 							"key": "role",
@@ -294,9 +330,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/employees?jobTitle=GROOMER",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"],
+					"raw": "{{base_url}}/employees?jobTitle=GROOMER",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					],
 					"query": [
 						{
 							"key": "jobTitle",
@@ -319,9 +359,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/employees?storeId={{store_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees"],
+					"raw": "{{base_url}}/employees?storeId={{store_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					],
 					"query": [
 						{
 							"key": "storeId",
@@ -344,9 +388,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/employees/{{employee_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees", "{{employee_id}}"]
+					"raw": "{{base_url}}/employees/{{employee_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees",
+						"{{employee_id}}"
+					]
 				},
 				"description": "Get employee details including stores"
 			}
@@ -372,9 +421,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/employees/{{employee_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees", "{{employee_id}}"]
+					"raw": "{{base_url}}/employees/{{employee_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees",
+						"{{employee_id}}"
+					]
 				},
 				"description": "Update employee role, job title, or store assignments"
 			}
@@ -400,9 +454,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/employees/{{employee_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "employees", "{{employee_id}}"]
+					"raw": "{{base_url}}/employees/{{employee_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees",
+						"{{employee_id}}"
+					]
 				},
 				"description": "Soft delete an employee by setting active=false"
 			}
@@ -431,4 +490,3 @@
 		}
 	]
 }
-

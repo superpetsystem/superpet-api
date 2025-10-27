@@ -5,7 +5,7 @@ const BASE_URL = 'http://localhost:3000';
 
 // Variáveis compartilhadas
 let accessToken = null;
-const STORE_ID = '00000000-0000-0000-0000-000000000101';
+let storeId = null;
 
 console.log('📊 Iniciando testes de Reports Dashboard\n');
 
@@ -17,12 +17,46 @@ async function login() {
   console.log('\n✅ Autenticado para testes de Reports\n');
 }
 
-// Test 1: Dashboard overview
-async function test1_DashboardOverview() {
-  console.log('Test 1: GET /v1/reports/dashboard');
+// Helper: Criar loja com feature habilitada
+async function createStoreWithFeature() {
+  console.log('🏪 Criando loja com feature REPORTS_DASHBOARD...');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/reports/dashboard`, {
+    // Criar loja
+    const storeResponse = await axios.post(`${BASE_URL}/stores`, {
+      code: `REP_STORE_${Date.now()}`,
+      name: 'Loja Reports Test',
+      timezone: 'America/Manaus',
+      openingHours: { mon: [['08:00', '18:00']] },
+      resourcesCatalog: ['GROOMER'],
+      capacity: { GROOMER: 2 },
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    storeId = storeResponse.data.id;
+    console.log(`   ✅ Loja criada: ${storeId}`);
+
+    // Habilitar feature REPORTS_DASHBOARD
+    await axios.put(`${BASE_URL}/stores/${storeId}/features/REPORTS_DASHBOARD`, {
+      enabled: true,
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    console.log(`   ✅ Feature REPORTS_DASHBOARD habilitada`);
+  } catch (error) {
+    console.error('   ❌ Erro ao criar loja:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Test 1: Dashboard overview
+async function test1_DashboardOverview() {
+  console.log('Test 1: GET /reports/dashboard');
+  
+  try {
+    const response = await axios.get(`${BASE_URL}/reports/dashboard`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -43,10 +77,10 @@ async function test1_DashboardOverview() {
 
 // Test 2: Relatório de customers
 async function test2_CustomerReport() {
-  console.log('\nTest 2: GET /v1/reports/customers?period=MONTH');
+  console.log('\nTest 2: GET /reports/customers?period=MONTH');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/reports/customers`, {
+    const response = await axios.get(`${BASE_URL}/reports/customers`, {
       params: { period: 'MONTH' },
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -68,10 +102,10 @@ async function test2_CustomerReport() {
 
 // Test 3: Relatório de pets
 async function test3_PetReport() {
-  console.log('\nTest 3: GET /v1/reports/pets?period=WEEK');
+  console.log('\nTest 3: GET /reports/pets?period=WEEK');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/reports/pets`, {
+    const response = await axios.get(`${BASE_URL}/reports/pets`, {
       params: { period: 'WEEK' },
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -91,11 +125,11 @@ async function test3_PetReport() {
 
 // Test 4: Performance da loja
 async function test4_StorePerformance() {
-  console.log('\nTest 4: GET /v1/reports/stores/:storeId/performance');
+  console.log('\nTest 4: GET /reports/stores/:storeId/performance');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/reports/stores/${STORE_ID}/performance`,
+      `${BASE_URL}/reports/stores/${storeId}/performance`,
       {
         params: { period: 'MONTH' },
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -117,14 +151,14 @@ async function test4_StorePerformance() {
 
 // Test 5: Relatório com período customizado
 async function test5_CustomPeriodReport() {
-  console.log('\nTest 5: GET /v1/reports/customers (período customizado)');
+  console.log('\nTest 5: GET /reports/customers (período customizado)');
   
   try {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
 
-    const response = await axios.get(`${BASE_URL}/v1/reports/customers`, {
+    const response = await axios.get(`${BASE_URL}/reports/customers`, {
       params: {
         period: 'CUSTOM',
         startDate: startDate.toISOString(),
@@ -147,10 +181,10 @@ async function test5_CustomPeriodReport() {
 
 // Test 6: Filtrar produtos por categoria
 async function test6_FilterByCategory() {
-  console.log('\nTest 6: GET /v1/products?category=HYGIENE');
+  console.log('\nTest 6: GET /inventory/products?category=HYGIENE');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/products`, {
+    const response = await axios.get(`${BASE_URL}/inventory/products`, {
       params: { category: 'HYGIENE' },
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -177,6 +211,7 @@ async function runAllTests() {
 
   try {
     await login();
+    await createStoreWithFeature();
     await test1_DashboardOverview();
     await test2_CustomerReport();
     await test3_PetReport();
