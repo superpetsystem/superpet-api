@@ -26,13 +26,13 @@ Postman collection for TelePickup and Live Camera features.
 Before using these endpoints, enable the features in your store:
 
 ```http
-PUT /v1/stores/{{store_id}}/features/TELEPICKUP
+PUT /stores/{{store_id}}/features/TELEPICKUP
 {
   "enabled": true,
   "limits": { "dailyPickups": 50 }
 }
 
-PUT /v1/stores/{{store_id}}/features/LIVE_CAM
+PUT /stores/{{store_id}}/features/LIVE_CAM
 {
   "enabled": true,
   "limits": { "maxConcurrentStreams": 10 }

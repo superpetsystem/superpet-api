@@ -46,16 +46,16 @@ X-Organization-Id: <uuid>  # Optional, overrides JWT claim
 
 | Method | Endpoint | Role | Description |
 |--------|----------|------|-------------|
-| POST | `/v1/employees` | OWNER/ADMIN | Create employee |
-| GET | `/v1/employees` | All | List employees |
-| GET | `/v1/employees/:id` | All | Get by ID |
-| PUT | `/v1/employees/:id` | OWNER/ADMIN | Update |
-| DELETE | `/v1/employees/:id` | OWNER | Delete |
+| POST | `/employees` | OWNER/ADMIN | Create employee |
+| GET | `/employees` | All | List employees |
+| GET | `/employees/:id` | All | Get by ID |
+| PUT | `/employees/:id` | OWNER/ADMIN | Update |
+| DELETE | `/employees/:id` | OWNER | Delete |
 
 ### Create Employee
 
 ```http
-POST /v1/employees
+POST /employees
 {
   "email": "staff@example.com",
   "name": "Staff Member",
@@ -83,16 +83,16 @@ POST /v1/employees
 
 | Method | Endpoint | Role | Description |
 |--------|----------|------|-------------|
-| POST | `/v1/stores` | OWNER | Create store |
-| GET | `/v1/stores` | All | List stores |
-| GET | `/v1/stores/:id` | All | Get by ID |
-| PUT | `/v1/stores/:id` | OWNER/ADMIN | Update |
-| DELETE | `/v1/stores/:id` | OWNER | Delete |
+| POST | `/stores` | OWNER | Create store |
+| GET | `/stores` | All | List stores |
+| GET | `/stores/:id` | All | Get by ID |
+| PUT | `/stores/:id` | OWNER/ADMIN | Update |
+| DELETE | `/stores/:id` | OWNER | Delete |
 
 ### Create Store
 
 ```http
-POST /v1/stores
+POST /stores
 {
   "code": "STORE_001",
   "name": "SuperPet Downtown",
@@ -121,13 +121,13 @@ Features are database-driven and can be enabled/disabled per store.
 
 | Method | Endpoint | Role | Description |
 |--------|----------|------|-------------|
-| GET | `/v1/stores/:storeId/features` | All | List features |
-| PUT | `/v1/stores/:storeId/features/:key` | OWNER/ADMIN | Configure |
+| GET | `/stores/:storeId/features` | All | List features |
+| PUT | `/stores/:storeId/features/:key` | OWNER/ADMIN | Configure |
 
 ### Configure Feature
 
 ```http
-PUT /v1/stores/:storeId/features/TELEPICKUP
+PUT /stores/:storeId/features/TELEPICKUP
 {
   "enabled": true,
   "customLimit": 50
@@ -144,16 +144,16 @@ PUT /v1/stores/:storeId/features/TELEPICKUP
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/customers` | Create customer |
-| GET | `/v1/customers` | List customers |
-| GET | `/v1/customers/:id` | Get by ID |
-| PUT | `/v1/customers/:id` | Update |
-| PATCH | `/v1/customers/:id/status` | Update status |
+| POST | `/customers` | Create customer |
+| GET | `/customers` | List customers |
+| GET | `/customers/:id` | Get by ID |
+| PUT | `/customers/:id` | Update |
+| PATCH | `/customers/:id/status` | Update status |
 
 ### Create Customer
 
 ```http
-POST /v1/customers
+POST /customers
 {
   "name": "John Doe",
   "email": "john@example.com", # At least one contact required
@@ -175,19 +175,19 @@ POST /v1/customers
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/customers/:id/addresses` | Add address |
-| GET | `/v1/customers/:id/addresses` | List addresses |
-| PATCH | `/v1/customers/:id/addresses/:addressId/primary` | Set primary |
+| POST | `/customers/:id/addresses` | Add address |
+| GET | `/customers/:id/addresses` | List addresses |
+| PATCH | `/customers/:id/addresses/:addressId/primary` | Set primary |
 
 ### Personal Data (PII Protected)
 
 | Method | Endpoint | Role | Description |
 |--------|----------|------|-------------|
-| GET | `/v1/customers/:id/personal-data` | OWNER/ADMIN | Get PII |
-| PUT | `/v1/customers/:id/personal-data` | OWNER/ADMIN | Update PII |
+| GET | `/customers/:id/personal-data` | OWNER/ADMIN | Get PII |
+| PUT | `/customers/:id/personal-data` | OWNER/ADMIN | Update PII |
 
 ```http
-PUT /v1/customers/:id/personal-data
+PUT /customers/:id/personal-data
 {
   "cpf": "12345678900",
   "rg": "1234567",
@@ -205,16 +205,16 @@ PUT /v1/customers/:id/personal-data
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/customers/:customerId/pets` | Create pet |
-| GET | `/v1/customers/:customerId/pets` | List customer pets |
-| GET | `/v1/pets/:id` | Get by ID |
-| PUT | `/v1/pets/:id` | Update |
-| PATCH | `/v1/pets/:id/status` | Update status |
+| POST | `/customers/:customerId/pets` | Create pet |
+| GET | `/customers/:customerId/pets` | List customer pets |
+| GET | `/pets/:id` | Get by ID |
+| PUT | `/pets/:id` | Update |
+| PATCH | `/pets/:id/status` | Update status |
 
 ### Create Pet
 
 ```http
-POST /v1/customers/:customerId/pets
+POST /customers/:customerId/pets
 {
   "name": "Thor",
   "species": "DOG",
@@ -243,24 +243,24 @@ Global service catalog with per-store pricing overrides.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/services` | Create service (OWNER) |
-| GET | `/v1/services` | List services |
-| GET | `/v1/services/:id` | Get by ID |
-| PUT | `/v1/services/:id` | Update (OWNER) |
+| POST | `/services` | Create service (OWNER) |
+| GET | `/services` | List services |
+| GET | `/services/:id` | Get by ID |
+| PUT | `/services/:id` | Update (OWNER) |
 
 ### Custom Services (Store Overrides)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/stores/:storeId/custom-services` | Override pricing |
-| GET | `/v1/stores/:storeId/custom-services` | List overrides |
-| POST | `/v1/stores/:storeId/custom-services/:id/publish` | Activate |
-| POST | `/v1/stores/:storeId/custom-services/:id/archive` | Deactivate |
+| POST | `/stores/:storeId/custom-services` | Override pricing |
+| GET | `/stores/:storeId/custom-services` | List overrides |
+| POST | `/stores/:storeId/custom-services/:id/publish` | Activate |
+| POST | `/stores/:storeId/custom-services/:id/archive` | Deactivate |
 
 ### Create Service
 
 ```http
-POST /v1/services
+POST /services
 {
   "code": "BATH_SMALL",
   "name": "Bath - Small Dog",
@@ -278,7 +278,7 @@ POST /v1/services
 ### Override Store Pricing
 
 ```http
-POST /v1/stores/:storeId/custom-services
+POST /stores/:storeId/custom-services
 {
   "serviceId": "service-uuid",
   "priceOverrideCents": 4500, # R$ 45.00
@@ -286,7 +286,7 @@ POST /v1/stores/:storeId/custom-services
 }
 
 # Then publish
-POST /v1/stores/:storeId/custom-services/:id/publish
+POST /stores/:storeId/custom-services/:id/publish
 ```
 
 **States:** DRAFT → PUBLISHED → ARCHIVED
@@ -301,14 +301,14 @@ Pet pickup scheduling with time windows.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/stores/:storeId/pickups` | Schedule pickup |
-| GET | `/v1/stores/:storeId/pickups` | List pickups |
-| PATCH | `/v1/stores/:storeId/pickups/:id/status` | Update status |
+| POST | `/stores/:storeId/pickups` | Schedule pickup |
+| GET | `/stores/:storeId/pickups` | List pickups |
+| PATCH | `/stores/:storeId/pickups/:id/status` | Update status |
 
 ### Schedule Pickup
 
 ```http
-POST /v1/stores/:storeId/pickups
+POST /stores/:storeId/pickups
 {
   "petId": "pet-uuid",
   "scheduledDate": "2025-10-20",
@@ -330,14 +330,14 @@ Real-time pet monitoring streams.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/stores/:storeId/live-cam/streams` | Create stream |
-| GET | `/v1/customers/:customerId/pets/:petId/live-cam` | Get pet streams |
-| DELETE | `/v1/stores/:storeId/live-cam/streams/:id` | End stream |
+| POST | `/stores/:storeId/live-cam/streams` | Create stream |
+| GET | `/customers/:customerId/pets/:petId/live-cam` | Get pet streams |
+| DELETE | `/stores/:storeId/live-cam/streams/:id` | End stream |
 
 ### Create Stream
 
 ```http
-POST /v1/stores/:storeId/live-cam/streams
+POST /stores/:storeId/live-cam/streams
 {
   "petId": "pet-uuid",
   "streamUrl": "https://player.example.com/live/stream123",
@@ -362,10 +362,10 @@ POST /v1/stores/:storeId/live-cam/streams
 
 ```typescript
 // ✅ Good: Scoped by organization
-GET /v1/customers?organizationId=<from-jwt>
+GET /customers?organizationId=<from-jwt>
 
 // ❌ Bad: No cross-tenant access
-GET /v1/customers/:other-org-customer-id
+GET /customers/:other-org-customer-id
 // Returns: 404 Not Found (not 403 Forbidden!)
 ```
 
@@ -407,7 +407,7 @@ Plans enforce limits on resources:
 ### Pagination
 
 ```http
-GET /v1/customers?page=1&limit=20
+GET /customers?page=1&limit=20
 ```
 
 **Response:**
@@ -428,10 +428,10 @@ GET /v1/customers?page=1&limit=20
 ### Filters
 
 ```http
-GET /v1/employees?role=STAFF&jobTitle=GROOMER&active=true
-GET /v1/customers?status=ACTIVE&query=john
-GET /v1/pets?species=DOG&status=ACTIVE
-GET /v1/services?visibility=PUBLIC
+GET /employees?role=STAFF&jobTitle=GROOMER&active=true
+GET /customers?status=ACTIVE&query=john
+GET /pets?species=DOG&status=ACTIVE
+GET /services?visibility=PUBLIC
 ```
 
 ---
@@ -486,8 +486,8 @@ Complete collections available in `docs/collections/`:
 ## ✅ API Standards
 
 ### Versioning
-- All endpoints prefixed with `/v1`
-- Future versions: `/v2`, `/v3`
+- Base URL: `http://localhost:3000`
+- No version prefix (simplified API)
 
 ### HTTP Methods
 - `GET` - Read

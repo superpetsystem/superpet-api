@@ -15,22 +15,22 @@ Collection de endpoints exclusivos para SUPER_ADMIN.
 ## 📋 Endpoints (11)
 
 ### Organizations
-1. **GET** `/v1/admin/organizations` - Listar organizações
-2. **POST** `/v1/admin/organizations` - Criar organização
+1. **GET** `/admin/organizations` - Listar organizações
+2. **POST** `/admin/organizations` - Criar organização
 
 ### Stores
-3. **POST** `/v1/admin/organizations/:id/stores` - Criar loja para organização
+3. **POST** `/admin/organizations/:id/stores` - Criar loja para organização
 
 ### Owners
-4. **POST** `/v1/admin/organizations/:id/owners` - Criar OWNER para organização
+4. **POST** `/admin/organizations/:id/owners` - Criar OWNER para organização
 
 ### Features
-5. **GET** `/v1/admin/features` - Listar todas features do sistema
-6. **GET** `/v1/admin/stores/:storeId/features` - Features de uma loja
-7. **POST** `/v1/admin/stores/:storeId/features/:key` - Habilitar feature
-8. **PUT** `/v1/admin/stores/:storeId/features/:key/limits` - Atualizar limites
-9. **DELETE** `/v1/admin/stores/:storeId/features/:key` - Desabilitar feature
-10. **GET** `/v1/admin/organizations/:orgId/stores-features` - Auditoria de features
+5. **GET** `/admin/features` - Listar todas features do sistema
+6. **GET** `/admin/stores/:storeId/features` - Features de uma loja
+7. **POST** `/admin/stores/:storeId/features/:key` - Habilitar feature
+8. **PUT** `/admin/stores/:storeId/features/:key/limits` - Atualizar limites
+9. **DELETE** `/admin/stores/:storeId/features/:key` - Desabilitar feature
+10. **GET** `/admin/organizations/:orgId/stores-features` - Auditoria de features
 
 ## 🎯 Features Disponíveis
 
@@ -66,7 +66,7 @@ POST /auth/login
 }
 
 # 2. Criar organização
-POST /v1/admin/organizations
+POST /admin/organizations
 {
   "name": "PetShop ABC",
   "slug": "petshop-abc-123",
@@ -78,7 +78,7 @@ POST /v1/admin/organizations
 }
 
 # 3. Habilitar feature
-POST /v1/admin/stores/{storeId}/features/INVENTORY_MANAGEMENT
+POST /admin/stores/{storeId}/features/INVENTORY_MANAGEMENT
 {
   "enabled": true,
   "limits": {
