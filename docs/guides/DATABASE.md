@@ -204,19 +204,19 @@ Located in `src/database/migrations/`:
 
 ```bash
 # Show status
-npm run migration:show:local
+npm run database:migration:status:local
 
 # Run pending
-npm run migration:run:local
+npm run database:migration:run:local
 
 # Revert last
-npm run migration:revert:local
+npm run database:migration:revert:local
 
 # Create new (empty)
-npm run migration:create src/database/migrations/AddColumnToTable
+npm run database:migration:create src/database/migrations/AddColumnToTable
 
 # Generate from entities
-npm run migration:generate:local src/database/migrations/UpdateSchema
+npm run database:migration:generate:local src/database/migrations/UpdateSchema
 ```
 
 ### Migration Structure
@@ -403,8 +403,8 @@ export abstract class BaseEntity {
 
 Before deploying migrations:
 
-- [ ] Tested locally with `migration:run:local`
-- [ ] Tested rollback with `migration:revert:local`
+- [ ] Tested locally with `database:migration:run:local`
+- [ ] Tested rollback with `database:migration:revert:local`
 - [ ] Both `up()` and `down()` implemented
 - [ ] Foreign keys defined correctly
 - [ ] Indexes added for performance

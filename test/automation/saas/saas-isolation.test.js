@@ -44,7 +44,7 @@ async function createOrganization(id, slug, name) {
   }
 }
 
-// Setup: Login como SUPER_ADMIN e criar 2 organizações
+// Setup: Login como SUPER_ADMIN e criar/atualizar 2 organizações
 async function setup() {
   console.log('🔧 Setup: Login como SUPER_ADMIN...\n');
   
@@ -56,8 +56,25 @@ async function setup() {
   
   console.log('🔧 Setup: Criando 2 organizações separadas...\n');
   
-  // Organização 1 (já existe do seed)
-  const org1Id = '00000000-0000-0000-0000-000000000001';
+  // Atualizar Organização 1 (default) para ter plano PRO e limites maiores
+  const mysql = require('mysql2/promise');
+  const connection = await mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'root',
+    database: 'superpet_test',
+  });
+  
+  await connection.execute(
+    `UPDATE organizations 
+     SET plan = 'PRO', 
+         limits = ? 
+     WHERE id = '00000000-0000-0000-0000-000000000001'`,
+    [JSON.stringify({ employees: 50, stores: 20, monthlyAppointments: 5000 })]
+  );
+  
+  await connection.end();
   
   // Organização 2 (nova)
   const org2Id = '00000000-0000-0000-0000-000000000002';
@@ -68,12 +85,12 @@ async function setup() {
 
 // Test 1: SUPER_ADMIN cria employee OWNER na Org 1
 async function test1_CreateOwnerOrg1() {
-  console.log('Test 1: POST /v1/employees (SUPER_ADMIN cria OWNER Org 1)');
+  console.log('Test 1: POST /employees (SUPER_ADMIN cria OWNER Org 1)');
   
   try {
     const email = `org1_owner_${Date.now()}@test.com`;
     
-    const response = await axios.post(`${BASE_URL}/v1/employees`, {
+    const response = await axios.post(`${BASE_URL}/employees`, {
       email,
       name: 'Owner Org 1',
       password: 'senha123',
@@ -107,7 +124,7 @@ async function test1_CreateOwnerOrg1() {
 
 // Test 2: SUPER_ADMIN cria employee OWNER na Org 2
 async function test2_CreateOwnerOrg2() {
-  console.log('\nTest 2: POST /v1/employees (SUPER_ADMIN cria OWNER Org 2)');
+  console.log('\nTest 2: POST /employees (SUPER_ADMIN cria OWNER Org 2)');
   
   try {
     const email = `org2_owner_${Date.now()}@test.com`;
@@ -161,10 +178,10 @@ async function test2_CreateOwnerOrg2() {
 
 // Test 3: Criar store na Org 1
 async function test3_CreateStoreOrg1() {
-  console.log('\nTest 3: POST /v1/stores (Org 1)');
+  console.log('\nTest 3: POST /stores (Org 1)');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/stores`, {
+    const response = await axios.post(`${BASE_URL}/stores`, {
       code: `ORG1_STORE_${Date.now()}`,
       name: 'Loja Org 1',
       timezone: 'America/Manaus',
@@ -182,10 +199,10 @@ async function test3_CreateStoreOrg1() {
 
 // Test 4: Criar store na Org 2
 async function test4_CreateStoreOrg2() {
-  console.log('\nTest 4: POST /v1/stores (Org 2)');
+  console.log('\nTest 4: POST /stores (Org 2)');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/stores`, {
+    const response = await axios.post(`${BASE_URL}/stores`, {
       code: `ORG2_STORE_${Date.now()}`,
       name: 'Loja Org 2',
       timezone: 'America/Sao_Paulo',
@@ -203,10 +220,10 @@ async function test4_CreateStoreOrg2() {
 
 // Test 5: Criar customer na Org 1
 async function test5_CreateCustomerOrg1() {
-  console.log('\nTest 5: POST /v1/customers (Org 1)');
+  console.log('\nTest 5: POST /customers (Org 1)');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/customers`, {
+    const response = await axios.post(`${BASE_URL}/customers`, {
       name: 'Customer Org 1',
       email: `org1_customer_${Date.now()}@test.com`,
       phone: '+5592988881111',
@@ -224,10 +241,10 @@ async function test5_CreateCustomerOrg1() {
 
 // Test 6: Criar customer na Org 2
 async function test6_CreateCustomerOrg2() {
-  console.log('\nTest 6: POST /v1/customers (Org 2)');
+  console.log('\nTest 6: POST /customers (Org 2)');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/customers`, {
+    const response = await axios.post(`${BASE_URL}/customers`, {
       name: 'Customer Org 2',
       email: `org2_customer_${Date.now()}@test.com`,
       phone: '+5511988882222',
@@ -245,10 +262,10 @@ async function test6_CreateCustomerOrg2() {
 
 // Test 7: Org 1 NÃO deve ver stores da Org 2
 async function test7_Org1CannotSeeOrg2Stores() {
-  console.log('\nTest 7: GET /v1/stores (Org 1 não deve ver Org 2)');
+  console.log('\nTest 7: GET /stores (Org 1 não deve ver Org 2)');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/stores`, {
+    const response = await axios.get(`${BASE_URL}/stores`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -269,10 +286,10 @@ async function test7_Org1CannotSeeOrg2Stores() {
 
 // Test 8: Org 2 NÃO deve ver stores da Org 1
 async function test8_Org2CannotSeeOrg1Stores() {
-  console.log('\nTest 8: GET /v1/stores (Org 2 não deve ver Org 1)');
+  console.log('\nTest 8: GET /stores (Org 2 não deve ver Org 1)');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/stores`, {
+    const response = await axios.get(`${BASE_URL}/stores`, {
       headers: { Authorization: `Bearer ${org2Token}` },
     });
 
@@ -293,10 +310,10 @@ async function test8_Org2CannotSeeOrg1Stores() {
 
 // Test 9: Org 1 NÃO deve acessar store da Org 2 por ID
 async function test9_Org1CannotAccessOrg2StoreById() {
-  console.log('\nTest 9: GET /v1/stores/:id (cross-tenant - deve falhar)');
+  console.log('\nTest 9: GET /stores/:id (cross-tenant - deve falhar)');
   
   try {
-    await axios.get(`${BASE_URL}/v1/stores/${org2StoreId}`, {
+    await axios.get(`${BASE_URL}/stores/${org2StoreId}`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -315,10 +332,10 @@ async function test9_Org1CannotAccessOrg2StoreById() {
 
 // Test 10: Org 1 NÃO deve ver customers da Org 2
 async function test10_Org1CannotSeeOrg2Customers() {
-  console.log('\nTest 10: GET /v1/customers (isolamento de customers)');
+  console.log('\nTest 10: GET /customers (isolamento de customers)');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/customers`, {
+    const response = await axios.get(`${BASE_URL}/customers`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -339,10 +356,10 @@ async function test10_Org1CannotSeeOrg2Customers() {
 
 // Test 11: Org 2 NÃO deve acessar customer da Org 1 por ID
 async function test11_Org2CannotAccessOrg1CustomerById() {
-  console.log('\nTest 11: GET /v1/customers/:id (cross-tenant - deve falhar)');
+  console.log('\nTest 11: GET /customers/:id (cross-tenant - deve falhar)');
   
   try {
-    await axios.get(`${BASE_URL}/v1/customers/${org1CustomerId}`, {
+    await axios.get(`${BASE_URL}/customers/${org1CustomerId}`, {
       headers: { Authorization: `Bearer ${org2Token}` },
     });
 
@@ -361,11 +378,11 @@ async function test11_Org2CannotAccessOrg1CustomerById() {
 
 // Test 12: Services da Org 1 não devem aparecer para Org 2
 async function test12_ServicesIsolation() {
-  console.log('\nTest 12: GET /v1/services (isolamento de serviços)');
+  console.log('\nTest 12: GET /services (isolamento de serviços)');
   
   try {
     // Criar service na Org 1
-    const service1 = await axios.post(`${BASE_URL}/v1/services`, {
+    const service1 = await axios.post(`${BASE_URL}/services`, {
       code: `ORG1_SERVICE_${Date.now()}`,
       name: 'Serviço exclusivo Org 1',
       durationMinutes: 60,
@@ -377,7 +394,7 @@ async function test12_ServicesIsolation() {
     const org1ServiceId = service1.data.id;
 
     // Listar services da Org 2
-    const org2Services = await axios.get(`${BASE_URL}/v1/services`, {
+    const org2Services = await axios.get(`${BASE_URL}/services`, {
       headers: { Authorization: `Bearer ${org2Token}` },
     });
 

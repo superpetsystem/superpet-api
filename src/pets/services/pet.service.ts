@@ -15,18 +15,22 @@ export class PetService {
     private readonly customersRepository: CustomersRepository,
   ) {}
 
-  async create(organizationId: string, customerId: string, dto: CreatePetDto): Promise<PetEntity> {
-    this.logger.log(`🔍 [BUSINESS RULE] Validating pet creation - Name: ${dto.name}, Species: ${dto.species}, Weight: ${dto.weightKg}kg, CustomerID: ${customerId}`);
+  async findAll(status?: PetStatus): Promise<PetEntity[]> {
+    return this.petsRepository.findAll(status);
+  }
+
+  async create(organizationId: string, dto: CreatePetDto): Promise<PetEntity> {
+    this.logger.log(`🔍 [BUSINESS RULE] Validating pet creation - Name: ${dto.name}, Species: ${dto.species}, Weight: ${dto.weightKg}kg, CustomerID: ${dto.customerId}`);
     
     // Validar customer ativo
-    const customer = await this.customersRepository.findById(customerId);
+    const customer = await this.customersRepository.findById(dto.customerId);
     if (!customer) {
-      this.logger.error(`❌ [BUSINESS RULE] CUSTOMER_NOT_FOUND - CustomerID: ${customerId}`);
+      this.logger.error(`❌ [BUSINESS RULE] CUSTOMER_NOT_FOUND - CustomerID: ${dto.customerId}`);
       throw new NotFoundException('Customer not found');
     }
 
     if (customer.status !== CustomerStatus.ACTIVE) {
-      this.logger.error(`❌ [BUSINESS RULE] CUSTOMER_INACTIVE - Cannot register pet for inactive customer - CustomerID: ${customerId}, Status: ${customer.status}`);
+      this.logger.error(`❌ [BUSINESS RULE] CUSTOMER_INACTIVE - Cannot register pet for inactive customer - CustomerID: ${dto.customerId}, Status: ${customer.status}`);
       throw new ForbiddenException('CUSTOMER_INACTIVE: Cannot register pets for inactive customers');
     }
 
@@ -58,7 +62,7 @@ export class PetService {
 
     return this.petsRepository.create({
       organizationId,
-      customerId,
+      customerId: dto.customerId,
       name: dto.name,
       species: dto.species,
       breed: dto.breed || null,

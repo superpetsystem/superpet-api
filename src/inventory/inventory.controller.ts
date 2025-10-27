@@ -29,7 +29,7 @@ import { TransferStockDto } from './dto/transfer-stock.dto';
 import { ProductCategory } from './entities/product.entity';
 import { MovementType } from './entities/inventory-movement.entity';
 
-@Controller('v1')
+@Controller('inventory')
 @UseGuards(JwtAuthGuard)
 export class InventoryController {
   private readonly logger = new Logger(InventoryController.name);

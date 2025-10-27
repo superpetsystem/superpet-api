@@ -44,8 +44,18 @@ async function resetDatabase() {
 
     console.log('📋 Deletando dados das tabelas...');
     for (const table of tables) {
-      await connection.execute(`DELETE FROM ${table}`);
-      console.log(`   ✅ ${table}`);
+      try {
+        // Verificar se a tabela existe antes de deletar
+        const [rows] = await connection.execute(`SHOW TABLES LIKE '${table}'`);
+        if (rows.length > 0) {
+          await connection.execute(`DELETE FROM ${table}`);
+          console.log(`   ✅ ${table}`);
+        } else {
+          console.log(`   ⚠️  ${table} (não existe)`);
+        }
+      } catch (error) {
+        console.log(`   ❌ ${table} (erro: ${error.message})`);
+      }
     }
 
     await connection.execute(`SET FOREIGN_KEY_CHECKS = 1`);

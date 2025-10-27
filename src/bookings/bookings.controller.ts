@@ -19,7 +19,7 @@ import { EmployeeRole } from '../employees/entities/employee.entity';
 import { BookingService } from './services/booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 
-@Controller('v1/bookings')
+@Controller('bookings')
 @UseGuards(JwtAuthGuard, FeatureGuard)
 @RequireFeature('ONLINE_BOOKING' as any)
 export class BookingsController {
@@ -58,7 +58,7 @@ export class BookingsController {
   async getCustomerBookings(@CurrentUser() user: any, @Param('customerId') customerId: string) {
     this.logger.log(`📋 List customer bookings - Customer: ${customerId}`);
 
-    const bookings = await this.bookingService.findByCustomer(customerId);
+    const bookings = await this.bookingService.findByCustomer(customerId, user.organizationId);
 
     this.logger.log(`✅ Found ${bookings.length} bookings`);
     return bookings;

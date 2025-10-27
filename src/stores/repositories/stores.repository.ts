@@ -22,6 +22,13 @@ export class StoresRepository {
     });
   }
 
+  async findByOrganizationAndId(organizationId: string, id: string): Promise<StoreEntity | null> {
+    return this.repository.findOne({
+      where: { id, organizationId },
+      relations: ['features'],
+    });
+  }
+
   async findByOrganization(organizationId: string, active?: boolean): Promise<StoreEntity[]> {
     const where: any = { organizationId };
     

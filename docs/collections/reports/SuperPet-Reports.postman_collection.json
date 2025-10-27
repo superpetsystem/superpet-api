@@ -18,9 +18,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/reports/dashboard",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "reports", "dashboard"]
+					"raw": "{{base_url}}/reports/dashboard",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"dashboard"
+					]
 				},
 				"description": "Get organization-wide dashboard metrics.\n\n**Returns:**\n- Total customers\n- Total pets  \n- Total stores\n- Active employees\n- Recent activity"
 			},
@@ -38,9 +43,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/reports/customers?period=MONTH&startDate=2025-09-01&endDate=2025-10-01",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "reports", "customers"],
+					"raw": "{{base_url}}/reports/customers?period=MONTH&startDate=2025-09-01&endDate=2025-10-01",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"customers"
+					],
 					"query": [
 						{
 							"key": "period",
@@ -75,9 +85,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/reports/pets?period=WEEK",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "reports", "pets"],
+					"raw": "{{base_url}}/reports/pets?period=WEEK",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"pets"
+					],
 					"query": [
 						{
 							"key": "period",
@@ -102,9 +117,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/reports/stores/{{store_id}}/performance?period=MONTH",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "reports", "stores", "{{store_id}}", "performance"],
+					"raw": "{{base_url}}/reports/stores/{{store_id}}/performance?period=MONTH",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"reports",
+						"stores",
+						"{{store_id}}",
+						"performance"
+					],
 					"query": [
 						{
 							"key": "period",
@@ -136,4 +158,3 @@
 		}
 	]
 }
-

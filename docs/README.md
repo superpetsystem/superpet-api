@@ -308,7 +308,7 @@ npm run start:local
 
 **Test Error Scenarios:**
 ```bash
-node test/automation/run-all-tests.js
+npm run test:automation:all
 # See all error codes in action
 ```
 

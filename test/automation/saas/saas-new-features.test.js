@@ -2,7 +2,7 @@ const axios = require('axios');
 const assert = require('assert');
 
 const BASE_URL = 'http://localhost:3000';
-const SUPER_ADMIN_EMAIL = 'superadmin@superpet.com.br';
+const SUPER_ADMIN_EMAIL = 'superadmin@superpet.com';
 const SUPER_ADMIN_PASSWORD = 'Super@2024!Admin';
 
 // Variáveis compartilhadas
@@ -25,19 +25,21 @@ console.log('🏢 Iniciando testes de Isolamento SaaS - Novas Features\n');
 async function setup() {
   console.log('🔧 Setup: Criando ambiente multi-tenant via SUPER_ADMIN...\n');
 
-  // 1. Login como SUPER_ADMIN
-  const superAdminLogin = await axios.post(`${BASE_URL}/auth/login`, {
-    email: SUPER_ADMIN_EMAIL,
-    password: SUPER_ADMIN_PASSWORD,
-  });
-  superAdminToken = superAdminLogin.data.access_token;
-  console.log('✅ SUPER_ADMIN autenticado\n');
+  try {
+    // 1. Login como SUPER_ADMIN
+    console.log('1. Fazendo login como SUPER_ADMIN...');
+    const superAdminLogin = await axios.post(`${BASE_URL}/auth/login`, {
+      email: SUPER_ADMIN_EMAIL,
+      password: SUPER_ADMIN_PASSWORD,
+    });
+    superAdminToken = superAdminLogin.data.access_token;
+    console.log('✅ SUPER_ADMIN autenticado\n');
 
   // 2. Criar 2 organizações
   const timestamp = Date.now();
   
   const org1 = await axios.post(
-    `${BASE_URL}/v1/admin/organizations`,
+    `${BASE_URL}/admin/organizations`,
     {
       name: `Test Org 1 - ${timestamp}`,
       slug: `test-org-1-${timestamp}`,
@@ -49,7 +51,7 @@ async function setup() {
   const org1Id = org1.data.id;
 
   const org2 = await axios.post(
-    `${BASE_URL}/v1/admin/organizations`,
+    `${BASE_URL}/admin/organizations`,
     {
       name: `Test Org 2 - ${timestamp}`,
       slug: `test-org-2-${timestamp}`,
@@ -66,7 +68,7 @@ async function setup() {
 
   // 3. Criar lojas via SUPER_ADMIN
   const org1Store = await axios.post(
-    `${BASE_URL}/v1/admin/organizations/${org1Id}/stores`,
+    `${BASE_URL}/admin/organizations/${org1Id}/stores`,
     {
       code: `ORG1_STORE_${timestamp}`,
       name: 'Store Org 1',
@@ -80,7 +82,7 @@ async function setup() {
   org1StoreId = org1Store.data.id;
 
   const org2Store = await axios.post(
-    `${BASE_URL}/v1/admin/organizations/${org2Id}/stores`,
+    `${BASE_URL}/admin/organizations/${org2Id}/stores`,
     {
       code: `ORG2_STORE_${timestamp}`,
       name: 'Store Org 2',
@@ -99,7 +101,7 @@ async function setup() {
 
   // 4. Criar OWNERs via SUPER_ADMIN
   const org1Owner = await axios.post(
-    `${BASE_URL}/v1/admin/organizations/${org1Id}/owners`,
+    `${BASE_URL}/admin/organizations/${org1Id}/owners`,
     {
       name: 'Owner Org 1',
       email: `owner1_${timestamp}@test.com`,
@@ -109,7 +111,7 @@ async function setup() {
   );
 
   const org2Owner = await axios.post(
-    `${BASE_URL}/v1/admin/organizations/${org2Id}/owners`,
+    `${BASE_URL}/admin/organizations/${org2Id}/owners`,
     {
       name: 'Owner Org 2',
       email: `owner2_${timestamp}@test.com`,
@@ -140,14 +142,14 @@ async function setup() {
   // Criar customers
   try {
     const org1Customer = await axios.post(
-      `${BASE_URL}/v1/customers`,
+      `${BASE_URL}/customers`,
       { name: 'Customer Org 1', phone: '+5592999999999' },
       { headers: { Authorization: `Bearer ${org1Token}` } }
     );
     org1CustomerId = org1Customer.data.id;
 
     const org2Customer = await axios.post(
-      `${BASE_URL}/v1/customers`,
+      `${BASE_URL}/customers`,
       { name: 'Customer Org 2', phone: '+5592999999998' },
       { headers: { Authorization: `Bearer ${org2Token}` } }
     );
@@ -162,15 +164,15 @@ async function setup() {
   // Criar pets
   try {
     const org1Pet = await axios.post(
-      `${BASE_URL}/v1/customers/${org1CustomerId}/pets`,
-      { name: 'Pet Org 1', species: 'DOG', breed: 'Labrador', weightKg: 25 },
+      `${BASE_URL}/pets`,
+      { customerId: org1CustomerId, name: 'Pet Org 1', species: 'DOG', breed: 'Labrador', weightKg: 25 },
       { headers: { Authorization: `Bearer ${org1Token}` } }
     );
     org1PetId = org1Pet.data.id;
 
     const org2Pet = await axios.post(
-      `${BASE_URL}/v1/customers/${org2CustomerId}/pets`,
-      { name: 'Pet Org 2', species: 'CAT', breed: 'Siamês', weightKg: 4 },
+      `${BASE_URL}/pets`,
+      { customerId: org2CustomerId, name: 'Pet Org 2', species: 'CAT', breed: 'Siamês', weightKg: 4 },
       { headers: { Authorization: `Bearer ${org2Token}` } }
     );
     org2PetId = org2Pet.data.id;
@@ -180,17 +182,21 @@ async function setup() {
     console.error('❌ Erro ao criar pets:', error.response?.data || error.message);
     throw error;
   }
+  } catch (error) {
+    console.error('❌ Erro no setup:', error.response?.data || error.message);
+    throw error;
+  }
 }
 
 // ========== ONLINE_BOOKING - TESTES SAAS ==========
 
 // Test 1: Cross-tenant - Ver booking de outra org (deve falhar)
 async function test1_BookingCrossTenant() {
-  console.log('Test 1: GET /v1/bookings/customers/:customerId (cross-tenant)');
+  console.log('Test 1: GET /bookings/customers/:customerId (cross-tenant)');
 
   try {
     // Org 1 tenta ver bookings do customer da Org 2
-    await axios.get(`${BASE_URL}/v1/bookings/customers/${org2CustomerId}`, {
+    await axios.get(`${BASE_URL}/bookings/customers/${org2CustomerId}`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -207,12 +213,12 @@ async function test1_BookingCrossTenant() {
 
 // Test 2: Feature desabilitada (403)
 async function test2_BookingFeatureDisabled() {
-  console.log('\nTest 2: POST /v1/bookings (feature desabilitada)');
+  console.log('\nTest 2: POST /bookings (feature desabilitada)');
 
   try {
     // Desabilitar feature ONLINE_BOOKING na store via SUPER_ADMIN
     await axios.delete(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     );
 
@@ -220,7 +226,7 @@ async function test2_BookingFeatureDisabled() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const services = await axios.get(`${BASE_URL}/v1/services`, {
+    const services = await axios.get(`${BASE_URL}/services`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -228,7 +234,7 @@ async function test2_BookingFeatureDisabled() {
     let serviceId;
     if (services.data.length === 0) {
       const newService = await axios.post(
-        `${BASE_URL}/v1/services`,
+        `${BASE_URL}/services`,
         {
           code: `SRV_TEST_${Date.now()}`,
           name: 'Serviço Test',
@@ -243,7 +249,7 @@ async function test2_BookingFeatureDisabled() {
     }
 
     await axios.post(
-      `${BASE_URL}/v1/bookings`,
+      `${BASE_URL}/bookings`,
       {
         storeId: org1StoreId,
         customerId: org1CustomerId,
@@ -262,7 +268,7 @@ async function test2_BookingFeatureDisabled() {
       
       // Reabilitar para próximos testes via SUPER_ADMIN
       await axios.post(
-        `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
+        `${BASE_URL}/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
         { enabled: true },
         { headers: { Authorization: `Bearer ${superAdminToken}` } }
       );
@@ -278,11 +284,11 @@ async function test2_BookingFeatureDisabled() {
 
 // Test 3: Cross-tenant - Ver prontuário de outra org (deve falhar)
 async function test3_VeterinaryCrossTenant() {
-  console.log('\nTest 3: GET /v1/veterinary/pets/:petId/records (cross-tenant)');
+  console.log('\nTest 3: GET /veterinary/pets/:petId/records (cross-tenant)');
 
   try {
     // Org 1 tenta ver prontuários do pet da Org 2
-    await axios.get(`${BASE_URL}/v1/veterinary/pets/${org2PetId}/records`, {
+    await axios.get(`${BASE_URL}/veterinary/pets/${org2PetId}/records`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -299,22 +305,22 @@ async function test3_VeterinaryCrossTenant() {
 
 // Test 4: Feature desabilitada (403)
 async function test4_VeterinaryFeatureDisabled() {
-  console.log('\nTest 4: POST /v1/veterinary/records (feature desabilitada)');
+  console.log('\nTest 4: POST /veterinary/records (feature desabilitada)');
 
   try {
     // Desabilitar feature VETERINARY_RECORDS na store via SUPER_ADMIN
     await axios.delete(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/VETERINARY_RECORDS`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features/VETERINARY_RECORDS`,
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     );
 
-    const employees = await axios.get(`${BASE_URL}/v1/employees`, {
+    const employees = await axios.get(`${BASE_URL}/employees`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
     // Tentar criar prontuário
     await axios.post(
-      `${BASE_URL}/v1/veterinary/records`,
+      `${BASE_URL}/veterinary/records`,
       {
         petId: org1PetId,
         storeId: org1StoreId,
@@ -333,7 +339,7 @@ async function test4_VeterinaryFeatureDisabled() {
       
       // Reabilitar via SUPER_ADMIN
       await axios.post(
-        `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/VETERINARY_RECORDS`,
+        `${BASE_URL}/admin/stores/${org1StoreId}/features/VETERINARY_RECORDS`,
         { enabled: true },
         { headers: { Authorization: `Bearer ${superAdminToken}` } }
       );
@@ -349,12 +355,12 @@ async function test4_VeterinaryFeatureDisabled() {
 
 // Test 5: Cross-tenant - Transferir para loja de outra org (deve falhar)
 async function test5_InventoryTransferCrossTenant() {
-  console.log('\nTest 5: POST /v1/inventory/transfers (cross-tenant)');
+  console.log('\nTest 5: POST /inventory/transfers (cross-tenant)');
 
   try {
     // Criar produto na Org 1
     const product = await axios.post(
-      `${BASE_URL}/v1/products`,
+      `${BASE_URL}/inventory/products`,
       {
         code: `PROD_${Date.now()}`,
         name: 'Produto Test',
@@ -366,7 +372,7 @@ async function test5_InventoryTransferCrossTenant() {
 
     // Adicionar estoque
     await axios.post(
-      `${BASE_URL}/v1/stores/${org1StoreId}/stock/movements`,
+      `${BASE_URL}/stores/${org1StoreId}/stock/movements`,
       {
         productId: org1ProductId,
         type: 'ENTRY',
@@ -377,7 +383,7 @@ async function test5_InventoryTransferCrossTenant() {
 
     // Tentar transferir para loja da Org 2
     await axios.post(
-      `${BASE_URL}/v1/transfers`,
+      `${BASE_URL}/transfers`,
       {
         productId: org1ProductId,
         fromStoreId: org1StoreId,
@@ -400,16 +406,16 @@ async function test5_InventoryTransferCrossTenant() {
 
 // Test 6: Isolamento de produtos por organização
 async function test6_ProductIsolation() {
-  console.log('\nTest 6: GET /v1/inventory/products (isolamento)');
+  console.log('\nTest 6: GET /inventory/products (isolamento)');
 
   try {
     // Org 1 lista seus produtos
-    const org1Products = await axios.get(`${BASE_URL}/v1/products`, {
+    const org1Products = await axios.get(`${BASE_URL}/inventory/products`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
     // Org 2 lista seus produtos
-    const org2Products = await axios.get(`${BASE_URL}/v1/products`, {
+    const org2Products = await axios.get(`${BASE_URL}/inventory/products`, {
       headers: { Authorization: `Bearer ${org2Token}` },
     });
 
@@ -442,18 +448,18 @@ async function test6_ProductIsolation() {
 
 // Test 7: Feature desabilitada em INVENTORY
 async function test7_InventoryFeatureDisabled() {
-  console.log('\nTest 7: POST /v1/products (feature desabilitada)');
+  console.log('\nTest 7: POST /products (feature desabilitada)');
 
   try {
     // Desabilitar INVENTORY_MANAGEMENT via SUPER_ADMIN
     await axios.delete(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/INVENTORY_MANAGEMENT`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features/INVENTORY_MANAGEMENT`,
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     );
 
     // Tentar criar produto
     await axios.post(
-      `${BASE_URL}/v1/products`,
+      `${BASE_URL}/inventory/products`,
       {
         code: `TEST_${Date.now()}`,
         name: 'Produto Teste',
@@ -469,7 +475,7 @@ async function test7_InventoryFeatureDisabled() {
       
       // Reabilitar via SUPER_ADMIN
       await axios.post(
-        `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/INVENTORY_MANAGEMENT`,
+        `${BASE_URL}/admin/stores/${org1StoreId}/features/INVENTORY_MANAGEMENT`,
         { enabled: true },
         { headers: { Authorization: `Bearer ${superAdminToken}` } }
       );
@@ -489,7 +495,7 @@ async function test8_BookingIsolation() {
     // Habilitar ONLINE_BOOKING na store via SUPER_ADMIN
     try {
       await axios.post(
-        `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
+        `${BASE_URL}/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
         { enabled: true },
         { headers: { Authorization: `Bearer ${superAdminToken}` } }
       );
@@ -502,7 +508,7 @@ async function test8_BookingIsolation() {
 
     // Verificar se feature foi realmente habilitada
     const storeFeatures = await axios.get(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features`,
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     );
     const onlineBookingEnabled = storeFeatures.data.features.some(
@@ -513,7 +519,7 @@ async function test8_BookingIsolation() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const org1Services = await axios.get(`${BASE_URL}/v1/services`, {
+    const org1Services = await axios.get(`${BASE_URL}/services`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
@@ -521,7 +527,7 @@ async function test8_BookingIsolation() {
     let serviceId;
     if (org1Services.data.length === 0) {
       const newService = await axios.post(
-        `${BASE_URL}/v1/services`,
+        `${BASE_URL}/services`,
         {
           code: `SRV_${Date.now()}`,
           name: 'Serviço Test',
@@ -537,7 +543,7 @@ async function test8_BookingIsolation() {
 
     // Criar booking na Org 1
     const booking = await axios.post(
-      `${BASE_URL}/v1/bookings`,
+      `${BASE_URL}/bookings`,
       {
         storeId: org1StoreId,
         customerId: org1CustomerId,
@@ -551,7 +557,7 @@ async function test8_BookingIsolation() {
     org1BookingId = booking.data.id;
 
     // Store 2 NÃO deve ver bookings da Store 1 (isolamento por store)
-    const org2Bookings = await axios.get(`${BASE_URL}/v1/bookings/stores/${org2StoreId}`, {
+    const org2Bookings = await axios.get(`${BASE_URL}/bookings/stores/${org2StoreId}`, {
       headers: { Authorization: `Bearer ${org2Token}` },
     });
 
@@ -573,18 +579,18 @@ async function test9_VeterinaryIsolation() {
   try {
     // Habilitar VETERINARY_RECORDS na store via SUPER_ADMIN
     await axios.post(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/VETERINARY_RECORDS`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features/VETERINARY_RECORDS`,
       { enabled: true },
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     ).catch(() => {}); // Ignora erro se já estiver habilitada
     
-    const org1Employees = await axios.get(`${BASE_URL}/v1/employees`, {
+    const org1Employees = await axios.get(`${BASE_URL}/employees`, {
       headers: { Authorization: `Bearer ${org1Token}` },
     });
 
     // Criar prontuário na Org 1
     const record = await axios.post(
-      `${BASE_URL}/v1/veterinary/records`,
+      `${BASE_URL}/veterinary/records`,
       {
         petId: org1PetId,
         storeId: org1StoreId,
@@ -599,7 +605,7 @@ async function test9_VeterinaryIsolation() {
 
     // Org 2 NÃO deve conseguir acessar
     try {
-      await axios.get(`${BASE_URL}/v1/veterinary/records/${org1RecordId}`, {
+      await axios.get(`${BASE_URL}/veterinary/records/${org1RecordId}`, {
         headers: { Authorization: `Bearer ${org2Token}` },
       });
       throw new Error('Org 2 viu prontuário da Org 1!');
@@ -624,14 +630,14 @@ async function test10_IndependentFeatures() {
   try {
     // Habilitar ONLINE_BOOKING na Org 2 primeiro via SUPER_ADMIN
     await axios.post(
-      `${BASE_URL}/v1/admin/stores/${org2StoreId}/features/ONLINE_BOOKING`,
+      `${BASE_URL}/admin/stores/${org2StoreId}/features/ONLINE_BOOKING`,
       { enabled: true },
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     ).catch(() => {});
     
     // Desabilitar ONLINE_BOOKING na Org 1 via SUPER_ADMIN
     await axios.delete(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     );
 
@@ -639,7 +645,7 @@ async function test10_IndependentFeatures() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 3);
 
-    const org2Services = await axios.get(`${BASE_URL}/v1/services`, {
+    const org2Services = await axios.get(`${BASE_URL}/services`, {
       headers: { Authorization: `Bearer ${org2Token}` },
     });
 
@@ -647,7 +653,7 @@ async function test10_IndependentFeatures() {
     let org2ServiceId;
     if (org2Services.data.length === 0) {
       const newService = await axios.post(
-        `${BASE_URL}/v1/services`,
+        `${BASE_URL}/services`,
         {
           code: `SRV_ORG2_${Date.now()}`,
           name: 'Serviço Org 2',
@@ -662,7 +668,7 @@ async function test10_IndependentFeatures() {
     }
 
     const booking = await axios.post(
-      `${BASE_URL}/v1/bookings`,
+      `${BASE_URL}/bookings`,
       {
         storeId: org2StoreId,
         customerId: org2CustomerId,
@@ -682,7 +688,7 @@ async function test10_IndependentFeatures() {
 
     // Reabilitar via SUPER_ADMIN
     await axios.post(
-      `${BASE_URL}/v1/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
+      `${BASE_URL}/admin/stores/${org1StoreId}/features/ONLINE_BOOKING`,
       { enabled: true },
       { headers: { Authorization: `Bearer ${superAdminToken}` } }
     );

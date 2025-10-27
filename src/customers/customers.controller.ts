@@ -29,7 +29,7 @@ import { Roles } from '../common/guards/role.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { EmployeeRole } from '../employees/entities/employee.entity';
 
-@Controller('v1/customers')
+@Controller('customers')
 @UseGuards(JwtAuthGuard)
 export class CustomersController {
   private readonly logger = new Logger(CustomersController.name);

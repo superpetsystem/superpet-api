@@ -24,7 +24,7 @@ import { StoreFeatureEntity } from './entities/store-feature.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { EmployeeRole } from '../employees/entities/employee.entity';
 
-@Controller('v1/stores')
+@Controller('stores')
 @UseGuards(JwtAuthGuard)
 export class StoresController {
   constructor(
@@ -129,18 +129,70 @@ export class StoresController {
   @Get(':storeId/features')
   @HttpCode(HttpStatus.OK)
   async getFeatures(@Param('storeId') storeId: string): Promise<StoreFeatureEntity[]> {
-    return this.storeFeatureService.findByStore(storeId);
+    return this.storeFeatureService.getStoreFeatures(storeId);
+  }
+
+  @Get(':storeId/features/customer')
+  @HttpCode(HttpStatus.OK)
+  async getCustomerFeatures(@Param('storeId') storeId: string): Promise<StoreFeatureEntity[]> {
+    return this.storeFeatureService.getCustomerFeatures(storeId);
+  }
+
+  @Post(':storeId/features')
+  @Roles(EmployeeRole.OWNER, EmployeeRole.ADMIN)
+  @UseGuards(RoleGuard)
+  @HttpCode(HttpStatus.CREATED)
+  async configureFeature(
+    @Param('storeId') storeId: string,
+    @Body() dto: ConfigureFeatureDto,
+  ): Promise<StoreFeatureEntity[]> {
+    const featureKey = dto.featureKey || 'UNKNOWN';
+    return this.storeFeatureService.configureFeature(
+      storeId, 
+      featureKey, 
+      dto.enabled, 
+      dto.storeLimits, 
+      dto.customerLimits
+    );
   }
 
   @Put(':storeId/features/:key')
   @Roles(EmployeeRole.OWNER, EmployeeRole.ADMIN)
   @UseGuards(RoleGuard)
   @HttpCode(HttpStatus.OK)
-  async configureFeature(
+  async updateFeature(
     @Param('storeId') storeId: string,
     @Param('key') key: string,
     @Body() dto: ConfigureFeatureDto,
-  ): Promise<StoreFeatureEntity> {
-    return this.storeFeatureService.configureFeature(storeId, key, dto.enabled, dto.limits);
+  ): Promise<any> {
+    // Se limite foi enviado em 'limits' (legado), usar como storeLimits
+    const storeLimits = dto.storeLimits || dto.limits || {};
+    const customerLimits = dto.customerLimits || {};
+    
+    const result = await this.storeFeatureService.configureFeature(
+      storeId, 
+      key, 
+      dto.enabled, 
+      storeLimits, 
+      customerLimits
+    );
+    
+    // Se retornar um array com pelo menos um item, retornar o primeiro
+    if (result.length > 0) {
+      const firstResult = result[0];
+      return {
+        featureKey: firstResult.featureKey,
+        enabled: firstResult.enabled,
+        limits: firstResult.limits || storeLimits,
+        accessType: firstResult.accessType,
+      };
+    }
+    
+    // Se for desabilitar ou não encontrar, retornar um objeto padrão
+    return { 
+      featureKey: key, 
+      enabled: dto.enabled || false,
+      limits: storeLimits
+    };
   }
 }

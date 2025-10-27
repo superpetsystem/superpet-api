@@ -38,8 +38,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/register",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "register"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
 				},
 				"description": "Register new user. Automatically creates Employee with OWNER role.\n\n**Response:** Returns access_token and user data\n\n**Possible Errors:**\n- 400: Email already exists\n- 400: Validation error (invalid email, password < 6 chars)\n- 400: EMPLOYEE_LIMIT_EXCEEDED (plan limit reached)"
 			},
@@ -60,8 +65,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
 						}
 					},
 					"status": "Created",
@@ -91,8 +101,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -122,8 +137,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -153,8 +173,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/register",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -202,8 +227,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/login",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "login"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
 				},
 				"description": "Login with email and password.\n\n**Response:** Returns access_token (JWT)\n\n**Possible Errors:**\n- 401: Invalid credentials (wrong email or password)\n- 401: User is not active"
 			},
@@ -224,8 +254,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/login",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "login"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
 						}
 					},
 					"status": "OK",
@@ -255,8 +290,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/login",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "login"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
 						}
 					},
 					"status": "Unauthorized",
@@ -285,8 +325,13 @@
 				],
 				"url": {
 					"raw": "{{base_url}}/auth/me",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "me"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"me"
+					]
 				},
 				"description": "Get current authenticated user profile.\n\n**Requires:** Valid JWT token in Authorization header\n\n**Possible Errors:**\n- 401: Missing or invalid token\n- 401: Token expired"
 			},
@@ -304,8 +349,13 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/auth/me",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "me"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
 						}
 					},
 					"status": "OK",
@@ -326,8 +376,13 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/auth/me",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "me"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
 						}
 					},
 					"status": "Unauthorized",
@@ -354,8 +409,13 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/auth/me",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "me"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
 						}
 					},
 					"status": "Unauthorized",
@@ -393,8 +453,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/change-password",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "change-password"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"change-password"
+					]
 				},
 				"description": "Change password for authenticated user.\n\n**Requires:** Valid JWT token\n\n**Validations:**\n- Current password must match\n- New password must be different\n- New password minimum 6 characters\n\n**Possible Errors:**\n- 400: Current password is incorrect\n- 400: New password must be different from current\n- 401: Missing or invalid token"
 			},
@@ -421,8 +486,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/change-password",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "change-password"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
 						}
 					},
 					"status": "OK",
@@ -458,8 +528,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/change-password",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "change-password"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -506,8 +581,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/forgot-password",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "forgot-password"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"forgot-password"
+					]
 				},
 				"description": "Request password reset token.\n\n**Security:** Returns generic message even if email doesn't exist\n\n**Development:** Returns token in response (for testing)\n**Production:** Sends token via email\n\n**Token:** 64-character hex string, expires in 1 hour"
 			},
@@ -528,8 +608,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/forgot-password",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "forgot-password"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
 						}
 					},
 					"status": "OK",
@@ -559,8 +644,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/forgot-password",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "forgot-password"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
 						}
 					},
 					"status": "OK",
@@ -592,8 +682,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/reset-password",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "reset-password"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"reset-password"
+					]
 				},
 				"description": "Reset password using token from forgot-password.\n\n**Requirements:**\n- Valid reset token (from email or saved in collection variable)\n- Token not expired (1 hour)\n- Token not already used\n\n**Possible Errors:**\n- 400: Invalid or expired reset token\n- 400: Reset token has expired"
 			},
@@ -614,8 +709,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/reset-password",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "reset-password"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
 						}
 					},
 					"status": "OK",
@@ -645,8 +745,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/reset-password",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "reset-password"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
 						}
 					},
 					"status": "Bad Request",
@@ -693,8 +798,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/refresh",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "refresh"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"refresh"
+					]
 				},
 				"description": "Refresh access token using refresh token.\n\n**Flow:**\n1. Login returns access_token (15min) + refresh_token (7d)\n2. When access_token expires, use refresh_token\n3. Get new access_token without re-login\n\n**Possible Errors:**\n- 401: Invalid refresh token\n- 401: Refresh token expired\n- 401: User not active"
 			},
@@ -715,8 +825,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/refresh",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "refresh"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
 						}
 					},
 					"status": "OK",
@@ -746,8 +861,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/refresh",
-							"host": ["{{base_url}}"],
-							"path": ["auth", "refresh"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
 						}
 					},
 					"status": "Unauthorized",

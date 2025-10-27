@@ -30,9 +30,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/customers",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers"]
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
 						}
 					}
 				},
@@ -48,9 +52,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/customers",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers"]
+							"raw": "{{base_url}}/customers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers"
+							]
 						}
 					}
 				},
@@ -66,9 +74,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}"]
+							"raw": "{{base_url}}/customers/{{customer_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}"
+							]
 						}
 					}
 				},
@@ -93,9 +106,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}"]
+							"raw": "{{base_url}}/customers/{{customer_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}"
+							]
 						}
 					}
 				},
@@ -120,9 +138,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "status"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"status"
+							]
 						},
 						"description": "Status: ACTIVE | INACTIVE | BLOCKED"
 					}
@@ -144,9 +168,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/addresses",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "addresses"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/addresses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"addresses"
+							]
 						}
 					}
 				},
@@ -171,9 +201,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/addresses",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "addresses"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/addresses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"addresses"
+							]
 						}
 					}
 				},
@@ -198,9 +234,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/addresses/{{address_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "addresses", "{{address_id}}"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/addresses/{{address_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"addresses",
+								"{{address_id}}"
+							]
 						}
 					}
 				},
@@ -216,9 +259,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/addresses/{{address_id}}/primary",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "addresses", "{{address_id}}", "primary"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/addresses/{{address_id}}/primary",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"addresses",
+								"{{address_id}}",
+								"primary"
+							]
 						},
 						"description": "Set this address as primary (unsets others)"
 					}
@@ -240,9 +291,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/personal-data",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "personal-data"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/personal-data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"personal-data"
+							]
 						},
 						"description": "Requires OWNER or ADMIN role"
 					}
@@ -268,9 +325,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/personal-data",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "personal-data"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/personal-data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"personal-data"
+							]
 						},
 						"description": "Add or update personal data (CPF, RG, etc). Requires OWNER or ADMIN role."
 					}

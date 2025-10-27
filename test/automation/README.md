@@ -1,211 +1,299 @@
-# 🧪 Automação de Testes - SuperPet API
+# 🧪 Testes Automatizados - SuperPet API
 
 ## 📋 Visão Geral
 
-Este diretório contém testes automatizados end-to-end para a API SuperPet, validando todos os módulos e funcionalidades do sistema.
+Esta estrutura de testes automatizados foi projetada para ser **modular**, **eficiente** e **escalável**. Os testes são organizados por **categorias** e **features**, com execução **paralela** quando possível.
 
-## 🚀 Como Executar os Testes
-
-### Opção 1: Rodar Testes do Zero (Recomendado)
-
-Este comando **reseta o banco completamente** e roda todos os testes:
-
-```bash
-npm run test:automation:scratch
-```
-
-**O que este comando faz:**
-1. 🗑️ Limpa todas as tabelas do banco de dados
-2. 👤 Recria o usuário SUPER_ADMIN
-3. ⏳ Aguarda estabilização do ambiente
-4. 🧪 Executa todos os testes automaticamente
-
-### Opção 2: Rodar Testes com Banco Existente
-
-Se o banco já está configurado e você só quer rodar os testes:
-
-```bash
-npm run test:automation
-```
-
-### Opção 3: Resetar Banco Apenas
-
-Para limpar o banco sem rodar os testes:
-
-```bash
-npm run test:reset-db
-```
-
-## 📦 Pré-requisitos
-
-1. **API rodando em modo local:**
-   ```bash
-   npm run start:local
-   ```
-
-2. **Banco de dados criado:**
-   - Database: `superpet_test`
-   - Migrations aplicadas: `npm run migration:run:local`
-
-3. **Configuração do banco:**
-   - Host: `localhost`
-   - Port: `3306`
-   - User: `root`
-   - Password: `root`
-
-## 🧩 Módulos Testados
-
-### ✅ Módulos Core
-- **Auth** - Autenticação, registro, login, troca de senha, recuperação
-- **Organizations** - Gerenciamento de organizações e planos SaaS
-- **Employees** - Gestão de funcionários e controle de acesso
-- **Stores** - Lojas, horários, capacidade e features
-- **Customers** - Clientes e endereços
-- **Pets** - Gestão de pets e seus dados
-- **Services** - Serviços padrão e customizados
-
-### ✅ Novos Módulos
-- **Admin** - SUPER_ADMIN, orquestração de features
-- **Bookings** - Sistema de agendamentos online
-- **Veterinary** - Prontuários e vacinações
-- **Inventory** - Gestão de estoque e produtos
-- **Reports** - Analytics e relatórios de BI
-
-### ✅ Validações SaaS
-- **Multi-Tenant** - Isolamento de dados entre organizações
-- **Role-Based Access** - SUPER_ADMIN, OWNER, ADMIN, STAFF, VIEWER
-- **Feature Toggling** - Habilitação dinâmica de funcionalidades
-- **Plan Limits** - Validação de limites por plano
-
-## 📊 Estrutura de Testes
+## 🏗️ Estrutura
 
 ```
 test/automation/
-├── README.md                      # Este arquivo
-├── run-from-scratch.js           # 🚀 Executa tudo do zero
-├── run-all-tests.js              # Orquestrador de testes
-├── reset-database.js             # Limpa o banco
-│
-├── helpers/
-│   ├── superadmin-login.js       # Login do SUPER_ADMIN
-│   └── ...
-│
-├── auth/
-│   └── auth.test.js              # Testes de autenticação
-│
-├── saas/
-│   ├── saas-isolation.test.js    # Isolamento multi-tenant
-│   ├── saas-limits.test.js       # Limites de planos
-│   ├── saas-roles.test.js        # Controle de acesso
-│   └── saas-new-features.test.js # Features novas (Bookings, Vet, etc)
-│
-├── modules/
-│   ├── admin.test.js             # Admin & Feature Orchestration
-│   ├── bookings.test.js          # Sistema de agendamentos
-│   ├── veterinary.test.js        # Prontuários veterinários
-│   ├── inventory.test.js         # Gestão de estoque
-│   ├── reports.test.js           # Reports & Analytics
-│   ├── organizations.test.js     # Organizações
-│   ├── employees.test.js         # Funcionários
-│   ├── stores.test.js            # Lojas
-│   ├── customers.test.js         # Clientes
-│   ├── pets.test.js              # Pets
-│   └── services.test.js          # Serviços
-│
-└── utils/
-    └── ...
+├── core/                          # Testes fundamentais
+│   ├── auth.test.js              # Testes completos de autenticação
+│   ├── saas.test.js              # Testes completos de SaaS
+│   └── helpers/                   # Helpers reutilizáveis
+│       ├── auth-helper.js         # Métodos específicos de auth
+│       └── saas-helper.js         # Métodos específicos de SaaS
+├── features/                      # Testes por feature
+│   ├── pdv.test.js               # Testes da feature PDV
+│   ├── inventory.test.js         # Testes da feature Inventory
+│   └── ...                       # Outras features
+└── run-all.js                    # Orquestrador principal
 ```
 
-## 🔧 Configuração do SUPER_ADMIN
+## 🚀 Como Executar
 
-Os testes criam automaticamente um usuário SUPER_ADMIN:
+### Executar Todos os Testes
+```bash
+npm run test:automation:all
+```
+
+### Executar Testes Específicos
+```bash
+# Testes de autenticação
+npm run test:automation:auth
+
+# Testes de SaaS
+npm run test:automation:saas
+
+# Testes da feature PDV
+npm run test:automation:pdv
+```
+
+## 🔧 Helpers Disponíveis
+
+### AuthHelper
+Métodos para autenticação e criação de usuários:
 
 ```javascript
-{
-  id: '00000000-0000-0000-0000-000000000000',
-  email: 'superadmin@superpet.com.br',
-  password: 'Super@2024!Admin',
-  role: 'SUPER_ADMIN'
+const AuthHelper = require('./core/helpers/auth-helper');
+const authHelper = new AuthHelper();
+
+// Login como SUPER_ADMIN
+const superAdminToken = await authHelper.loginSuperAdmin();
+
+// Criar organização
+const org = await authHelper.createTestOrganization(superAdminToken);
+
+// Criar OWNER
+const owner = await authHelper.createTestOwner(superAdminToken, org.id);
+
+// Login do OWNER
+const ownerToken = await authHelper.loginOwner(owner.user.email, 'senha123');
+
+// Criar STAFF
+const staff = await authHelper.createTestStaff(ownerToken, org.id, storeId);
+
+// Criar customer
+const customer = await authHelper.createCustomer(ownerToken, org.id);
+```
+
+### SaasHelper
+Métodos para configuração de ambiente SaaS:
+
+```javascript
+const SaasHelper = require('./core/helpers/saas-helper');
+const saasHelper = new SaasHelper();
+
+// Setup completo: Org + Store + Owner + Staff + Customer
+const env = await saasHelper.setupCompleteSaasEnvironment();
+
+// Habilitar feature para loja
+await saasHelper.enableFeatureForStore(
+  env.ownerToken, 
+  env.store.id, 
+  'PDV_POINT_OF_SALE',
+  { maxConcurrentCarts: 50 }
+);
+
+// Verificar se feature está habilitada
+const isEnabled = await saasHelper.isFeatureEnabled(
+  env.ownerToken, 
+  env.store.id, 
+  'PDV_POINT_OF_SALE'
+);
+
+// Criar segunda organização para testes de isolamento
+const org2 = await saasHelper.createSecondOrganization();
+
+// Testar isolamento SaaS
+const isIsolated = await saasHelper.testSaasIsolation(org1, org2, testFunction);
+
+// Obter headers padrão
+const headers = saasHelper.getHeaders(token, orgId);
+```
+
+## 🛒 Como Criar Testes para Nova Feature
+
+### 1. Criar arquivo de teste
+```bash
+# Criar: test/automation/features/nova-feature.test.js
+```
+
+### 2. Estrutura básica
+```javascript
+const SaasHelper = require('../core/helpers/saas-helper');
+const axios = require('axios');
+
+const BASE_URL = 'http://localhost:3000';
+
+class NovaFeatureTests {
+  constructor() {
+    this.saasHelper = new SaasHelper();
+    this.results = { passed: 0, failed: 0, tests: [] };
+  }
+
+  async runAllTests() {
+    console.log('🆕 INICIANDO TESTES DA FEATURE NOVA-FEATURE');
+    console.log('=' .repeat(60));
+
+    try {
+      await this.testFeatureBlocking();
+      await this.testFeatureEnabling();
+      await this.testFeatureOperations();
+      await this.testSaasIsolation();
+
+      this.printResults();
+    } catch (error) {
+      console.error('❌ Erro geral nos testes:', error.message);
+    }
+  }
+
+  async testFeatureBlocking() {
+    // Testar bloqueio sem feature habilitada
+  }
+
+  async testFeatureEnabling() {
+    // Testar habilitação da feature
+  }
+
+  async testFeatureOperations() {
+    // Testar operações da feature
+  }
+
+  async testSaasIsolation() {
+    // Testar isolamento SaaS
+  }
+
+  addResult(testName, passed, message) {
+    // Adicionar resultado do teste
+  }
+
+  printResults() {
+    // Imprimir resultados
+  }
+}
+
+module.exports = NovaFeatureTests;
+```
+
+### 3. Adicionar ao orquestrador
+```javascript
+// Em test/automation/run-all.js
+const NovaFeatureTests = require('./features/nova-feature.test');
+
+async runFeatureTests() {
+  const novaFeatureTests = new NovaFeatureTests();
+  await novaFeatureTests.runAllTests();
+  return novaFeatureTests.results;
 }
 ```
 
-## 📝 Convenções de Teste
+### 4. Adicionar script no package.json
+```json
+{
+  "scripts": {
+    "test:automation:nova-feature": "node test/automation/features/nova-feature.test.js"
+  }
+}
+```
 
-### Ordem de Execução
-1. Auth (login, tokens)
-2. SaaS Isolation (multi-tenant)
-3. SaaS Limits (planos)
-4. SaaS Roles (RBAC)
-5. Organizations
-6. Employees
-7. Stores
-8. Customers
-9. Pets
-10. Services
-11. Admin (SUPER_ADMIN features)
-12. Bookings
-13. Veterinary
-14. Inventory
-15. Reports
-16. SaaS New Features (testes integrados)
+## 🎯 Padrões de Teste
 
-### Padrões de Resposta
-- **201** - Created (sucesso na criação)
-- **200** - OK (sucesso geral)
-- **400** - Bad Request (dados inválidos)
-- **401** - Unauthorized (não autenticado)
-- **403** - Forbidden (sem permissão)
-- **404** - Not Found (não encontrado)
+### 1. Teste de Bloqueio
+Sempre testar se a feature bloqueia acesso quando não habilitada:
+```javascript
+try {
+  await axios.post(`${BASE_URL}/v1/nova-feature/endpoint`, data, headers);
+  this.addResult('Bloqueio sem Feature', false, 'Acesso permitido sem feature');
+} catch (error) {
+  if (error.response?.status === 403 && error.response?.data?.message === 'FEATURE_NOT_ENABLED') {
+    this.addResult('Bloqueio sem Feature', true, 'Feature bloqueou acesso (403 FEATURE_NOT_ENABLED)');
+  }
+}
+```
 
-### Variáveis Globais
-Os testes salvam IDs importantes para uso posterior:
-- `SUPERADMIN_TOKEN` - Token do SUPER_ADMIN
-- `ORG1_ID`, `ORG2_ID` - IDs das organizações
-- `OWNER1_ID`, `ADMIN1_ID`, etc - IDs de usuários
-- `STORE1_ID`, `STORE2_ID` - IDs das lojas
-- E muitos outros...
+### 2. Teste de Habilitação
+Testar se a feature pode ser habilitada:
+```javascript
+await this.saasHelper.enableFeatureForStore(ownerToken, storeId, 'NOVA_FEATURE');
+const isEnabled = await this.saasHelper.isFeatureEnabled(ownerToken, storeId, 'NOVA_FEATURE');
+```
 
-## 🐛 Troubleshooting
+### 3. Teste de Operações
+Testar operações principais da feature:
+```javascript
+// CREATE
+const createResponse = await axios.post(`${BASE_URL}/v1/nova-feature`, data, headers);
 
-### Erro: "connect ECONNREFUSED"
-➡️ API não está rodando. Execute: `npm run start:local`
+// READ
+const readResponse = await axios.get(`${BASE_URL}/v1/nova-feature/${id}`, headers);
 
-### Erro: "ER_NO_SUCH_TABLE"
-➡️ Migrations não aplicadas. Execute: `npm run migration:run:local`
+// UPDATE
+const updateResponse = await axios.put(`${BASE_URL}/v1/nova-feature/${id}`, data, headers);
 
-### Erro: "Database does not exist"
-➡️ Criar o banco: `CREATE DATABASE superpet_test;`
+// DELETE
+await axios.delete(`${BASE_URL}/v1/nova-feature/${id}`, headers);
+```
 
-### Erro: "Invalid credentials" no SUPER_ADMIN
-➡️ Execute o reset completo: `npm run test:automation:scratch`
+### 4. Teste de Isolamento SaaS
+Testar se organizações não podem acessar dados umas das outras:
+```javascript
+const org1 = await this.saasHelper.setupCompleteSaasEnvironment();
+const org2 = await this.saasHelper.createSecondOrganization();
 
-### Testes falhando por ordem
-➡️ Use sempre `npm run test:automation:scratch` para garantir estado limpo
+try {
+  await axios.get(`${BASE_URL}/v1/nova-feature/${org1ResourceId}`, 
+    this.saasHelper.getHeaders(org2.ownerToken, org2.organization.id));
+  this.addResult('Isolamento SaaS', false, 'Org2 acessou dados da Org1');
+} catch (error) {
+  if (error.response?.status === 403 || error.response?.status === 404) {
+    this.addResult('Isolamento SaaS', true, 'Isolamento funcionando (403/404)');
+  }
+}
+```
 
-## 🎯 Boas Práticas
+## 📊 Execução Paralela
 
-1. **Sempre use `npm run test:automation:scratch`** para garantir que o banco está limpo
-2. **Não modifique o banco manualmente** durante os testes
-3. **Aguarde API estar pronta** antes de rodar testes
-4. **Rode todos os testes** após mudanças no código
-5. **Verifique isolamento** - testes não devem depender uns dos outros
+Os testes são executados em paralelo quando possível:
 
-## 📈 Cobertura
+1. **Core Tests** (Auth + SaaS) - Executam em paralelo
+2. **Feature Tests** - Executam sequencialmente (podem depender dos core)
+3. **Dentro de cada feature** - Testes executam sequencialmente
 
-Os testes cobrem:
-- ✅ Autenticação e autorização
-- ✅ Multi-tenant e isolamento
-- ✅ CRUD completo de todas entidades
-- ✅ Validações de negócio
-- ✅ Controle de permissões (RBAC)
-- ✅ Limites de planos SaaS
-- ✅ Feature toggling
-- ✅ Edge cases e cenários de erro
+## 🔄 Fluxo de Execução
 
-## 🚦 Status dos Testes
+```
+🚀 INICIANDO SUITE COMPLETA DE TESTES
+├── 🔐 Core Tests (paralelo)
+│   ├── Auth Tests
+│   └── SaaS Tests
+├── 🛒 Feature Tests (sequencial)
+│   ├── PDV Tests
+│   ├── Inventory Tests
+│   └── ... outras features
+└── 📊 Resultados Consolidados
+```
 
-Execute `npm run test:automation:scratch` para ver o status completo de todos os módulos!
+## 🎉 Benefícios
 
----
+- ✅ **Modular**: Cada feature tem seus próprios testes
+- ✅ **Reutilizável**: Helpers compartilhados entre features
+- ✅ **Eficiente**: Execução paralela quando possível
+- ✅ **Escalável**: Fácil adicionar novas features
+- ✅ **Consistente**: Padrões uniformes de teste
+- ✅ **Completo**: Cobertura de Auth, SaaS e Features
 
-**Desenvolvido com ❤️ pela equipe SuperPet**
+## 🚨 Pré-requisitos
+
+1. **API rodando**: `npm run start:local`
+2. **Banco limpo**: `npm run test:database:reset`
+3. **Seed executado**: Dados iniciais carregados
+
+## 📝 Logs e Resultados
+
+Cada teste produz logs detalhados e resultados consolidados:
+
+```
+🎯 RESULTADOS FINAIS DA SUITE DE TESTES
+📊 RESUMO POR CATEGORIA:
+🔐 Auth:     7✅ 0❌ (100.0%)
+🏢 SaaS:    6✅ 0❌ (100.0%)
+🛒 Features: 5✅ 0❌ (100.0%)
+
+📈 TOTAL GERAL:
+✅ Passou: 18
+❌ Falhou: 0
+🎯 Taxa de Sucesso Geral: 100.0%
+⏱️  Tempo Total: 45.2s
+```

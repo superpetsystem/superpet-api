@@ -250,7 +250,7 @@ logger.error('❌ Error message');      // Error
 npm run start:local
 
 # Terminal 2: Run tests
-node test/automation/run-all-tests.js
+npm run test:automation:all
 ```
 
 ### Specific Error Tests

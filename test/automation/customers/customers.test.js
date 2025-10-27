@@ -29,10 +29,10 @@ async function login() {
 
 // Test 1: Criar customer
 async function test1_CreateCustomer() {
-  console.log('Test 1: POST /v1/customers');
+  console.log('Test 1: POST /customers');
   
   try {
-    const response = await axios.post(`${BASE_URL}/v1/customers`, {
+    const response = await axios.post(`${BASE_URL}/customers`, {
       name: 'Rodolfo Diego',
       email: customerEmail,
       phone: '+5592988887777',
@@ -62,10 +62,10 @@ async function test1_CreateCustomer() {
 
 // Test 2: Listar customers
 async function test2_ListCustomers() {
-  console.log('\nTest 2: GET /v1/customers');
+  console.log('\nTest 2: GET /customers');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/customers`, {
+    const response = await axios.get(`${BASE_URL}/customers`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -82,10 +82,10 @@ async function test2_ListCustomers() {
 
 // Test 3: Ver customer específico
 async function test3_GetCustomerById() {
-  console.log('\nTest 3: GET /v1/customers/:id');
+  console.log('\nTest 3: GET /customers/:id');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/customers/${customerId}`, {
+    const response = await axios.get(`${BASE_URL}/customers/${customerId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -103,10 +103,10 @@ async function test3_GetCustomerById() {
 
 // Test 4: Criar customer sem contato (deve falhar)
 async function test4_CreateCustomerNoContact() {
-  console.log('\nTest 4: POST /v1/customers (sem contato)');
+  console.log('\nTest 4: POST /customers (sem contato)');
   
   try {
-    await axios.post(`${BASE_URL}/v1/customers`, {
+    await axios.post(`${BASE_URL}/customers`, {
       name: 'Sem Contato',
       // Sem email e sem phone
     }, {
@@ -126,11 +126,11 @@ async function test4_CreateCustomerNoContact() {
 
 // Test 5: Adicionar endereço
 async function test5_CreateAddress() {
-  console.log('\nTest 5: POST /v1/customers/:id/addresses');
+  console.log('\nTest 5: POST /customers/:id/addresses');
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/customers/${customerId}/addresses`,
+      `${BASE_URL}/customers/${customerId}/addresses`,
       {
         street: 'Rua das Flores',
         number: '123',
@@ -160,10 +160,10 @@ async function test5_CreateAddress() {
 
 // Test 6: Listar endereços
 async function test6_ListAddresses() {
-  console.log('\nTest 6: GET /v1/customers/:id/addresses');
+  console.log('\nTest 6: GET /customers/:id/addresses');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/customers/${customerId}/addresses`, {
+    const response = await axios.get(`${BASE_URL}/customers/${customerId}/addresses`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -184,11 +184,11 @@ async function test6_ListAddresses() {
 
 // Test 7: Atualizar status do customer
 async function test7_UpdateCustomerStatus() {
-  console.log('\nTest 7: PATCH /v1/customers/:id/status');
+  console.log('\nTest 7: PATCH /customers/:id/status');
   
   try {
     const response = await axios.patch(
-      `${BASE_URL}/v1/customers/${customerId}/status`,
+      `${BASE_URL}/customers/${customerId}/status`,
       { status: 'INACTIVE' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -200,7 +200,7 @@ async function test7_UpdateCustomerStatus() {
 
     // Voltar para ACTIVE
     await axios.patch(
-      `${BASE_URL}/v1/customers/${customerId}/status`,
+      `${BASE_URL}/customers/${customerId}/status`,
       { status: 'ACTIVE' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -213,11 +213,11 @@ async function test7_UpdateCustomerStatus() {
 
 // Test 8: Adicionar Personal Data (CPF, RG, etc)
 async function test8_AddPersonalData() {
-  console.log('\nTest 8: PUT /v1/customers/:id/personal-data');
+  console.log('\nTest 8: PUT /customers/:id/personal-data');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/customers/${customerId}/personal-data`,
+      `${BASE_URL}/customers/${customerId}/personal-data`,
       {
         cpf: uniqueCpf,
         rg: '1234567',

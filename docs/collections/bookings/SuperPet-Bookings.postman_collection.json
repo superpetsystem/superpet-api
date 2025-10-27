@@ -42,9 +42,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/bookings",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "bookings"]
+					"raw": "{{base_url}}/bookings",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings"
+					]
 				},
 				"description": "Create a new booking.\n\n**Status:** PENDING\n\n**Validations:**\n- Store must have ONLINE_BOOKING feature enabled\n- No conflicting bookings\n- Service must exist\n\n**Errors:**\n- 403: FEATURE_NOT_ENABLED\n- 400: BOOKING_CONFLICT"
 			},
@@ -62,9 +66,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/bookings/stores/{{store_id}}?date=2025-10-25",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "bookings", "stores", "{{store_id}}"],
+					"raw": "{{base_url}}/bookings/stores/{{store_id}}?date=2025-10-25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"stores",
+						"{{store_id}}"
+					],
 					"query": [
 						{
 							"key": "date",
@@ -95,9 +105,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/bookings/customers/{{customer_id}}",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "bookings", "customers", "{{customer_id}}"]
+					"raw": "{{base_url}}/bookings/customers/{{customer_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"customers",
+						"{{customer_id}}"
+					]
 				},
 				"description": "List all bookings for a customer."
 			},
@@ -115,9 +131,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/bookings/{{booking_id}}/confirm",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "bookings", "{{booking_id}}", "confirm"]
+					"raw": "{{base_url}}/bookings/{{booking_id}}/confirm",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"{{booking_id}}",
+						"confirm"
+					]
 				},
 				"description": "Confirm a booking.\n\n**Status:** PENDING → CONFIRMED\n\n**Requires:** OWNER, ADMIN or STAFF role"
 			},
@@ -135,9 +157,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/bookings/{{booking_id}}/complete",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "bookings", "{{booking_id}}", "complete"]
+					"raw": "{{base_url}}/bookings/{{booking_id}}/complete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"{{booking_id}}",
+						"complete"
+					]
 				},
 				"description": "Mark booking as completed.\n\n**Status:** CONFIRMED → COMPLETED\n\n**Requires:** OWNER, ADMIN or STAFF role"
 			},
@@ -164,9 +192,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/bookings/{{booking_id}}/cancel",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "bookings", "{{booking_id}}", "cancel"]
+					"raw": "{{base_url}}/bookings/{{booking_id}}/cancel",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bookings",
+						"{{booking_id}}",
+						"cancel"
+					]
 				},
 				"description": "Cancel a booking with reason.\n\n**Status:** ANY → CANCELLED"
 			},
@@ -211,4 +245,3 @@
 		}
 	]
 }
-

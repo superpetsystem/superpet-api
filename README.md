@@ -86,11 +86,10 @@ cp env/template.env env/local.env
 mysql -u root -p -e "CREATE DATABASE superpet_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # Run migrations
-npm run migration:run:local
+npm run database:migration:run:local
 
 # Seed database (optional)
-npm run typeorm -- -d src/database/data-source.ts migration:run
-node src/database/seeds/run-seed.ts
+npm run database:seed
 
 # Start application
 npm run start:local
@@ -128,8 +127,11 @@ Application will be running at `http://localhost:3000`
 ### Run Tests
 
 ```bash
-# Run all automation tests (88 tests)
-node test/automation/run-all-tests.js
+# Run all automation tests (134 tests)
+npm run test:automation:all
+
+# Run tests from scratch (reset + setup + tests)
+npm run test:automation:from-scratch
 
 # Run specific module
 node test/automation/auth/auth.test.js
@@ -139,6 +141,9 @@ node test/automation/saas/saas-isolation.test.js
 # Run error scenario tests
 node test/automation/errors/validation-errors.test.js  # 12 tests
 node test/automation/errors/permission-errors.test.js  # 2 tests
+
+# Reset test database
+npm run test:database:reset
 
 # Setup SUPER_ADMIN for testing
 node test/automation/setup-superuser.js
@@ -387,25 +392,25 @@ superpet-api/
 ```bash
 # Development
 npm run start:local              # Start in local mode
-npm run start:dev                # Start with watch mode
+npm run start:local:debug        # Start with debug mode
 npm run build                    # Build for production
 
 # Database
-npm run typeorm                  # TypeORM CLI
-npm run migration:generate       # Generate migration from entities
-npm run migration:create         # Create empty migration
-npm run migration:run:local      # Run migrations (local)
-npm run migration:revert:local   # Revert last migration (local)
+npm run database:typeorm         # TypeORM CLI
+npm run database:migration:generate  # Generate migration from entities
+npm run database:migration:create    # Create empty migration
+npm run database:migration:run:local # Run migrations (local)
+npm run database:migration:revert:local # Revert last migration (local)
+npm run database:seed            # Seed database (local)
 
 # Testing
-node test/automation/run-all-tests.js        # Run all 74 tests
-node test/automation/auth/auth.test.js       # Run auth tests only
-node test/automation/saas/saas-isolation.test.js  # Run SaaS tests
+npm run test:automation:all      # Run all 134 tests
+npm run test:automation:from-scratch # Run tests from scratch
+npm run test:database:reset      # Reset test database
 
 # Database Utilities
 node test/automation/setup-superuser.js      # Create SUPER_ADMIN user
 node test/automation/update-org-limits.js    # Update organization limits
-node test/automation/reset-database.js       # Reset database (careful!)
 ```
 
 ### Environment Configuration
@@ -471,16 +476,16 @@ REDIS_PORT=6379
 
 ```bash
 # Run all pending migrations
-npm run migration:run:local
+npm run database:migration:run:local
 
 # Revert last migration
-npm run migration:revert:local
+npm run database:migration:revert:local
 
 # Generate migration from entity changes
-npm run migration:generate -- src/database/migrations/MigrationName
+npm run database:migration:generate -- src/database/migrations/MigrationName
 
 # Create empty migration
-npm run migration:create -- src/database/migrations/MigrationName
+npm run database:migration:create -- src/database/migrations/MigrationName
 ```
 
 ---
@@ -573,10 +578,10 @@ npm run build
 export NODE_ENV=production
 
 # Run migrations
-npm run migration:run:prod
+npm run database:migration:run:production
 
 # Start application
-npm run start:prod
+npm run start:production
 ```
 
 ### Docker Support (Coming Soon)
@@ -597,8 +602,8 @@ docker-compose up -d
 
 1. Create feature branch from `main`
 2. Implement changes following existing patterns
-3. Run tests: `node test/automation/run-all-tests.js`
-4. Ensure all 74 tests pass
+3. Run tests: `npm run test:automation:all`
+4. Ensure all 134 tests pass
 5. Create pull request
 
 ### Code Style

@@ -30,9 +30,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/pickups",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "pickups"]
+							"raw": "{{base_url}}/stores/{{store_id}}/pickups",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"pickups"
+							]
 						}
 					}
 				},
@@ -48,9 +54,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/pickups?date=2025-10-20",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "pickups"],
+							"raw": "{{base_url}}/stores/{{store_id}}/pickups?date=2025-10-20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"pickups"
+							],
 							"query": [
 								{
 									"key": "date",
@@ -81,9 +93,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/pickups/{{pickup_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "pickups", "{{pickup_id}}", "status"]
+							"raw": "{{base_url}}/stores/{{store_id}}/pickups/{{pickup_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"pickups",
+								"{{pickup_id}}",
+								"status"
+							]
 						}
 					}
 				},
@@ -108,9 +128,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/pickups/{{pickup_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "pickups", "{{pickup_id}}", "status"]
+							"raw": "{{base_url}}/stores/{{store_id}}/pickups/{{pickup_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"pickups",
+								"{{pickup_id}}",
+								"status"
+							]
 						}
 					}
 				},
@@ -135,9 +163,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/pickups/{{pickup_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "pickups", "{{pickup_id}}", "status"]
+							"raw": "{{base_url}}/stores/{{store_id}}/pickups/{{pickup_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"pickups",
+								"{{pickup_id}}",
+								"status"
+							]
 						}
 					}
 				}
@@ -167,9 +203,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/live-cam/streams",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "live-cam", "streams"]
+							"raw": "{{base_url}}/stores/{{store_id}}/live-cam/streams",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"live-cam",
+								"streams"
+							]
 						}
 					}
 				},
@@ -185,9 +228,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/customers/{{customer_id}}/pets/{{pet_id}}/live-cam",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "customers", "{{customer_id}}", "pets", "{{pet_id}}", "live-cam"]
+							"raw": "{{base_url}}/customers/{{customer_id}}/pets/{{pet_id}}/live-cam",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"{{customer_id}}",
+								"pets",
+								"{{pet_id}}",
+								"live-cam"
+							]
 						},
 						"description": "Customer can view live streams of their pet"
 					}
@@ -204,9 +255,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/live-cam/streams/{{stream_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "live-cam", "streams", "{{stream_id}}"]
+							"raw": "{{base_url}}/stores/{{store_id}}/live-cam/streams/{{stream_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"live-cam",
+								"streams",
+								"{{stream_id}}"
+							]
 						}
 					}
 				}
@@ -251,4 +310,3 @@
 		}
 	]
 }
-

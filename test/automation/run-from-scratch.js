@@ -108,7 +108,7 @@ async function createSuperAdmin() {
   });
 
   try {
-    const email = 'superadmin@superpet.com.br';
+    const email = 'superadmin@superpet.com';
     const password = 'Super@2024!Admin';
     const hashedPassword = await bcrypt.hash(password, 10);
 

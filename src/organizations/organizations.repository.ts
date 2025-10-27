@@ -31,6 +31,15 @@ export class OrganizationsRepository {
   async findAll(): Promise<OrganizationEntity[]> {
     return this.repository.find({ order: { createdAt: 'DESC' } });
   }
+
+  async update(id: string, data: Partial<OrganizationEntity>): Promise<OrganizationEntity> {
+    await this.repository.update(id, data);
+    const updated = await this.repository.findOne({ where: { id } });
+    if (!updated) {
+      throw new Error('Organization not found after update');
+    }
+    return updated;
+  }
 }
 
 

@@ -17,7 +17,7 @@ import { EmployeeRole } from '../employees/entities/employee.entity';
 import { ReportsService } from './services/reports.service';
 import { ReportFiltersDto } from './dto/report-filters.dto';
 
-@Controller('v1/reports')
+@Controller('reports')
 @UseGuards(JwtAuthGuard)
 export class ReportsController {
   private readonly logger = new Logger(ReportsController.name);

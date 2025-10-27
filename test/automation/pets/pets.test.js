@@ -25,12 +25,13 @@ async function setup() {
 
 // Test 1: Criar pet
 async function test1_CreatePet() {
-  console.log('Test 1: POST /v1/customers/:customerId/pets');
+  console.log('Test 1: POST /pets');
   
   try {
     const response = await axios.post(
-      `${BASE_URL}/v1/customers/${customerId}/pets`,
+      `${BASE_URL}/pets`,
       {
+        customerId: customerId,
         name: 'Thor',
         species: 'DOG',
         breed: 'Labrador',
@@ -61,11 +62,11 @@ async function test1_CreatePet() {
 
 // Test 2: Listar pets do customer
 async function test2_ListPetsByCustomer() {
-  console.log('\nTest 2: GET /v1/customers/:customerId/pets');
+  console.log('\nTest 2: GET /pets/customers/:customerId');
   
   try {
     const response = await axios.get(
-      `${BASE_URL}/v1/customers/${customerId}/pets`,
+      `${BASE_URL}/pets/customers/${customerId}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
@@ -82,10 +83,10 @@ async function test2_ListPetsByCustomer() {
 
 // Test 3: Ver pet específico
 async function test3_GetPetById() {
-  console.log('\nTest 3: GET /v1/pets/:id');
+  console.log('\nTest 3: GET /pets/:id');
   
   try {
-    const response = await axios.get(`${BASE_URL}/v1/pets/${petId}`, {
+    const response = await axios.get(`${BASE_URL}/pets/${petId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -103,11 +104,11 @@ async function test3_GetPetById() {
 
 // Test 4: Atualizar pet
 async function test4_UpdatePet() {
-  console.log('\nTest 4: PUT /v1/pets/:id');
+  console.log('\nTest 4: PUT /pets/:id');
   
   try {
     const response = await axios.put(
-      `${BASE_URL}/v1/pets/${petId}`,
+      `${BASE_URL}/pets/${petId}`,
       {
         name: 'Thor Odinson',
         weightKg: 33.0,
@@ -130,12 +131,13 @@ async function test4_UpdatePet() {
 
 // Test 5: Criar pet com peso inválido
 async function test5_CreatePetInvalidWeight() {
-  console.log('\nTest 5: POST /v1/customers/:customerId/pets (peso inválido)');
+  console.log('\nTest 5: POST /pets (peso inválido)');
   
   try {
     await axios.post(
-      `${BASE_URL}/v1/customers/${customerId}/pets`,
+      `${BASE_URL}/pets`,
       {
+        customerId: customerId,
         name: 'Pet Inválido',
         species: 'DOG',
         weightKg: 300, // Acima do limite de 200kg
@@ -156,11 +158,11 @@ async function test5_CreatePetInvalidWeight() {
 
 // Test 6: Marcar pet como DECEASED
 async function test6_MarkPetDeceased() {
-  console.log('\nTest 6: PATCH /v1/pets/:id/status');
+  console.log('\nTest 6: PATCH /pets/:id/status');
   
   try {
     const response = await axios.patch(
-      `${BASE_URL}/v1/pets/${petId}/status`,
+      `${BASE_URL}/pets/${petId}/status`,
       { status: 'DECEASED' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
@@ -173,7 +175,7 @@ async function test6_MarkPetDeceased() {
 
     // Voltar para ACTIVE
     await axios.patch(
-      `${BASE_URL}/v1/pets/${petId}/status`,
+      `${BASE_URL}/pets/${petId}/status`,
       { status: 'ACTIVE' },
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
