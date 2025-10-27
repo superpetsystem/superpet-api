@@ -5,12 +5,12 @@ Collection para gerenciamento de agendamentos online.
 ## 📋 Endpoints (6)
 
 ### Bookings
-1. **POST** `/v1/bookings` - Criar agendamento
-2. **GET** `/v1/bookings/stores/:storeId` - Listar agendamentos da loja
-3. **GET** `/v1/bookings/customers/:customerId` - Listar agendamentos do cliente
-4. **PATCH** `/v1/bookings/:id/confirm` - Confirmar agendamento
-5. **PATCH** `/v1/bookings/:id/complete` - Completar agendamento
-6. **PATCH** `/v1/bookings/:id/cancel` - Cancelar agendamento
+1. **POST** `/bookings` - Criar agendamento
+2. **GET** `/bookings/stores/:storeId` - Listar agendamentos da loja
+3. **GET** `/bookings/customers/:customerId` - Listar agendamentos do cliente
+4. **PATCH** `/bookings/:id/confirm` - Confirmar agendamento
+5. **PATCH** `/bookings/:id/complete` - Completar agendamento
+6. **PATCH** `/bookings/:id/cancel` - Cancelar agendamento
 
 ## ✅ Requisitos
 
@@ -19,7 +19,7 @@ Collection para gerenciamento de agendamentos online.
 **Para habilitar:**
 ```bash
 # Via SUPER_ADMIN
-POST /v1/admin/stores/{storeId}/features/ONLINE_BOOKING
+POST /admin/stores/{storeId}/features/ONLINE_BOOKING
 {
   "enabled": true,
   "limits": {
@@ -40,7 +40,7 @@ CANCELLED (a qualquer momento)
 
 ```bash
 # 1. Criar agendamento
-POST /v1/bookings
+POST /bookings
 {
   "storeId": "uuid",
   "customerId": "uuid",
@@ -52,13 +52,13 @@ POST /v1/bookings
 }
 
 # 2. Confirmar
-PATCH /v1/bookings/{id}/confirm
+PATCH /bookings/{id}/confirm
 
 # 3. Completar
-PATCH /v1/bookings/{id}/complete
+PATCH /bookings/{id}/complete
 
 # Ou cancelar
-PATCH /v1/bookings/{id}/cancel
+PATCH /bookings/{id}/cancel
 {
   "reason": "Cliente desmarcou"
 }

@@ -163,7 +163,7 @@ export class StoreFeaturesEntity {
 
 ```typescript
 // Enable feature for store
-PUT /v1/stores/:storeId/features/TELEPICKUP
+PUT /stores/:storeId/features/TELEPICKUP
 {
   "enabled": true,
   "customLimit": 50
@@ -269,7 +269,7 @@ await planLimitsService.validateEmployeeCreation(organizationId);
 ### 1. Create Customer
 
 ```
-Client → POST /v1/customers
+Client → POST /customers
     ↓
 CustomersController.create()
     ├─→ Logger: "📝 Create customer - Email: user@test.com"
@@ -290,7 +290,7 @@ Response: CustomerEntity
 ### 2. Employee Creates Another Employee
 
 ```
-Client → POST /v1/employees (Bearer token)
+Client → POST /employees (Bearer token)
     ↓
 JwtAuthGuard
     ├─→ Validate JWT token
@@ -313,7 +313,7 @@ Response: EmployeeEntity
 ### 3. STAFF Access Store
 
 ```
-Client → GET /v1/stores/:storeId (Bearer token)
+Client → GET /stores/:storeId (Bearer token)
     ↓
 JwtAuthGuard → Validate token
     ↓

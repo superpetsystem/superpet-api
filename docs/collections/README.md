@@ -21,7 +21,7 @@ Complete Postman collections for all API modules with automated tests and variab
 | 11 | [**Inventory**](./inventory/) | 13 | Stock & product management 🆕 |
 | 12 | [**Reports**](./reports/) | 4 | Analytics & business intelligence 🆕 |
 
-**Total: 109 endpoints documented** (was 64)
+**Total: 134+ endpoints documented** (with SaaS features)
 
 ---
 
@@ -76,10 +76,10 @@ Create a Postman Environment with:
 - Token expiry: access 15min, refresh 7d
 
 ### 👥 Employees Collection (10 endpoints)
-- POST /v1/employees (create with role)
-- GET /v1/employees (with filters)
-- GET /v1/employees/:id
-- PUT /v1/employees/:id
+- POST /employees (create with role)
+- GET /employees (with filters)
+- GET /employees/:id
+- PUT /employees/:id
 
 **Filters:**
 - `?role=STAFF`
@@ -89,137 +89,137 @@ Create a Postman Environment with:
 
 ### 🏪 Stores Collection (12 endpoints)
 **Store Management:**
-- POST /v1/stores
-- GET /v1/stores
-- GET /v1/stores/:id
-- PUT /v1/stores/:id
-- PATCH /v1/stores/:id/status
-- PUT /v1/stores/:id/opening-hours
-- PUT /v1/stores/:id/capacity
-- PUT /v1/stores/:id/blackouts
+- POST /stores
+- GET /stores
+- GET /stores/:id
+- PUT /stores/:id
+- PATCH /stores/:id/status
+- PUT /stores/:id/opening-hours
+- PUT /stores/:id/capacity
+- PUT /stores/:id/blackouts
 
 **Feature Configuration:**
-- GET /v1/stores/:id/features
-- PUT /v1/stores/:id/features/:key (enable/disable)
+- GET /stores/:id/features
+- PUT /stores/:id/features/:key (enable/disable)
 
 ### 👤 Customers Collection (11 endpoints)
 **Customer Management:**
-- POST /v1/customers
-- GET /v1/customers
-- GET /v1/customers/:id
-- PUT /v1/customers/:id
-- PATCH /v1/customers/:id/status
+- POST /customers
+- GET /customers
+- GET /customers/:id
+- PUT /customers/:id
+- PATCH /customers/:id/status
 
 **Addresses:**
-- GET /v1/customers/:id/addresses
-- POST /v1/customers/:id/addresses
-- PUT /v1/customers/:id/addresses/:addressId
-- PATCH /v1/customers/:id/addresses/:addressId/primary
+- GET /customers/:id/addresses
+- POST /customers/:id/addresses
+- PUT /customers/:id/addresses/:addressId
+- PATCH /customers/:id/addresses/:addressId/primary
 
 **Personal Data (PII):**
-- GET /v1/customers/:id/personal-data
-- PUT /v1/customers/:id/personal-data
+- GET /customers/:id/personal-data
+- PUT /customers/:id/personal-data
 
 ### 🐾 Pets Collection (7 endpoints)
-- POST /v1/customers/:customerId/pets
-- GET /v1/customers/:customerId/pets
-- GET /v1/pets/:id
-- PUT /v1/pets/:id
-- PATCH /v1/pets/:id/status
+- POST /customers/:customerId/pets
+- GET /customers/:customerId/pets
+- GET /pets/:id
+- PUT /pets/:id
+- PATCH /pets/:id/status
 
 **Species Supported:**
 - DOG, CAT, BIRD, RABBIT, HAMSTER, FISH, REPTILE, OTHER
 
 ### 💼 Services Collection (13 endpoints)
 **Service Catalog:**
-- POST /v1/services
-- GET /v1/services
-- GET /v1/services/:id
-- PUT /v1/services/:id
-- PATCH /v1/services/:id/status
-- PUT /v1/services/:id/addons
+- POST /services
+- GET /services
+- GET /services/:id
+- PUT /services/:id
+- PATCH /services/:id/status
+- PUT /services/:id/addons
 
 **Custom Services (Store Pricing):**
-- GET /v1/stores/:storeId/custom-services
-- GET /v1/stores/:storeId/custom-services/:id
-- POST /v1/stores/:storeId/custom-services
-- PUT /v1/stores/:storeId/custom-services/:id
-- POST /v1/stores/:storeId/custom-services/:id/publish
-- POST /v1/stores/:storeId/custom-services/:id/archive
-- DELETE /v1/stores/:storeId/custom-services/:id
+- GET /stores/:storeId/custom-services
+- GET /stores/:storeId/custom-services/:id
+- POST /stores/:storeId/custom-services
+- PUT /stores/:storeId/custom-services/:id
+- POST /stores/:storeId/custom-services/:id/publish
+- POST /stores/:storeId/custom-services/:id/archive
+- DELETE /stores/:storeId/custom-services/:id
 
 ### 🎯 Features Collection (8 endpoints)
 **TelePickup:**
-- GET /v1/stores/:storeId/pickups
-- POST /v1/stores/:storeId/pickups
-- PATCH /v1/stores/:storeId/pickups/:id/status
+- GET /stores/:storeId/pickups
+- POST /stores/:storeId/pickups
+- PATCH /stores/:storeId/pickups/:id/status
 
 **Live Camera:**
-- POST /v1/stores/:storeId/live-cam/streams
-- GET /v1/customers/:customerId/pets/:petId/live-cam
-- DELETE /v1/stores/:storeId/live-cam/streams/:id
+- POST /stores/:storeId/live-cam/streams
+- GET /customers/:customerId/pets/:petId/live-cam
+- DELETE /stores/:storeId/live-cam/streams/:id
 
 ### 👨‍💼 Admin Collection (11 endpoints) 🆕
 **SUPER_ADMIN Only:**
-- GET /v1/admin/organizations
-- POST /v1/admin/organizations
-- POST /v1/admin/organizations/:id/stores
-- POST /v1/admin/organizations/:id/owners
+- GET /admin/organizations
+- POST /admin/organizations
+- POST /admin/organizations/:id/stores
+- POST /admin/organizations/:id/owners
 
 **Feature Orchestration:**
-- GET /v1/admin/features
-- GET /v1/admin/stores/:storeId/features
-- POST /v1/admin/stores/:storeId/features/:key
-- PUT /v1/admin/stores/:storeId/features/:key/limits
-- DELETE /v1/admin/stores/:storeId/features/:key
-- GET /v1/admin/organizations/:orgId/stores-features
+- GET /admin/features
+- GET /admin/stores/:storeId/features
+- POST /admin/stores/:storeId/features/:key
+- PUT /admin/stores/:storeId/features/:key/limits
+- DELETE /admin/stores/:storeId/features/:key
+- GET /admin/organizations/:orgId/stores-features
 
 ### 📅 Bookings Collection (6 endpoints) 🆕
-- POST /v1/bookings
-- GET /v1/bookings/stores/:storeId
-- GET /v1/bookings/customers/:customerId
-- PATCH /v1/bookings/:id/confirm
-- PATCH /v1/bookings/:id/complete
-- PATCH /v1/bookings/:id/cancel
+- POST /bookings
+- GET /bookings/stores/:storeId
+- GET /bookings/customers/:customerId
+- PATCH /bookings/:id/confirm
+- PATCH /bookings/:id/complete
+- PATCH /bookings/:id/cancel
 
 **Status Flow:** PENDING → CONFIRMED → COMPLETED
 
 ### 🏥 Veterinary Collection (7 endpoints) 🆕
 **Medical Records:**
-- POST /v1/veterinary/records
-- GET /v1/veterinary/records/:id
-- GET /v1/veterinary/pets/:petId/records
-- PUT /v1/veterinary/records/:id
+- POST /veterinary/records
+- GET /veterinary/records/:id
+- GET /veterinary/pets/:petId/records
+- PUT /veterinary/records/:id
 
 **Vaccinations:**
-- POST /v1/veterinary/vaccinations
-- GET /v1/veterinary/pets/:petId/vaccinations
-- GET /v1/veterinary/pets/:petId/vaccinations/upcoming
+- POST /veterinary/vaccinations
+- GET /veterinary/pets/:petId/vaccinations
+- GET /veterinary/pets/:petId/vaccinations/upcoming
 
 ### 📦 Inventory Collection (13 endpoints) 🆕
 **Products:**
-- POST /v1/products
-- GET /v1/products
-- GET /v1/products/:id
-- PUT /v1/products/:id
-- DELETE /v1/products/:id
+- POST /products
+- GET /products
+- GET /products/:id
+- PUT /products/:id
+- DELETE /products/:id
 
 **Stock Management:**
-- GET /v1/stores/:storeId/stock
-- POST /v1/stores/:storeId/stock/movements
-- POST /v1/stores/:storeId/stock/adjust
-- GET /v1/stores/:storeId/stock/movements
-- GET /v1/stores/:storeId/stock/alerts
+- GET /stores/:storeId/stock
+- POST /stores/:storeId/stock/movements
+- POST /stores/:storeId/stock/adjust
+- GET /stores/:storeId/stock/movements
+- GET /stores/:storeId/stock/alerts
 
 **Transfers:**
-- POST /v1/transfers
-- GET /v1/stores/:storeId/expiring
+- POST /transfers
+- GET /stores/:storeId/expiring
 
 ### 📊 Reports Collection (4 endpoints) 🆕
-- GET /v1/reports/dashboard
-- GET /v1/reports/customers
-- GET /v1/reports/pets
-- GET /v1/reports/stores/:storeId/performance
+- GET /reports/dashboard
+- GET /reports/customers
+- GET /reports/pets
+- GET /reports/stores/:storeId/performance
 
 **Periods:** DAY, WEEK, MONTH, YEAR, CUSTOM
 

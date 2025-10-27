@@ -5,15 +5,15 @@ Collection para prontuários veterinários e controle de vacinação.
 ## 📋 Endpoints (7)
 
 ### Medical Records
-1. **POST** `/v1/veterinary/records` - Criar prontuário médico
-2. **GET** `/v1/veterinary/records/:id` - Ver prontuário
-3. **GET** `/v1/veterinary/pets/:petId/records` - Histórico do pet
-4. **PUT** `/v1/veterinary/records/:id` - Atualizar prontuário
+1. **POST** `/veterinary/records` - Criar prontuário médico
+2. **GET** `/veterinary/records/:id` - Ver prontuário
+3. **GET** `/veterinary/pets/:petId/records` - Histórico do pet
+4. **PUT** `/veterinary/records/:id` - Atualizar prontuário
 
 ### Vaccinations
-5. **POST** `/v1/veterinary/vaccinations` - Registrar vacinação
-6. **GET** `/v1/veterinary/pets/:petId/vaccinations` - Histórico de vacinas
-7. **GET** `/v1/veterinary/pets/:petId/vaccinations/upcoming` - Lembretes de vacinas
+5. **POST** `/veterinary/vaccinations` - Registrar vacinação
+6. **GET** `/veterinary/pets/:petId/vaccinations` - Histórico de vacinas
+7. **GET** `/veterinary/pets/:petId/vaccinations/upcoming` - Lembretes de vacinas
 
 ## ✅ Requisitos
 
@@ -22,7 +22,7 @@ Collection para prontuários veterinários e controle de vacinação.
 **Para habilitar:**
 ```bash
 # Via SUPER_ADMIN
-POST /v1/admin/stores/{storeId}/features/VETERINARY_RECORDS
+POST /admin/stores/{storeId}/features/VETERINARY_RECORDS
 {
   "enabled": true,
   "limits": {
@@ -50,7 +50,7 @@ POST /v1/admin/stores/{storeId}/features/VETERINARY_RECORDS
 ## 📝 Exemplo de Prontuário
 
 ```bash
-POST /v1/veterinary/records
+POST /veterinary/records
 {
   "petId": "uuid",
   "storeId": "uuid",
@@ -70,7 +70,7 @@ POST /v1/veterinary/records
 ## 💉 Exemplo de Vacinação
 
 ```bash
-POST /v1/veterinary/vaccinations
+POST /veterinary/vaccinations
 {
   "petId": "uuid",
   "vaccineName": "V10 (Múltipla)",
@@ -86,7 +86,7 @@ POST /v1/veterinary/vaccinations
 
 ```bash
 # Vacinas próximas nos próximos 30 dias
-GET /v1/veterinary/pets/{petId}/vaccinations/upcoming?days=30
+GET /veterinary/pets/{petId}/vaccinations/upcoming?days=30
 ```
 
 ## 📊 Campos de Prontuário

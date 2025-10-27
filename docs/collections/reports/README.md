@@ -4,10 +4,10 @@ Collection para relatórios gerenciais e business intelligence.
 
 ## 📋 Endpoints (4)
 
-1. **GET** `/v1/reports/dashboard` - Dashboard geral com KPIs
-2. **GET** `/v1/reports/customers` - Analytics de clientes
-3. **GET** `/v1/reports/pets` - Estatísticas de pets
-4. **GET** `/v1/reports/stores/:storeId/performance` - Performance da loja
+1. **GET** `/reports/dashboard` - Dashboard geral com KPIs
+2. **GET** `/reports/customers` - Analytics de clientes
+3. **GET** `/reports/pets` - Estatísticas de pets
+4. **GET** `/reports/stores/:storeId/performance` - Performance da loja
 
 ## ✅ Requisitos
 
@@ -16,7 +16,7 @@ Collection para relatórios gerenciais e business intelligence.
 ## 📊 Dashboard Overview
 
 ```bash
-GET /v1/reports/dashboard
+GET /reports/dashboard
 
 # Retorna:
 {
@@ -44,10 +44,10 @@ GET /v1/reports/dashboard
 
 ```bash
 # Últimos 30 dias
-GET /v1/reports/customers?period=MONTH
+GET /reports/customers?period=MONTH
 
 # Período customizado
-GET /v1/reports/customers?period=CUSTOM&startDate=2025-09-01&endDate=2025-10-01
+GET /reports/customers?period=CUSTOM&startDate=2025-09-01&endDate=2025-10-01
 
 # Resposta:
 {
@@ -65,7 +65,7 @@ GET /v1/reports/customers?period=CUSTOM&startDate=2025-09-01&endDate=2025-10-01
 ### Pet Statistics
 
 ```bash
-GET /v1/reports/pets?period=WEEK
+GET /reports/pets?period=WEEK
 
 # Resposta:
 {
@@ -88,7 +88,7 @@ GET /v1/reports/pets?period=WEEK
 ### Store Performance
 
 ```bash
-GET /v1/reports/stores/{storeId}/performance?period=MONTH
+GET /reports/stores/{storeId}/performance?period=MONTH
 
 # Resposta:
 {
@@ -112,7 +112,7 @@ GET /v1/reports/stores/{storeId}/performance?period=MONTH
 
 ### 1. Dashboard Executivo
 ```bash
-GET /v1/reports/dashboard
+GET /reports/dashboard
 ```
 - KPIs principais
 - Visão geral do negócio
@@ -120,7 +120,7 @@ GET /v1/reports/dashboard
 
 ### 2. Análise de Crescimento
 ```bash
-GET /v1/reports/customers?period=YEAR
+GET /reports/customers?period=YEAR
 ```
 - Crescimento de clientes
 - Taxa de conversão
@@ -128,7 +128,7 @@ GET /v1/reports/customers?period=YEAR
 
 ### 3. Estatísticas de Pets
 ```bash
-GET /v1/reports/pets?period=MONTH
+GET /reports/pets?period=MONTH
 ```
 - Distribuição por espécie
 - Novos cadastros
@@ -136,7 +136,7 @@ GET /v1/reports/pets?period=MONTH
 
 ### 4. Performance de Loja
 ```bash
-GET /v1/reports/stores/{storeId}/performance?period=MONTH
+GET /reports/stores/{storeId}/performance?period=MONTH
 ```
 - Faturamento
 - Serviços mais vendidos

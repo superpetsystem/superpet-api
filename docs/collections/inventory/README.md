@@ -5,22 +5,22 @@ Collection para gestão completa de estoque e produtos.
 ## 📋 Endpoints (13)
 
 ### Products
-1. **POST** `/v1/products` - Criar produto
-2. **GET** `/v1/products` - Listar produtos
-3. **GET** `/v1/products/:id` - Ver produto
-4. **PUT** `/v1/products/:id` - Atualizar produto
-5. **DELETE** `/v1/products/:id` - Deletar produto
+1. **POST** `/products` - Criar produto
+2. **GET** `/products` - Listar produtos
+3. **GET** `/products/:id` - Ver produto
+4. **PUT** `/products/:id` - Atualizar produto
+5. **DELETE** `/products/:id` - Deletar produto
 
 ### Stock Management
-6. **GET** `/v1/stores/:storeId/stock` - Ver estoque da loja
-7. **POST** `/v1/stores/:storeId/stock/movements` - Adicionar movimentação
-8. **POST** `/v1/stores/:storeId/stock/adjust` - Ajustar estoque
-9. **GET** `/v1/stores/:storeId/stock/movements` - Histórico de movimentações
-10. **GET** `/v1/stores/:storeId/stock/alerts` - Alertas de estoque baixo
+6. **GET** `/stores/:storeId/stock` - Ver estoque da loja
+7. **POST** `/stores/:storeId/stock/movements` - Adicionar movimentação
+8. **POST** `/stores/:storeId/stock/adjust` - Ajustar estoque
+9. **GET** `/stores/:storeId/stock/movements` - Histórico de movimentações
+10. **GET** `/stores/:storeId/stock/alerts` - Alertas de estoque baixo
 
 ### Transfers
-11. **POST** `/v1/transfers` - Transferir entre lojas
-12. **GET** `/v1/stores/:storeId/expiring` - Produtos próximos ao vencimento
+11. **POST** `/transfers` - Transferir entre lojas
+12. **GET** `/stores/:storeId/expiring` - Produtos próximos ao vencimento
 
 ## ✅ Requisitos
 
@@ -49,7 +49,7 @@ Collection para gestão completa de estoque e produtos.
 
 ### Criar Produto
 ```json
-POST /v1/products
+POST /products
 {
   "code": "SHP_001",
   "name": "Shampoo Premium",
@@ -65,7 +65,7 @@ POST /v1/products
 
 ### Adicionar Entrada
 ```json
-POST /v1/stores/{storeId}/stock/movements
+POST /stores/{storeId}/stock/movements
 {
   "productId": "uuid",
   "type": "ENTRY",
@@ -77,7 +77,7 @@ POST /v1/stores/{storeId}/stock/movements
 
 ### Registrar Venda (Saída)
 ```json
-POST /v1/stores/{storeId}/stock/movements
+POST /stores/{storeId}/stock/movements
 {
   "productId": "uuid",
   "type": "EXIT",
@@ -89,7 +89,7 @@ POST /v1/stores/{storeId}/stock/movements
 
 ### Ajustar Estoque
 ```json
-POST /v1/stores/{storeId}/stock/adjust
+POST /stores/{storeId}/stock/adjust
 {
   "productId": "uuid",
   "newQuantity": 30,
@@ -99,7 +99,7 @@ POST /v1/stores/{storeId}/stock/adjust
 
 ### Transferir Entre Lojas
 ```json
-POST /v1/transfers
+POST /transfers
 {
   "productId": "uuid",
   "fromStoreId": "store-1-uuid",
@@ -121,7 +121,7 @@ POST /v1/transfers
 
 ### Estoque Baixo
 ```bash
-GET /v1/stores/{storeId}/stock/alerts
+GET /stores/{storeId}/stock/alerts
 
 # Retorna produtos onde:
 # currentStock < minStockLevel
@@ -129,7 +129,7 @@ GET /v1/stores/{storeId}/stock/alerts
 
 ### Produtos Vencendo
 ```bash
-GET /v1/stores/{storeId}/expiring?days=30
+GET /stores/{storeId}/expiring?days=30
 
 # Produtos que vencem nos próximos 30 dias
 ```
