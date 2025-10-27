@@ -45,9 +45,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/products",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "products"]
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
 						},
 						"description": "Create a new product.\n\n**Categories:**\n- FOOD\n- HYGIENE\n- MEDICATION\n- ACCESSORIES\n- TOYS\n- OTHER\n\n**Prices:** In cents (2500 = R$ 25.00)"
 					},
@@ -65,9 +69,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/products?category=HYGIENE",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "products"],
+							"raw": "{{base_url}}/products?category=HYGIENE",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							],
 							"query": [
 								{
 									"key": "category",
@@ -98,9 +106,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/products/{{product_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "products", "{{product_id}}"]
+							"raw": "{{base_url}}/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id}}"
+							]
 						},
 						"description": "Get product details."
 					},
@@ -127,9 +140,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/products/{{product_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "products", "{{product_id}}"]
+							"raw": "{{base_url}}/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id}}"
+							]
 						},
 						"description": "Update product information."
 					},
@@ -147,9 +165,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/products/{{product_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "products", "{{product_id}}"]
+							"raw": "{{base_url}}/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id}}"
+							]
 						},
 						"description": "Delete a product (soft delete)."
 					},
@@ -172,9 +195,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/stock",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "stock"]
+							"raw": "{{base_url}}/stores/{{store_id}}/stock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock"
+							]
 						},
 						"description": "Get current stock for all products in a store."
 					},
@@ -201,9 +230,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/stock/movements",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "stock", "movements"]
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"movements"
+							]
 						},
 						"description": "Add stock entry.\n\n**Type:** ENTRY (positive quantity)\n\n**Use Case:** Purchase from supplier, production"
 					},
@@ -230,9 +266,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/stock/movements",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "stock", "movements"]
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"movements"
+							]
 						},
 						"description": "Add stock exit.\n\n**Type:** EXIT (positive quantity, decreases stock)\n\n**Use Case:** Sales, usage in services\n\n**Validation:** Checks if sufficient stock available"
 					},
@@ -259,9 +302,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/stock/adjust",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "stock", "adjust"]
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/adjust",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"adjust"
+							]
 						},
 						"description": "Manually adjust stock to specific quantity.\n\n**Type:** ADJUSTMENT\n\n**Use Case:** Physical inventory, corrections"
 					},
@@ -279,9 +329,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/stock/movements?productId={{product_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "stock", "movements"],
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/movements?productId={{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"movements"
+							],
 							"query": [
 								{
 									"key": "productId",
@@ -312,9 +369,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/stock/alerts",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "stock", "alerts"]
+							"raw": "{{base_url}}/stores/{{store_id}}/stock/alerts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"stock",
+								"alerts"
+							]
 						},
 						"description": "Get products with stock below minimum level.\n\n**Use Case:** Reorder alerts, inventory management"
 					},
@@ -346,9 +410,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/transfers",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "transfers"]
+							"raw": "{{base_url}}/transfers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transfers"
+							]
 						},
 						"description": "Transfer products between stores.\n\n**Validations:**\n- Both stores must be in same organization\n- Sufficient stock in source store\n- Creates EXIT in source, ENTRY in destination"
 					},
@@ -366,9 +434,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/expiring?days=30",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "expiring"],
+							"raw": "{{base_url}}/stores/{{store_id}}/expiring?days=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"expiring"
+							],
 							"query": [
 								{
 									"key": "days",
@@ -412,4 +486,3 @@
 		}
 	]
 }
-

@@ -19,6 +19,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { VeterinaryModule } from './veterinary/veterinary.module';
 import { AdminModule } from './admin/admin.module';
 import { PdvModule } from './pdv/pdv.module';
+import { CustomerPortalModule } from './customer-portal/customer-portal.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { PdvModule } from './pdv/pdv.module';
     VeterinaryModule,
     AdminModule,
     PdvModule,
+    CustomerPortalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

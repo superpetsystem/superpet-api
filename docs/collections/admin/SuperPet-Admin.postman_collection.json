@@ -38,8 +38,13 @@
 				},
 				"url": {
 					"raw": "{{base_url}}/auth/login",
-					"host": ["{{base_url}}"],
-					"path": ["auth", "login"]
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
 				},
 				"description": "Login as SUPER_ADMIN to access admin endpoints.\n\n**Note:** SUPER_ADMIN can only be created via SQL script (apply-superadmin.js)"
 			},
@@ -57,9 +62,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/admin/features",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "features"]
+					"raw": "{{base_url}}/admin/features",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"features"
+					]
 				},
 				"description": "List all available features in the system.\n\n**Returns:** Array of 13 features with categories, plans, and default limits"
 			},
@@ -77,9 +87,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/admin/organizations",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "organizations"]
+					"raw": "{{base_url}}/admin/organizations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations"
+					]
 				},
 				"description": "List all organizations in the system."
 			},
@@ -121,9 +136,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/admin/organizations",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "organizations"]
+					"raw": "{{base_url}}/admin/organizations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations"
+					]
 				},
 				"description": "Create a new organization.\n\n**Plans:** FREE, BASIC, PRO, ENTERPRISE"
 			},
@@ -165,9 +185,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/admin/organizations/{{organization_id}}/stores",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "organizations", "{{organization_id}}", "stores"]
+					"raw": "{{base_url}}/admin/organizations/{{organization_id}}/stores",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations",
+						"{{organization_id}}",
+						"stores"
+					]
 				},
 				"description": "Create a store for a specific organization."
 			},
@@ -194,9 +221,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/admin/organizations/{{organization_id}}/owners",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "organizations", "{{organization_id}}", "owners"]
+					"raw": "{{base_url}}/admin/organizations/{{organization_id}}/owners",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations",
+						"{{organization_id}}",
+						"owners"
+					]
 				},
 				"description": "Create OWNER for an organization.\n\n**Creates:**\n- User with USER role\n- Employee with OWNER role"
 			},
@@ -214,9 +248,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/admin/stores/{{store_id}}/features",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "stores", "{{store_id}}", "features"]
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features"
+					]
 				},
 				"description": "List all features enabled for a specific store."
 			},
@@ -243,9 +284,17 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/admin/stores/{{store_id}}/features/TELEPICKUP",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "stores", "{{store_id}}", "features", "TELEPICKUP"]
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features/TELEPICKUP",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features",
+						"TELEPICKUP"
+					]
 				},
 				"description": "Enable or configure a feature for a store.\n\n**Features Available:**\n- TELEPICKUP\n- LIVE_CAM\n- INVENTORY_MANAGEMENT\n- REPORTS_DASHBOARD\n- ONLINE_BOOKING\n- VETERINARY_RECORDS\n- And 7 more..."
 			},
@@ -272,9 +321,18 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/v1/admin/stores/{{store_id}}/features/TELEPICKUP/limits",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "stores", "{{store_id}}", "features", "TELEPICKUP", "limits"]
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features/TELEPICKUP/limits",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features",
+						"TELEPICKUP",
+						"limits"
+					]
 				},
 				"description": "Update limits for an already enabled feature."
 			},
@@ -292,9 +350,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/admin/stores/{{store_id}}/features/TELEPICKUP",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "stores", "{{store_id}}", "features", "TELEPICKUP"]
+					"raw": "{{base_url}}/admin/stores/{{store_id}}/features/TELEPICKUP",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"stores",
+						"{{store_id}}",
+						"features",
+						"TELEPICKUP"
+					]
 				},
 				"description": "Disable a feature for a store."
 			},
@@ -312,9 +378,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/v1/admin/organizations/{{organization_id}}/stores-features",
-					"host": ["{{base_url}}"],
-					"path": ["v1", "admin", "organizations", "{{organization_id}}", "stores-features"]
+					"raw": "{{base_url}}/admin/organizations/{{organization_id}}/stores-features",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"admin",
+						"organizations",
+						"{{organization_id}}",
+						"stores-features"
+					]
 				},
 				"description": "Get all stores and their enabled features for an organization.\n\n**Use Case:** Audit features across all stores in an organization"
 			},
@@ -349,4 +422,3 @@
 		}
 	]
 }
-

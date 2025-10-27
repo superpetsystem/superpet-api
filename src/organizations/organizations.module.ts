@@ -8,6 +8,7 @@ import { PlanLimitsService } from './services/plan-limits.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([OrganizationEntity, StoreEntity, EmployeeEntity])],
+  controllers: [],
   providers: [OrganizationsRepository, PlanLimitsService],
   exports: [OrganizationsRepository, PlanLimitsService],
 })

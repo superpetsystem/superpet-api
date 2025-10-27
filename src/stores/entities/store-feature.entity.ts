@@ -2,15 +2,23 @@ import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, CreateDa
 import { StoreEntity } from './store.entity';
 import { FeatureEntity } from './feature.entity';
 
+export enum FeatureAccessType {
+  STORE = 'STORE',           // Apenas para funcionários da loja
+  CUSTOMER = 'CUSTOMER',     // Apenas para clientes
+}
+
 export interface FeatureLimits {
   dailyPickups?: number;
   maxConcurrentStreams?: number;
   maxAppointmentsPerDay?: number;
+  allowSelfService?: boolean;
+  requireApproval?: boolean;
+  maxDailyUsage?: number;
   [key: string]: any;
 }
 
 @Entity('store_features')
-@Index('IDX_STORE_FEATURE_UNIQUE', ['storeId', 'featureKey'], { unique: true })
+@Index('IDX_STORE_FEATURE_UNIQUE', ['storeId', 'featureKey', 'accessType'], { unique: true })
 export class StoreFeatureEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,6 +36,14 @@ export class StoreFeatureEntity {
   @ManyToOne(() => FeatureEntity, { eager: true })
   @JoinColumn({ name: 'feature_key', referencedColumnName: 'key' })
   feature?: FeatureEntity;
+
+  @Column({
+    name: 'access_type',
+    type: 'enum',
+    enum: FeatureAccessType,
+    default: FeatureAccessType.STORE,
+  })
+  accessType: FeatureAccessType;
 
   @Column({ type: 'boolean', default: true })
   enabled: boolean;

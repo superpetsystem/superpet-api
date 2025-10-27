@@ -6,7 +6,7 @@ async function runEverything() {
   console.log('\n🚀 EXECUTANDO TUDO: RESET + MIGRATIONS + SEED + TODOS OS TESTES');
   console.log('╔════════════════════════════════════════════════════════════════════╗');
   console.log('║                    SUPERPET API - EXECUÇÃO COMPLETA                ║');
-  console.log('║           Reset DB + Migrations + Seed + 134 Testes              ║');
+  console.log('║           Reset DB + Migrations + Seed + 139 Testes              ║');
   console.log('╚════════════════════════════════════════════════════════════════════╝');
   console.log('');
 
@@ -28,7 +28,7 @@ async function runEverything() {
     await sleep(2000);
 
     // 5. Executar todos os testes
-    console.log('\n📍 PASSO 4: Executando todos os 134 testes...\n');
+    console.log('\n📍 PASSO 4: Executando todos os 139 testes...\n');
     console.log('═══════════════════════════════════════════════════════════\n');
     
     try {

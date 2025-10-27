@@ -45,9 +45,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/records",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "records"]
+							"raw": "{{base_url}}/veterinary/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"records"
+							]
 						},
 						"description": "Create a veterinary medical record.\n\n**Types:**\n- CONSULTATION\n- EXAM\n- SURGERY\n- EMERGENCY\n- OTHER"
 					},
@@ -65,9 +70,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/records/{{record_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "records", "{{record_id}}"]
+							"raw": "{{base_url}}/veterinary/records/{{record_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"records",
+								"{{record_id}}"
+							]
 						},
 						"description": "Get a specific medical record."
 					},
@@ -85,9 +96,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/pets/{{pet_id}}/records",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "pets", "{{pet_id}}", "records"]
+							"raw": "{{base_url}}/veterinary/pets/{{pet_id}}/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"pets",
+								"{{pet_id}}",
+								"records"
+							]
 						},
 						"description": "List all medical records for a pet.\n\n**Returns:** Complete medical history ordered by date"
 					},
@@ -114,9 +132,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/records/{{record_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "records", "{{record_id}}"]
+							"raw": "{{base_url}}/veterinary/records/{{record_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"records",
+								"{{record_id}}"
+							]
 						},
 						"description": "Update an existing medical record."
 					},
@@ -163,9 +187,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/vaccinations",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "vaccinations"]
+							"raw": "{{base_url}}/veterinary/vaccinations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"vaccinations"
+							]
 						},
 						"description": "Register a vaccination.\n\n**Common Vaccines:**\n- V10 (Múltipla)\n- V8\n- Antirrábica\n- Giárdia\n- Gripe Canina"
 					},
@@ -183,9 +212,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/pets/{{pet_id}}/vaccinations",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "pets", "{{pet_id}}", "vaccinations"]
+							"raw": "{{base_url}}/veterinary/pets/{{pet_id}}/vaccinations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"pets",
+								"{{pet_id}}",
+								"vaccinations"
+							]
 						},
 						"description": "List all vaccinations for a pet."
 					},
@@ -203,9 +239,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/veterinary/pets/{{pet_id}}/vaccinations/upcoming?days=30",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "veterinary", "pets", "{{pet_id}}", "vaccinations", "upcoming"],
+							"raw": "{{base_url}}/veterinary/pets/{{pet_id}}/vaccinations/upcoming?days=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"veterinary",
+								"pets",
+								"{{pet_id}}",
+								"vaccinations",
+								"upcoming"
+							],
 							"query": [
 								{
 									"key": "days",
@@ -274,4 +318,3 @@
 		}
 	]
 }
-

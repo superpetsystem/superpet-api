@@ -30,9 +30,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/services",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "services"]
+							"raw": "{{base_url}}/services",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"services"
+							]
 						}
 					}
 				},
@@ -48,9 +52,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/services",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "services"]
+							"raw": "{{base_url}}/services",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"services"
+							]
 						}
 					}
 				},
@@ -66,9 +74,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/services/{{service_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "services", "{{service_id}}"]
+							"raw": "{{base_url}}/services/{{service_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"services",
+								"{{service_id}}"
+							]
 						}
 					}
 				},
@@ -93,9 +106,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/services/{{service_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "services", "{{service_id}}"]
+							"raw": "{{base_url}}/services/{{service_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"services",
+								"{{service_id}}"
+							]
 						}
 					}
 				},
@@ -120,9 +138,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/services/{{service_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "services", "{{service_id}}", "status"]
+							"raw": "{{base_url}}/services/{{service_id}}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"services",
+								"{{service_id}}",
+								"status"
+							]
 						},
 						"description": "Status: ACTIVE | INACTIVE"
 					}
@@ -148,9 +172,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/services/{{service_id}}/addons",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "services", "{{service_id}}", "addons"]
+							"raw": "{{base_url}}/services/{{service_id}}/addons",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"services",
+								"{{service_id}}",
+								"addons"
+							]
 						},
 						"description": "Add optional addons to service"
 					}
@@ -181,9 +211,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services"
+							]
 						},
 						"description": "Create custom service pricing for a specific store (starts as DRAFT)"
 					}
@@ -200,9 +236,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}/publish",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}", "publish"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services/{{custom_service_id}}/publish",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services",
+								"{{custom_service_id}}",
+								"publish"
+							]
 						},
 						"description": "Publish custom service (makes it active for the store)"
 					}
@@ -219,9 +263,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services"
+							]
 						}
 					}
 				},
@@ -246,9 +296,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services/{{custom_service_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services",
+								"{{custom_service_id}}"
+							]
 						},
 						"description": "Update custom service pricing or duration"
 					}
@@ -265,9 +322,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}/archive",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}", "archive"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services/{{custom_service_id}}/archive",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services",
+								"{{custom_service_id}}",
+								"archive"
+							]
 						},
 						"description": "Archive custom service (store reverts to base pricing)"
 					}
@@ -284,9 +349,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services/{{custom_service_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services",
+								"{{custom_service_id}}"
+							]
 						},
 						"description": "Permanently delete custom service"
 					}
@@ -303,9 +375,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/v1/stores/{{store_id}}/custom-services/{{custom_service_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "stores", "{{store_id}}", "custom-services", "{{custom_service_id}}"]
+							"raw": "{{base_url}}/stores/{{store_id}}/custom-services/{{custom_service_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stores",
+								"{{store_id}}",
+								"custom-services",
+								"{{custom_service_id}}"
+							]
 						}
 					}
 				}
@@ -340,4 +419,3 @@
 		}
 	]
 }
-

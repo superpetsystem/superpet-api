@@ -15,6 +15,8 @@ const { runAllTests: runReportsTests } = require('./reports/reports.test.js');
 const { runAllTests: runBookingsTests } = require('./bookings/bookings.test.js');
 const { runAllTests: runVeterinaryTests } = require('./veterinary/veterinary.test.js');
 const { runAllTests: runSaasNewFeaturesTests } = require('./saas/saas-new-features.test.js');
+const { runAllTests: runFeatureAccessTests } = require('./features/feature-access.test.js');
+const { runAllTests: runSaasDivisionTests } = require('./features/saas-division.test.js');
 
 async function runAllAutomationTests() {
   console.log('\n');
@@ -126,9 +128,21 @@ async function runAllAutomationTests() {
     console.log('\n');
 
     // 17. SaaS - Novas Features (Isolamento)
-    console.log('📝 MÓDULO 17/17: SaaS Isolamento - Novas Features\n');
+    console.log('📝 MÓDULO 17/18: SaaS Isolamento - Novas Features\n');
     const saasNewFeaturesResult = await runSaasNewFeaturesTests();
     results.push({ module: 'SaaS New Features', success: true, ...saasNewFeaturesResult });
+    console.log('\n');
+
+    // 18. Feature Access System
+    console.log('📝 MÓDULO 18/19: Sistema de Acesso de Features (SaaS)\n');
+    const featureAccessResult = await runFeatureAccessTests();
+    results.push({ module: 'Feature Access', success: true, ...featureAccessResult });
+    console.log('\n');
+
+    // 19. SaaS Division (STORE/CUSTOMER)
+    console.log('📝 MÓDULO 19/19: Divisão STORE/CUSTOMER (SaaS)\n');
+    const saasDivisionResult = await runSaasDivisionTests();
+    results.push({ module: 'SaaS Division', success: true, ...saasDivisionResult });
     console.log('\n');
 
     // Resumo final
