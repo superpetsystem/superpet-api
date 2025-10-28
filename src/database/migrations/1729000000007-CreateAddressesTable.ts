@@ -126,3 +126,4 @@ export class CreateAddressesTable1729000000007 implements MigrationInterface {
 
 
 
+

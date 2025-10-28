@@ -27,6 +27,13 @@ export class CreateStoreFeaturesTable1729000000010 implements MigrationInterface
             comment: 'Chave da feature (referência a features.key)',
           },
           {
+            name: 'access_type',
+            type: "enum",
+            enum: ['STORE', 'CUSTOMER'],
+            default: "'STORE'",
+            isNullable: true,
+          },
+          {
             name: 'enabled',
             type: 'boolean',
             default: true,
