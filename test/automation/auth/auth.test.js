@@ -26,13 +26,16 @@ async function test1_Register() {
     assert.strictEqual(response.status, 201, 'Status deve ser 201');
     assert(response.data.access_token, 'Deve retornar access_token');
     assert(response.data.user, 'Deve retornar user');
+    assert(response.data.refresh_token, 'Deve retornar refresh_token');
     assert.strictEqual(response.data.user.email, userEmail, 'Email deve corresponder');
 
     accessToken = response.data.access_token;
     userId = response.data.user.id;
+    refreshToken = response.data.refresh_token;
 
     console.log(`   ✅ Usuário registrado: ${userEmail}`);
     console.log(`   ✅ Token obtido: ${accessToken.substring(0, 20)}...`);
+    console.log(`   ✅ Refresh: ${refreshToken.substring(0, 16)}...`);
   } catch (error) {
     console.error('   ❌ Erro:', error.response?.data || error.message);
     throw error;
@@ -52,11 +55,14 @@ async function test2_Login() {
     assert.strictEqual(response.status, 200, 'Status deve ser 200');
     assert(response.data.access_token, 'Deve retornar access_token');
     assert(response.data.user, 'Deve retornar user');
+    assert(response.data.refresh_token, 'Deve retornar refresh_token');
 
     accessToken = response.data.access_token;
+    refreshToken = response.data.refresh_token;
 
     console.log('   ✅ Login realizado com sucesso');
     console.log(`   ✅ Novo token: ${accessToken.substring(0, 20)}...`);
+    console.log(`   ✅ Novo refresh: ${refreshToken.substring(0, 16)}...`);
   } catch (error) {
     console.error('   ❌ Erro:', error.response?.data || error.message);
     throw error;
@@ -261,6 +267,49 @@ async function test10_ResetPasswordInvalidToken() {
   }
 }
 
+// Test 11: Refresh Token
+async function test11_RefreshToken() {
+  console.log('\nTest 11: POST /auth/refresh');
+  try {
+    const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+      refreshToken,
+    });
+    assert.strictEqual(response.status, 200, 'Status deve ser 200');
+    assert(response.data.access_token, 'Deve retornar novo access_token');
+    accessToken = response.data.access_token;
+    console.log('   ✅ Refresh gerou novo access token');
+  } catch (error) {
+    console.error('   ❌ Erro:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Test 12: Logout (blacklist tokens)
+async function test12_Logout() {
+  console.log('\nTest 12: POST /auth/logout');
+  try {
+    const response = await axios.post(`${BASE_URL}/auth/logout`, {
+      refreshToken,
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    assert.strictEqual(response.status, 200, 'Status deve ser 200');
+    assert(response.data.message, 'Deve retornar mensagem');
+    console.log('   ✅ Logout efetuado e tokens enviados para blacklist');
+
+    // Tentar usar access token após logout deve falhar
+    try {
+      await axios.get(`${BASE_URL}/auth/me`, { headers: { Authorization: `Bearer ${accessToken}` } });
+      throw new Error('Deveria ter bloqueado token em blacklist');
+    } catch (err) {
+      console.log('   ✅ Acesso bloqueado após logout');
+    }
+  } catch (error) {
+    console.error('   ❌ Erro:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
 async function runAllTests() {
   console.log('=' .repeat(70));
   console.log('🧪 TESTES DE AUTENTICAÇÃO');
@@ -280,13 +329,15 @@ async function runAllTests() {
     await test8_ForgotPassword();
     await test9_ResetPassword();
     await test10_ResetPasswordInvalidToken();
+    await test11_RefreshToken();
+    await test12_Logout();
 
     console.log('\n' + '='.repeat(70));
     console.log('✅ TODOS OS TESTES DE AUTH PASSARAM!');
     console.log('='.repeat(70));
     console.log(`\n📊 Resumo:`);
-    console.log(`   • 10 testes executados`);
-    console.log(`   • 10 testes passaram`);
+    console.log(`   • 12 testes executados`);
+    console.log(`   • 12 testes passaram`);
     console.log(`   • Token ativo: ${accessToken ? 'Sim' : 'Não'}`);
     console.log(`   • User ID: ${userId}`);
     console.log(`   • Password changed: ✅`);

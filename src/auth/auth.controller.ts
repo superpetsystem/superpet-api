@@ -7,6 +7,7 @@ import {
   UseGuards,
   Get,
   Logger,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -45,7 +46,7 @@ export class AuthController {
       this.logger.log(`✅ User registered successfully - Email: ${registerDto.email}, UserID: ${user.id}`);
       
       // Fazer login automático após registro
-      const loginResult = await this.authService.login(user);
+      const loginResult = await this.authService.loginWithRefresh(user);
       return loginResult;
     } catch (error) {
       this.logger.error(`❌ Register failed - Email: ${registerDto.email}, Error: ${error.message}`);
@@ -66,7 +67,7 @@ export class AuthController {
         loginDto.password,
       );
       
-      const result = await this.authService.login(user);
+      const result = await this.authService.loginWithRefresh(user);
       this.logger.log(`✅ Login successful - Email: ${loginDto.email}, UserID: ${user.id}`);
       
       return result;
@@ -91,6 +92,19 @@ export class AuthController {
     
     this.logger.log(`✅ Profile retrieved - UserID: ${user.id}`);
     return userProfile;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req: any, @Body() body: { refreshToken?: string }) {
+    this.logger.log('🔒 Logout request');
+    const authHeader: string = req.headers['authorization'] || req.headers['Authorization'];
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : undefined;
+    if (!token) {
+      throw new (await import('@nestjs/common')).BadRequestException('Missing bearer token');
+    }
+    return this.authService.logout(token, body?.refreshToken);
   }
 
   @Public()

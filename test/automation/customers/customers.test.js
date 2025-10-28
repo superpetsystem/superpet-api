@@ -19,11 +19,15 @@ function generateUniqueCpf() {
   return timestamp.substring(timestamp.length - 9) + random;
 }
 
-// Helper: Fazer login
+// Helper: Fazer login (registrando usuário local, sem executar suite de Auth)
 async function login() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const email = `customers_${Date.now()}_${Math.random().toString(36).slice(2)}@superpet.com.br`;
+  const resp = await axios.post(`${BASE_URL}/auth/register`, {
+    email,
+    name: 'Customers Tester',
+    password: 'senha123',
+  });
+  accessToken = resp.data.access_token;
   console.log('\n✅ Autenticado para testes de Customers\n');
 }
 
@@ -261,7 +265,7 @@ async function runAllTests() {
 
     console.log('\n' + '='.repeat(70));
     console.log('✅ TODOS OS TESTES DE CUSTOMERS PASSARAM!');
-    console.log('=' .repeat(70));
+    console.log('='.repeat(70));
     console.log(`\n📊 Resumo:`);
     console.log(`   • 8 testes executados`);
     console.log(`   • 8 testes passaram`);

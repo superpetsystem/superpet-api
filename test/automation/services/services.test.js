@@ -11,11 +11,10 @@ let storeId = null;
 
 console.log('💼 Iniciando testes de Services\n');
 
-// Helper: Fazer login
+// Helper: Fazer login (auth simples para evitar logout/blacklist)
 async function login() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Services Tester');
   console.log('\n✅ Autenticado para testes de Services\n');
 }
 

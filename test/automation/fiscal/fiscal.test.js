@@ -10,9 +10,8 @@ let invoiceId = null;
 console.log('🧾 Iniciando testes de Fiscal/Invoicing');
 
 async function login() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Fiscal Tester');
 }
 
 async function createStoreAndEnableFiscal() {

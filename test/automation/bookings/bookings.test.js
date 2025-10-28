@@ -13,11 +13,10 @@ let serviceId = null;
 
 console.log('📅 Iniciando testes de Online Booking\n');
 
-// Helper: Setup completo
+// Helper: Setup completo (auth simples para evitar logout/blacklist)
 async function setup() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Booking Tester');
 
   // Criar customer e pet
   const customerTests = require('../customers/customers.test.js');

@@ -15,9 +15,8 @@ console.log('🎯 Iniciando testes de Features (TELEPICKUP e LIVE_CAM)\n');
 
 // Helper: Setup completo
 async function setup() {
-  const authTests = require('../auth/auth.test.js');
-  const authResult = await authTests.runAllTests();
-  accessToken = authResult.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Features Tester');
 
   const petsTests = require('../pets/pets.test.js');
   const petsResult = await petsTests.runAllTests();

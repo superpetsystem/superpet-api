@@ -10,15 +10,21 @@ let petId = null;
 
 console.log('🐾 Iniciando testes de Pets\n');
 
-// Helper: Setup (login + criar customer)
+// Helper: Setup (login + criar customer) - usar auth simples para evitar logout/blacklist
 async function setup() {
-  const authTests = require('../auth/auth.test.js');
-  const authResult = await authTests.runAllTests();
-  accessToken = authResult.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Pets Tester');
 
-  const customersTests = require('../customers/customers.test.js');
-  const customerResult = await customersTests.runAllTests();
-  customerId = customerResult.customerId;
+  // Criar customer diretamente
+  const email = `petcustomer_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+  const response = await axios.post(`${BASE_URL}/customers`, {
+    name: 'Rodolfo Diego',
+    email,
+    phone: '+5592988887777',
+    marketingConsent: { email: true },
+  }, { headers: { Authorization: `Bearer ${accessToken}` } });
+  
+  customerId = response.data.id;
 
   console.log('\n✅ Setup completo para testes de Pets\n');
 }

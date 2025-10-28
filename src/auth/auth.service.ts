@@ -8,6 +8,7 @@ import { EmployeeRole, JobTitle } from '../employees/entities/employee.entity';
 import { PasswordResetRepository } from './repositories/password-reset.repository';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { TokenBlacklistRepository } from './repositories/token-blacklist.repository';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private passwordResetRepository: PasswordResetRepository,
     @Inject(forwardRef(() => EmployeesRepository))
     private employeesRepository: EmployeesRepository,
+    private tokenBlacklistRepository: TokenBlacklistRepository,
   ) {}
 
   async validateUser(email: string, password: string, organizationId?: string): Promise<any> {
@@ -246,6 +248,35 @@ export class AuthService {
       this.logger.error(`❌ Refresh token failed - Error: ${error.message}`);
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  /**
+   * Logout - invalida o access token (e opcionalmente o refresh) via blacklist
+   */
+  async logout(accessToken: string, refreshToken?: string): Promise<{ message: string }>{
+    // Extrair exp e sub do access token sem validar (já validado pelo guard)
+    const decodedAccess: any = this.jwtService.decode(accessToken);
+    const expSec = decodedAccess?.exp;
+    const sub = decodedAccess?.sub;
+    const accessExpiresAt = expSec ? new Date(expSec * 1000) : new Date(Date.now() + 15 * 60 * 1000);
+
+    if (sub) {
+      await this.tokenBlacklistRepository.addToBlacklist(accessToken, sub, accessExpiresAt, 'logout');
+    }
+
+    if (refreshToken) {
+      try {
+        const decodedRefresh: any = this.jwtService.verify(refreshToken, {
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        });
+        const refreshExp = decodedRefresh?.exp ? new Date(decodedRefresh.exp * 1000) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        await this.tokenBlacklistRepository.addToBlacklist(refreshToken, decodedRefresh.sub, refreshExp, 'logout');
+      } catch (_) {
+        // Ignorar refresh inválido
+      }
+    }
+
+    return { message: 'Logged out' };
   }
 
   /**
