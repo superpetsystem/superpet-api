@@ -14,8 +14,7 @@ export class CreateFeatureAccessTables1700000000000 implements MigrationInterfac
             type: 'varchar',
             length: '36',
             isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid()',
+            isNullable: false,
           },
           {
             name: 'store_id',
@@ -60,20 +59,7 @@ export class CreateFeatureAccessTables1700000000000 implements MigrationInterfac
             isNullable: false,
           },
         ],
-        foreignKeys: [
-          {
-            columnNames: ['store_id'],
-            referencedTableName: 'stores',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          },
-          {
-            columnNames: ['feature_key'],
-            referencedTableName: 'features',
-            referencedColumnNames: ['key'],
-            onDelete: 'CASCADE',
-          },
-        ],
+        foreignKeys: [],
       }),
       true,
     );

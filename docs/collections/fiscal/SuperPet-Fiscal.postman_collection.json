@@ -1,0 +1,305 @@
+{
+  "info": {
+    "_postman_id": "fiscal-collection-001",
+    "name": "SuperPet - Fiscal / Invoicing",
+    "description": "Fiscal invoice management (NF-e/NFC-e) with SaaS feature enforcement.\n\nRequirements:\n- JWT authentication (Bearer {{access_token}})\n- Store feature FISCAL_INVOICING enabled (STORE access)\n- Store-level access must respect tenant isolation\n\nNotes:\n- This module uses mocked external fiscal provider for development.\n- XML and DANFE endpoints return mocked URLs/content.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Invoices",
+      "item": [
+        {
+          "name": "1. Create Invoice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('invoice_id', res.id);",
+                  "  console.log('✅ invoice_id saved:', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": null,\n  \"invoiceType\": \"NFC_E\",\n  \"issuanceDate\": \"{{_iso_timestamp}}\",\n  \"totalAmount\": 100.00,\n  \"totalProducts\": 100.00,\n  \"totalServices\": 0,\n  \"discount\": 0,\n  \"freight\": 0,\n  \"totalTax\": 10.00,\n  \"paymentMethod\": \"CASH\",\n  \"items\": [\n    {\n      \"id\": \"SKU-1\",\n      \"type\": \"PRODUCT\",\n      \"description\": \"Produto Teste\",\n      \"quantity\": 1,\n      \"unitValue\": 100.00,\n      \"totalValue\": 100.00,\n      \"taxRate\": 0.1,\n      \"taxValue\": 10.00\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/fiscal/stores/{{store_id}}/invoices",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "stores", "{{store_id}}", "invoices"]
+            },
+            "description": "Create a new invoice for a store.\n\nGuards:\n- JwtAuthGuard\n- StoreAccessGuard\n- FeatureGuard (FISCAL_INVOICING)\n\nErrors:\n- 401 Unauthorized (missing/invalid token)\n- 403 FEATURE_NOT_ENABLED (feature disabled)\n- 403 STORE_ACCESS_DENIED (no access to store)\n- 400 Validation error (invalid body)"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {},
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"access_token\": \"ey...\",\n  \"user\": {\n    \"id\": \"uuid\",\n    \"email\": \"user@example.com\"\n  }\n}"
+            },
+            {
+              "name": "403 FEATURE_NOT_ENABLED",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"statusCode\": 403,\n  \"message\": \"FEATURE_NOT_ENABLED\"\n}"
+            },
+            {
+              "name": "400 Validation Error",
+              "originalRequest": {},
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"statusCode\": 400,\n  \"message\": [\n    \"issuanceDate must be a valid ISO 8601 date string\",\n    \"items.0.quantity must be a number conforming to the specified constraints\"\n  ],\n  \"error\": \"Bad Request\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. List Store Invoices",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/stores/{{store_id}}/invoices",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "stores", "{{store_id}}", "invoices"]
+            },
+            "description": "List invoices by store (desc by number).\n\nErrors:\n- 403 STORE_ACCESS_DENIED"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "[\n  { \n    \"id\": \"{{invoice_id}}\", \n    \"storeId\": \"{{store_id}}\",\n    \"number\": 1,\n    \"status\": \"AUTHORIZED\",\n    \"xmlUrl\": \"https://.../xml\",\n    \"danfeUrl\": \"https://.../danfe\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "3. Get Invoice by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/invoices/{{invoice_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "invoices", "{{invoice_id}}"]
+            },
+            "description": "Get invoice details by ID.\n\nErrors:\n- 404 Invoice not found"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"id\": \"{{invoice_id}}\",\n  \"storeId\": \"{{store_id}}\",\n  \"number\": 1,\n  \"status\": \"AUTHORIZED\",\n  \"xmlUrl\": \"https://.../xml\",\n  \"danfeUrl\": \"https://.../danfe\"\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {},
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Invoice not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Cancel Invoice",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "{{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Cancelamento de teste\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/fiscal/invoices/{{invoice_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "invoices", "{{invoice_id}}", "cancel"]
+            },
+            "description": "Cancel an authorized invoice.\n\nErrors:\n- 404 Invoice not found"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"id\": \"{{invoice_id}}\",\n  \"status\": \"CANCELED\",\n  \"deniedReason\": \"Cancelamento de teste\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Get XML",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/invoices/{{invoice_id}}/xml",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "invoices", "{{invoice_id}}", "xml"]
+            },
+            "description": "Get XML content and URL for the invoice."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"xml\": { \"id\": \"NFe...\" },\n  \"url\": \"https://.../xml\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "6. Get DANFE URL",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/invoices/{{invoice_id}}/danfe",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "invoices", "{{invoice_id}}", "danfe"]
+            },
+            "description": "Get DANFE printable URL."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"danfeUrl\": \"https://.../danfe\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Errors & Scenarios",
+      "item": [
+        {
+          "name": "7. Feature Disabled (403)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/stores/{{store_id_no_feature}}/invoices",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "stores", "{{store_id_no_feature}}", "invoices"]
+            },
+            "description": "Expect 403 FEATURE_NOT_ENABLED if feature is disabled for the store."
+          },
+          "response": [
+            {
+              "name": "403 FEATURE_NOT_ENABLED",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"statusCode\": 403,\n  \"message\": \"FEATURE_NOT_ENABLED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "8. Store Access Denied (403)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token_other_org}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/stores/{{store_id}}/invoices",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "stores", "{{store_id}}", "invoices"]
+            },
+            "description": "Expect 403 STORE_ACCESS_DENIED for cross-tenant access."
+          },
+          "response": [
+            {
+              "name": "403 STORE_ACCESS_DENIED",
+              "originalRequest": {},
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"statusCode\": 403,\n  \"message\": \"STORE_ACCESS_DENIED\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "9. Get Non-Existing Invoice (404)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "{{access_token}}", "type": "text" } ],
+            "url": {
+              "raw": "{{base_url}}/fiscal/invoices/00000000-0000-0000-0000-000000000000",
+              "host": ["{{base_url}}"],
+              "path": ["fiscal", "invoices", "00000000-0000-0000-0000-000000000000"]
+            },
+            "description": "Expect 404 when invoice does not exist."
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "originalRequest": {},
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Invoice not found\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "access_token_other_org", "value": "", "type": "string" },
+    { "key": "store_id", "value": "", "type": "string" },
+    { "key": "store_id_no_feature", "value": "", "type": "string" },
+    { "key": "invoice_id", "value": "", "type": "string" },
+    { "key": "_iso_timestamp", "value": "{{$isoTimestamp}}", "type": "string" }
+  ]
+}
+
+
