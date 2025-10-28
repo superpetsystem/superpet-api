@@ -11,9 +11,8 @@ console.log('📊 Iniciando testes de Reports Dashboard\n');
 
 // Helper: Fazer login
 async function login() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Reports Tester');
   console.log('\n✅ Autenticado para testes de Reports\n');
 }
 

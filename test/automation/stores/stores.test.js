@@ -13,11 +13,15 @@ const ORGANIZATION_ID = '00000000-0000-0000-0000-000000000001';
 
 console.log('🏪 Iniciando testes de Stores\n');
 
-// Helper: Fazer login
+// Helper: Registrar e logar (sem executar suite de Auth, evita logout/blacklist)
 async function login() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const userEmail = `stores_${Date.now()}_${Math.random().toString(36).slice(2)}@superpet.com.br`;
+  const registerResp = await axios.post(`${BASE_URL}/auth/register`, {
+    email: userEmail,
+    name: 'Stores Tester',
+    password: 'senha123',
+  });
+  accessToken = registerResp.data.access_token;
   console.log('\n✅ Autenticado para testes de Stores\n');
 }
 

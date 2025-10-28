@@ -8,11 +8,10 @@ let customerId = null;
 
 console.log('❌ Iniciando testes de Validação de Erros\n');
 
-// Setup
+// Setup (auth simples para evitar logout/blacklist)
 async function setup() {
-  const authTests = require('../auth/auth.test.js');
-  const result = await authTests.runAllTests();
-  accessToken = result.accessToken;
+  const { loginSimple } = require('../helpers/auth-helper-simple.js');
+  accessToken = await loginSimple('Validation Tester');
   console.log('\n✅ Autenticado para testes de Validação\n');
 }
 
