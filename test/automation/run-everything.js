@@ -19,16 +19,32 @@ async function runEverything() {
     console.log('\n📍 PASSO 2: Executando migrations...\n');
     await runMigrations();
 
+    // 2.1. Garantir colunas recentes em features (compatibilidade)
+    await ensureFeatureTableCompatibility();
+
     // 3. Criar SUPER_ADMIN
     console.log('\n📍 PASSO 3: Criando SUPER_ADMIN...\n');
     await createSuperAdmin();
 
-    // 4. Aguardar estabilização
+    // 4. Rodar seeds (features, etc.)
+    console.log('\n📍 PASSO 4: Executando seeds...\n');
+    try {
+      execSync('npm run database:seed', {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      });
+      console.log('   ✅ Seeds executados com sucesso!');
+    } catch (error) {
+      console.error('   ❌ Erro ao executar seeds:', error.message);
+      throw error;
+    }
+
+    // 5. Aguardar estabilização
     console.log('\n⏳ Aguardando estabilização do ambiente...');
     await sleep(2000);
 
-    // 5. Executar todos os testes
-    console.log('\n📍 PASSO 4: Executando todos os 139 testes...\n');
+    // 6. Executar todos os testes
+    console.log('\n📍 PASSO 5: Executando todos os 139 testes...\n');
     console.log('═══════════════════════════════════════════════════════════\n');
     
     try {
@@ -117,6 +133,31 @@ async function resetDatabase() {
   }
 }
 
+async function ensureFeatureTableCompatibility() {
+  const mysql = require('mysql2/promise');
+  const connection = await mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'root',
+    database: 'superpet_test',
+  });
+  try {
+    // Adiciona coluna 'divisible' se não existir (usada no sistema de features SaaS)
+    await connection.execute(`ALTER TABLE features ADD COLUMN IF NOT EXISTS divisible BOOLEAN NOT NULL DEFAULT false`);
+  } catch (e) {
+    // Alguns MySQL não suportam IF NOT EXISTS em ADD COLUMN: tentar checar manualmente
+    try {
+      const [rows] = await connection.execute(`SHOW COLUMNS FROM features LIKE 'divisible'`);
+      if (rows.length === 0) {
+        await connection.execute(`ALTER TABLE features ADD COLUMN divisible BOOLEAN NOT NULL DEFAULT false`);
+      }
+    } catch (_) {}
+  } finally {
+    await connection.end();
+  }
+}
+
 async function createSuperAdmin() {
   const connection = await mysql.createConnection({
     host: 'localhost',
@@ -127,7 +168,28 @@ async function createSuperAdmin() {
   });
 
   try {
-    console.log('   👤 Criando SUPER_ADMIN...');
+    console.log('   🏢 Criando organização padrão para testes...');
+    // Criar organização primeiro (evita falha de FK ao criar employee)
+    await connection.execute(`
+      INSERT INTO organizations (id, name, slug, plan, limits, status)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+      name = VALUES(name),
+      slug = VALUES(slug),
+      plan = VALUES(plan),
+      limits = VALUES(limits),
+      status = VALUES(status)
+    `, [
+      '00000000-0000-0000-0000-000000000001',
+      'Organização Padrão',
+      'org-padrao',
+      'PRO',
+      JSON.stringify({ employees: 50, stores: 10, monthlyAppointments: 5000 }),
+      'ACTIVE'
+    ]);
+    console.log('   ✅ Organização padrão criada!');
+
+    console.log('\n   👤 Criando SUPER_ADMIN...');
     console.log('      Email: superadmin@superpet.com');
     console.log('      Senha: Super@2024!Admin');
 
@@ -160,29 +222,6 @@ async function createSuperAdmin() {
     `, [employeeId, userId, '00000000-0000-0000-0000-000000000001', 'SUPER_ADMIN', 'OWNER', 1]);
 
     console.log('\n   ✅ SUPER_ADMIN criado com sucesso!');
-
-    console.log('\n   🏢 Criando organização padrão para testes...');
-    
-    // Criar organização padrão
-    await connection.execute(`
-      INSERT INTO organizations (id, name, slug, plan, limits, status)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-      name = VALUES(name),
-      slug = VALUES(slug),
-      plan = VALUES(plan),
-      limits = VALUES(limits),
-      status = VALUES(status)
-    `, [
-      '00000000-0000-0000-0000-000000000001',
-      'Organização Padrão',
-      'org-padrao',
-      'PRO',
-      JSON.stringify({ employees: 50, stores: 10, monthlyAppointments: 5000 }),
-      'ACTIVE'
-    ]);
-
-    console.log('   ✅ Organização padrão criada!');
 
   } finally {
     await connection.end();

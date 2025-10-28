@@ -20,6 +20,7 @@ import { VeterinaryModule } from './veterinary/veterinary.module';
 import { AdminModule } from './admin/admin.module';
 import { PdvModule } from './pdv/pdv.module';
 import { CustomerPortalModule } from './customer-portal/customer-portal.module';
+import { FiscalModule } from './fiscal/fiscal.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { CustomerPortalModule } from './customer-portal/customer-portal.module';
     AdminModule,
     PdvModule,
     CustomerPortalModule,
+    FiscalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

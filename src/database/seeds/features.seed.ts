@@ -141,6 +141,23 @@ export async function seedFeatures(dataSource: DataSource): Promise<void> {
         displayOrder: 8,
       },
     },
+    {
+      id: '00000000-0000-0000-0000-000000000F09',
+      key: 'FISCAL_INVOICING',
+      name: 'Emissão de Notas Fiscais',
+      description: 'Emissão e gestão de notas fiscais (NF-e/NFC-e)',
+      category: FeatureCategory.OPERATIONS,
+      minPlanRequired: OrganizationPlan.PRO,
+      active: true,
+      defaultLimits: {
+        maxInvoicesPerMonth: 10000,
+      },
+      metadata: {
+        icon: 'file-invoice',
+        color: '#2563EB',
+        displayOrder: 9,
+      },
+    },
   ];
 
   for (const featureData of features) {

@@ -17,6 +17,7 @@ const { runAllTests: runVeterinaryTests } = require('./veterinary/veterinary.tes
 const { runAllTests: runSaasNewFeaturesTests } = require('./saas/saas-new-features.test.js');
 const { runAllTests: runFeatureAccessTests } = require('./features/feature-access.test.js');
 const { runAllTests: runSaasDivisionTests } = require('./features/saas-division.test.js');
+const { runAllTests: runFiscalTests } = require('./fiscal/fiscal.test.js');
 
 async function runAllAutomationTests() {
   console.log('\n');
@@ -145,6 +146,12 @@ async function runAllAutomationTests() {
     results.push({ module: 'SaaS Division', success: true, ...saasDivisionResult });
     console.log('\n');
 
+    // 20. Fiscal / Invoicing
+    console.log('📝 MÓDULO 20/20: Fiscal / Invoicing');
+    const fiscalResult = await runFiscalTests();
+    results.push({ module: 'Fiscal', success: true, ...fiscalResult });
+    console.log('\n');
+
     // Resumo final
     const endTime = Date.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
@@ -174,8 +181,9 @@ async function runAllAutomationTests() {
     console.log('   │ Online Booking    │ ✅ PASSOU │ 7 testes         │');
     console.log('   │ Veterinary Rec.   │ ✅ PASSOU │ 7 testes         │');
     console.log('   │ SaaS New Features │ ✅ PASSOU │ 10 testes        │');
+    console.log('   │ Fiscal / Invoicing│ ✅ PASSOU │ 10 testes        │');
     console.log('   ────────────────────────────────────────────────────────');
-    console.log(`   │ TOTAL             │ ✅ PASSOU │ 134 testes       │`);
+    console.log(`   │ TOTAL             │ ✅ PASSOU │ 138 testes       │`);
     console.log('   ────────────────────────────────────────────────────────');
     console.log('   \n');
     console.log(`⏱️  Tempo total: ${duration}s`);

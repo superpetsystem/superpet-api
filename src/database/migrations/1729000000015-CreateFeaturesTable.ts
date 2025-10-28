@@ -63,6 +63,11 @@ export class CreateFeaturesTable1729000000015 implements MigrationInterface {
             comment: 'Configurações extras (icon, color, displayOrder, etc)',
           },
           {
+            name: 'divisible',
+            type: 'boolean',
+            default: false,
+          },
+          {
             name: 'created_at',
             type: 'timestamp',
             default: 'CURRENT_TIMESTAMP',

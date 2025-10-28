@@ -20,8 +20,9 @@ Complete Postman collections for all API modules with automated tests and variab
 | 10 | [**Veterinary**](./veterinary/) | 7 | Medical records & vaccinations 🆕 |
 | 11 | [**Inventory**](./inventory/) | 13 | Stock & product management 🆕 |
 | 12 | [**Reports**](./reports/) | 4 | Analytics & business intelligence 🆕 |
+| 13 | [**Fiscal**](./fiscal/) | 6 | Invoicing (NF-e/NFC-e) with SaaS feature enforcement 🆕 |
 
-**Total: 134+ endpoints documented** (with SaaS features)
+**Total: 138+ endpoints documented** (with SaaS features)
 
 ---
 
