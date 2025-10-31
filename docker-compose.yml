@@ -1,0 +1,45 @@
+services:
+  api:
+    container_name: superpet-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql-db
+    environment:
+      NODE_ENV: local
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_DATABASE: superpet_db
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_SECRET: your-super-secret-refresh-jwt-key-change-this-in-production
+      JWT_REFRESH_EXPIRES_IN: 7d
+      PORT: 3000
+    networks:
+      - superpet-net
+
+  mysql-db:
+    image: mysql:8
+    container_name: mysql-db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: superpet_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - superpet-net
+
+
+volumes:
+  mysql-data:
+
+networks:
+  superpet-net:
