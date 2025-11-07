@@ -1,3 +1,24 @@
+/**
+ * ============================================
+ * AUTH.SERVICE.TS - SERVIÇO DE AUTENTICAÇÃO
+ * ============================================
+ * 
+ * Este service contém toda a lógica de negócio relacionada à autenticação.
+ * 
+ * RESPONSABILIDADES:
+ * - Validar credenciais de usuários
+ * - Gerar e validar JWT tokens
+ * - Gerenciar registro de novos usuários
+ * - Reset e troca de senhas
+ * - Logout (blacklist de tokens)
+ * - Refresh tokens
+ * 
+ * SEGURANÇA:
+ * - Senhas são hasheadas com bcrypt (nunca armazenadas em texto plano)
+ * - Tokens JWT são assinados com chave secreta
+ * - Tokens invalidados são armazenados em blacklist
+ */
+
 import { Injectable, UnauthorizedException, BadRequestException, Inject, forwardRef, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -10,10 +31,38 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { TokenBlacklistRepository } from './repositories/token-blacklist.repository';
 
+/**
+ * @Injectable() - Marca a classe como um provider do NestJS
+ * 
+ * Permite que seja injetada em controllers e outros services.
+ */
 @Injectable()
 export class AuthService {
+  /**
+   * Logger - Sistema de logs do NestJS
+   * 
+   * Permite registrar eventos importantes:
+   * - logger.log(): Informações gerais
+   * - logger.warn(): Avisos
+   * - logger.error(): Erros
+   * 
+   * Útil para debug e monitoramento em produção.
+   */
   private readonly logger = new Logger(AuthService.name);
 
+  /**
+   * Constructor com Dependency Injection
+   * 
+   * O NestJS injeta automaticamente todas as dependências aqui.
+   * 
+   * Dependências:
+   * - usersRepository: Acesso aos dados de usuários
+   * - jwtService: Geração e validação de JWT tokens
+   * - configService: Acesso a variáveis de ambiente
+   * - passwordResetRepository: Gerenciar tokens de reset
+   * - employeesRepository: Buscar dados de funcionários (forwardRef para evitar dependência circular)
+   * - tokenBlacklistRepository: Gerenciar tokens invalidados
+   */
   constructor(
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
@@ -24,53 +73,187 @@ export class AuthService {
     private tokenBlacklistRepository: TokenBlacklistRepository,
   ) {}
 
+  /**
+   * validateUser() - Valida credenciais de um usuário
+   * 
+   * Este método é usado durante o login para verificar se o email e senha
+   * são válidos.
+   * 
+   * FLUXO:
+   * 1. Busca o usuário por email (global ou por organização)
+   * 2. Verifica se o usuário existe e tem senha
+   * 3. Verifica se o usuário está ativo
+   * 4. Compara a senha fornecida com o hash armazenado (bcrypt)
+   * 5. Retorna o usuário sem a senha (por segurança)
+   * 
+   * @param email - Email do usuário
+   * @param password - Senha em texto plano (será comparada com hash)
+   * @param organizationId - ID da organização (opcional, para multi-tenant)
+   * @returns Usuário sem a senha
+   * @throws UnauthorizedException se credenciais inválidas ou usuário inativo
+   */
   async validateUser(email: string, password: string, organizationId?: string): Promise<any> {
-    // Buscar por email globalmente se organizationId não for fornecido
+    /**
+     * Buscar usuário por email
+     * 
+     * Se organizationId for fornecido: busca dentro da organização (multi-tenant)
+     * Se não: busca globalmente (email é único no sistema)
+     */
     const user = organizationId 
       ? await this.usersRepository.findByEmail(organizationId, email)
       : await this.usersRepository.findByEmailGlobal(email);
     
+    /**
+     * Validação 1: Usuário existe e tem senha
+     * 
+     * Se o usuário não existir ou não tiver senha (ex: login social),
+     * retorna erro genérico para não vazar informações.
+     */
     if (!user || !user.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    /**
+     * Validação 2: Usuário está ativo
+     * 
+     * Usuários podem estar: ACTIVE, INACTIVE, SUSPENDED, etc.
+     * Apenas usuários ativos podem fazer login.
+     */
     if (user.status !== UserStatus.ACTIVE) {
       throw new UnauthorizedException('User is not active');
     }
 
+    /**
+     * Validação 3: Senha está correta
+     * 
+     * bcrypt.compare():
+     * - Compara a senha em texto plano com o hash armazenado
+     * - É seguro contra timing attacks
+     * - Retorna true se a senha estiver correta
+     * 
+     * IMPORTANTE: Nunca compare senhas diretamente!
+     * Sempre use bcrypt.compare() para comparar com hash.
+     */
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    /**
+     * Retorna o usuário SEM a senha
+     * 
+     * Destructuring: { password: _, ...result }
+     * - Remove o campo 'password' do objeto
+     * - Retorna todos os outros campos
+     * 
+     * Por segurança, senhas nunca devem ser retornadas em respostas.
+     */
     const { password: _, ...result } = user;
     return result;
   }
 
+  /**
+   * login() - Gera JWT token para um usuário autenticado
+   * 
+   * Após validar as credenciais, este método gera um JWT token
+   * que será usado para autenticar requisições futuras.
+   * 
+   * JWT PAYLOAD:
+   * O payload contém informações que serão incluídas no token.
+   * Essas informações podem ser lidas (mas não alteradas) por quem tem o token.
+   * 
+   * @param user - Usuário já validado (sem senha)
+   * @returns Objeto com access_token e dados do usuário
+   */
   async login(user: any) {
+    /**
+     * Payload do JWT - Dados que serão incluídos no token
+     * 
+     * - email: Email do usuário (para identificação)
+     * - sub (subject): ID do usuário (padrão JWT)
+     * - organizationId: ID da organização (multi-tenant)
+     * - role: Role do usuário (SUPER_ADMIN ou USER)
+     * 
+     * IMPORTANTE: Não coloque informações sensíveis no payload!
+     * O payload é apenas codificado em Base64, não criptografado.
+     * Qualquer um pode decodificar e ler (mas não pode alterar sem a chave secreta).
+     */
     const payload = {
       email: user.email,
       sub: user.id,
       organizationId: user.organizationId,
-      role: user.role, // Adicionar role do USER (SUPER_ADMIN ou USER)
+      role: user.role, // Role do USER (SUPER_ADMIN ou USER)
     };
 
+    /**
+     * jwtService.sign() - Gera o JWT token
+     * 
+     * Assina o payload com a chave secreta (JWT_SECRET).
+     * O token resultante pode ser verificado usando a mesma chave.
+     * 
+     * Formato do token: header.payload.signature
+     * Exemplo: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+     */
     return {
       access_token: this.jwtService.sign(payload),
       user,
     };
   }
 
+  /**
+   * register() - Registra um novo usuário no sistema
+   * 
+   * Este método cria um novo usuário e automaticamente cria um Employee
+   * com role OWNER para o usuário registrado.
+   * 
+   * FLUXO:
+   * 1. Verifica se o email já existe
+   * 2. Hash da senha com bcrypt
+   * 3. Cria o usuário no banco
+   * 4. Cria um Employee com role OWNER
+   * 5. Retorna o usuário criado
+   * 
+   * @param organizationId - ID da organização (multi-tenant)
+   * @param email - Email do novo usuário
+   * @param name - Nome do usuário
+   * @param password - Senha em texto plano (será hasheada)
+   * @returns Usuário criado
+   * @throws BadRequestException se o email já existir
+   */
   async register(organizationId: string, email: string, name: string, password: string): Promise<UserEntity> {
+    /**
+     * Verificar se o email já está em uso
+     * 
+     * Previne duplicação de emails na mesma organização.
+     * Em um sistema multi-tenant, o mesmo email pode existir em organizações diferentes.
+     */
     const existingUser = await this.usersRepository.findByEmail(organizationId, email);
     
     if (existingUser) {
       throw new BadRequestException('Email already exists');
     }
 
+    /**
+     * Hash da senha com bcrypt
+     * 
+     * bcrypt.hash():
+     * - Gera um hash seguro da senha
+     * - 10 é o "salt rounds" (número de iterações)
+     *   - Maior = mais seguro, mas mais lento
+     *   - 10 é um bom equilíbrio (recomendado)
+     * 
+     * IMPORTANTE: Nunca armazene senhas em texto plano!
+     * Sempre use bcrypt ou outra função de hash segura.
+     */
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    /**
+     * Criar o usuário no banco de dados
+     * 
+     * status: UserStatus.ACTIVE - Usuário já fica ativo após registro
+     * password: hashedPassword - Senha hasheada, não texto plano
+     */
     const user = await this.usersRepository.create({
       organizationId,
       email,
@@ -79,11 +262,22 @@ export class AuthService {
       status: UserStatus.ACTIVE,
     });
 
-    // Criar Employee com role OWNER e jobTitle OWNER para o usuário registrado
+    /**
+     * Criar Employee automaticamente para o usuário registrado
+     * 
+     * Quando um usuário se registra, ele automaticamente vira OWNER
+     * da organização (primeiro usuário = dono).
+     * 
+     * Employee vs User:
+     * - User: Conta de acesso ao sistema (email, senha)
+     * - Employee: Relacionamento do usuário com uma organização
+     * 
+     * Um User pode ter múltiplos Employees (em organizações diferentes).
+     */
     await this.employeesRepository.create({
       userId: user.id,
       organizationId,
-      role: EmployeeRole.OWNER,
+      role: EmployeeRole.OWNER, // Primeiro usuário = dono
       jobTitle: JobTitle.OWNER,
       active: true,
     });
@@ -221,6 +415,13 @@ export class AuthService {
     this.logger.log(`🔄 Refresh token request`);
 
     try {
+      // Verificar se o refresh token foi revogado (logout, troca de senha, etc)
+      const isRevoked = await this.tokenBlacklistRepository.isBlacklisted(refreshToken);
+      if (isRevoked) {
+        this.logger.warn(`🚫 Refresh token blacklisted`);
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
       // Verificar refresh token
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
